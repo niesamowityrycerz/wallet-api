@@ -10,7 +10,30 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_01_161736) do
+ActiveRecord::Schema.define(version: 2021_03_02_200405) do
+
+  create_table "event_store_events", force: :cascade do |t|
+    t.string "event_id", limit: 36, null: false
+    t.string "event_type", null: false
+    t.binary "metadata"
+    t.binary "data", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "valid_at", precision: 6
+    t.index ["created_at"], name: "index_event_store_events_on_created_at"
+    t.index ["event_id"], name: "index_event_store_events_on_event_id", unique: true
+    t.index ["event_type"], name: "index_event_store_events_on_event_type"
+    t.index ["valid_at"], name: "index_event_store_events_on_valid_at"
+  end
+
+  create_table "event_store_events_in_streams", force: :cascade do |t|
+    t.string "stream", null: false
+    t.integer "position"
+    t.string "event_id", limit: 36, null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.index ["created_at"], name: "index_event_store_events_in_streams_on_created_at"
+    t.index ["stream", "event_id"], name: "index_event_store_events_in_streams_on_stream_and_event_id", unique: true
+    t.index ["stream", "position"], name: "index_event_store_events_in_streams_on_stream_and_position", unique: true
+  end
 
   create_table "oauth_access_tokens", force: :cascade do |t|
     t.integer "resource_owner_id"
@@ -38,6 +61,16 @@ ActiveRecord::Schema.define(version: 2021_03_01_161736) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["uid"], name: "index_oauth_applications_on_uid", unique: true
+  end
+
+  create_table "transaction_projections", force: :cascade do |t|
+    t.integer "issuer_id"
+    t.string "issuer_uid"
+    t.string "transaction_uid"
+    t.string "borrower_name"
+    t.integer "amount"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "users", force: :cascade do |t|

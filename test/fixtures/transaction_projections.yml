@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  issuer_id: 1
+  issuer_uid: MyString
+  transaction_uid: MyString
+  borrower_name: MyString
+  amount: 1
+
+two:
+  issuer_id: 1
+  issuer_uid: MyString
+  transaction_uid: MyString
+  borrower_name: MyString
+  amount: 1

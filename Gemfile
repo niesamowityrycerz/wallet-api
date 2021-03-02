@@ -36,6 +36,13 @@ gem 'doorkeeper'
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.1.0', require: false
 
+# cqrs approach
+gem 'rails_event_store'
+
+# lighweight ruby gem for hashes
+# (enables you specify datatypes and throws errors)
+gem 'classy_hash'
+
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
 # gem 'rack-cors'
 
