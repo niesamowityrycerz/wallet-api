@@ -2,12 +2,12 @@ module Transactions
   module Events 
     class TransactionIssued < Event
       SCHEMA = {
-        issuer_uid: String,
-        borrower_name: String,
-        issuer_id: Integer,
-        amount: Integer,
+        creditor_id: Integer,
+        debtor_id: Integer,
         transaction_uid: String,
-        description: String
+        amount: Float,
+        description: String,
+        currency_id: Integer
       }
     end
   end

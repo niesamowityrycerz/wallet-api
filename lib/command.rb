@@ -12,7 +12,8 @@ class Command
     # self will differ; for example: for IssueTransaction class 
     # self is equal to Transactions::IssueTransaction 
 
+
     ClassyHash.validate(data, self::SCHEMA)
-    new(data)
+    self.new(data)
   end
 end

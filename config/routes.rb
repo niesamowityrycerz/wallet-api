@@ -13,4 +13,8 @@ Rails.application.routes.draw do
 
   mount Api::Root => '/'
   #mount GrapeSwaggerRails::Engine, at: '/documentation'
+
+  Rails.application.routes.draw do
+    mount RailsEventStore::Browser => '/res' if Rails.env.development?
+  end
 end
