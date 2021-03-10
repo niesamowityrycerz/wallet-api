@@ -9,20 +9,20 @@ module ReadModels
           # create new record in transaction_projections tables
           ReadModels::Transactions::TransactionProjection.create!(
             {
-              creditor_id: event.data[:creditor_id],
-              debtor_id: event.data[:debtor_id],
-              transaction_uid: event.data[:transaction_uid],
-              amount: event.data[:amount],
-              currency_id: event.data[:currency_id],
-              description: event.data[:description],
-              maturity_in_days: event.data.fetch(:maturity),
-              interest: event.data.fetch(:interest),
-              date_of_transaction: event.data.fetch(:date_of_transaction)
-            }
+              creditor_id: event.data.fetch(:creditor_id),
+              debtor_id: event.data.fetch(:debtor_id),
+              transaction_uid: event.data.fetch(:transaction_uid),
+              amount: event.data.fetch(:amount),
+              currency_id: event.data.fetch(:currency_id),
+              description: event.data.fetch(:description),
+              maturity_in_days: event.data.fetch(:maturity_in_days),
+              date_of_transaction: ( event.data.fetch(:date_of_transaction) if event.data.key?(:date_of_transaction) )
+            }.compact
           )
 
 
           # link published event to additional stream 
+          # nie działa 
           event_store.link(
             event.event_id,
             stream_name: stream_name(event.data[:creditor_id]),

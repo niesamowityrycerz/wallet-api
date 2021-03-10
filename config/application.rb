@@ -23,7 +23,9 @@ module WalletApi
     config.load_defaults 5.2
 
     config.eager_load_paths << Rails.root.join('lib')
-    config.eager_load_paths << Rails.root.join('domains', 'transactions', 'lib')
+    config.eager_load_paths << Rails.root.join('domains',   'transactions', 'lib')
+    config.eager_load_paths << Rails.root.join('domains',   'transaction_points', 'lib')
+    config.eager_load_paths << Rails.root.join('domains', 'processes')
 
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration can go into files in config/initializers

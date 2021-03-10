@@ -1,5 +1,5 @@
 module CommandHandler
-  # PO CO TO JEST 
+  # PO CO TO doładnie jest? Odwarza aggregat>
   def with_aggregate(aggregate_class, aggregate_id, &block)
     repository = AggregateRoot::InstrumentedRepository.new(
       AggregateRoot::Repository.new(Rails.configuration.event_store), ActiveSupport::Notifications

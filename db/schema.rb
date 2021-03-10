@@ -10,7 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_05_155426) do
+ActiveRecord::Schema.define(version: 2021_03_10_100407) do
+
+  create_table "credibility_points", force: :cascade do |t|
+    t.float "points"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "debtor_id"
+    t.integer "transaction_projection_id"
+    t.index ["debtor_id"], name: "index_credibility_points_on_debtor_id"
+    t.index ["transaction_projection_id"], name: "index_credibility_points_on_transaction_projection_id"
+  end
 
   create_table "currencies", force: :cascade do |t|
     t.string "name"
@@ -42,6 +52,16 @@ ActiveRecord::Schema.define(version: 2021_03_05_155426) do
     t.index ["stream", "position"], name: "index_event_store_events_in_streams_on_stream_and_position", unique: true
   end
 
+  create_table "faith_points", force: :cascade do |t|
+    t.float "points"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "creditor_id"
+    t.integer "transaction_projection_id"
+    t.index ["creditor_id"], name: "index_faith_points_on_creditor_id"
+    t.index ["transaction_projection_id"], name: "index_faith_points_on_transaction_projection_id"
+  end
+
   create_table "oauth_access_tokens", force: :cascade do |t|
     t.integer "resource_owner_id"
     t.integer "application_id", null: false
@@ -71,19 +91,18 @@ ActiveRecord::Schema.define(version: 2021_03_05_155426) do
   end
 
   create_table "repayment_conditions", force: :cascade do |t|
-    t.float "interest"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "creditor_id"
     t.integer "currency_id"
-    t.integer "repayment_type_id"
     t.integer "maturity_in_days"
+    t.integer "settlement_method_id"
+    t.integer "creditor_id"
     t.index ["creditor_id"], name: "index_repayment_conditions_on_creditor_id"
     t.index ["currency_id"], name: "index_repayment_conditions_on_currency_id"
-    t.index ["repayment_type_id"], name: "index_repayment_conditions_on_repayment_type_id"
+    t.index ["settlement_method_id"], name: "index_repayment_conditions_on_settlement_method_id"
   end
 
-  create_table "repayment_types", force: :cascade do |t|
+  create_table "settlement_methods", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -98,12 +117,17 @@ ActiveRecord::Schema.define(version: 2021_03_05_155426) do
     t.integer "creditor_id"
     t.integer "debtor_id"
     t.string "description"
-    t.float "interest"
-    t.integer "repayment_type_id"
+    t.integer "settlement_method_id"
     t.integer "status", default: 0
     t.integer "maturity_in_days"
     t.datetime "max_date_of_settlement"
     t.datetime "date_of_transaction"
+    t.boolean "creditor_informed", default: false
+    t.string "reason_for_closing"
+    t.string "doubts"
+    t.datetime "date_of_settlement"
+    t.float "credibility_points"
+    t.float "faith_points"
   end
 
   create_table "users", force: :cascade do |t|
@@ -116,6 +140,12 @@ ActiveRecord::Schema.define(version: 2021_03_05_155426) do
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+  end
+
+  create_table "warning_types", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
 end

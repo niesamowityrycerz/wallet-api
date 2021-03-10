@@ -13,10 +13,9 @@ module Transactions
               repayment_conditions: repayment_condition_repository.creditor_conditions
             }
           )
-          # I can do this thanks to attr_accessor
           transaction.repayment_conditions = repayment_condition_repository
 
-          transaction.set_liquidate_conditions(params)
+          transaction.add_settlement_terms(params)
         end
       end
     end

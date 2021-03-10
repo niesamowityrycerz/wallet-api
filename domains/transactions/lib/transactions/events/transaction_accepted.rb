@@ -1,6 +1,6 @@
 module Transactions 
   module Events 
-    class TransactionAcceptedRejectedPending < Event 
+    class TransactionAccepted < Event 
       SCHEMA = {
         transaction_uid: String,
         status: Symbol
