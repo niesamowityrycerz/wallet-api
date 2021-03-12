@@ -23,7 +23,6 @@ RSpec.describe 'Transaction flow', type: :unit do
 
     @settlement_terms_params = {  
       transaction_uid: @transaction_uid,
-      creditor_id: creditor.id,
       debtor_id: debtor.id,
       max_date_of_settlement: Date.today + rand(1..9).day,
       settlement_method_id: one_instalment.id,
@@ -52,6 +51,8 @@ RSpec.describe 'Transaction flow', type: :unit do
       ).in_stream("Transaction$#{@transaction_uid}").strict 
     end
 
+
+    #### Tu jest wersja testu z Background procesem -> jest event ###
     it 'adds settlement terms' do
       settlement_terms = Transactions::Commands::AddSettlementTerms.send(@settlement_terms_params)
       command_bus.call(settlement_terms)
@@ -60,6 +61,10 @@ RSpec.describe 'Transaction flow', type: :unit do
         an_event(Transactions::Events::TransactionIssued),
         an_event(Transactions::Events::SettlementTermsAdded)
       ).in_stream("Transaction$#{@transaction_uid}").strict
+
+      expect(event_store).to have_published(
+        an_event(Warnings::Events::TransactionExpiredWarningSent).with_data(transaction_uid: @transaction_uid)
+      ).in_stream("Warning$#{@transaction_uid}").strict
     end
 
     it 'rejects transaction' do 
@@ -151,8 +156,8 @@ RSpec.describe 'Transaction flow', type: :unit do
       settle_transaction = Transactions::Commands::SettleTransaction.new(params)
       expect {
         command_bus.call(settle_transaction)
-      }.to change { WriteModels::TransactionPoints::CredibilityPoint.all.count }.by(1)
-       .and change { WriteModels::TransactionPoints::FaithPoint.all.count }.by(1)
+      }.to change { WriteModels::CredibilityPoints::CredibilityPoint.all.count }.by(1)
+       .and change { WriteModels::TrustPoints::FaithPoint.all.count }.by(1)
 
       expect(event_store).to have_published(
         an_event(Transactions::Events::TransactionIssued),
@@ -160,8 +165,8 @@ RSpec.describe 'Transaction flow', type: :unit do
       ).in_stream("Transaction$#{@transaction_uid}").strict
 
       expect(event_store).to have_published(
-        an_event(TransactionPoints::Events::CredibilityPointsCalculated),
-        an_event(TransactionPoints::Events::FaithPointsCalculated)
+        an_event(CredibilityPoints::Events::CredibilityPointsCalculated),
+        an_event(TrustPoints::Events::FaithPointsCalculated)
       ).in_stream("TransactionPoint$#{@transaction_uid}").strict
     end
   end 

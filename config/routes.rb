@@ -1,3 +1,6 @@
+require 'sidekiq/web'
+
+
 Rails.application.routes.draw do
   use_doorkeeper do 
     skip_controllers :authorizations, :applications, :authorized_applications
@@ -13,6 +16,8 @@ Rails.application.routes.draw do
 
   mount Api::Root => '/'
   #mount GrapeSwaggerRails::Engine, at: '/documentation'
+
+  mount Sidekiq::Web, at: '/sidekiq'
 
   Rails.application.routes.draw do
     mount RailsEventStore::Browser => '/res' if Rails.env.development?

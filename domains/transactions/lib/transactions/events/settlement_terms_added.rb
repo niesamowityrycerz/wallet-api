@@ -3,7 +3,8 @@ module Transactions
     class SettlementTermsAdded < Event 
       SCHEMA = {
         transaction_uid: String,
-        max_date_of_settlement: Date
+        max_date_of_settlement: Date,
+        status: Symbol
       }
     end
   end

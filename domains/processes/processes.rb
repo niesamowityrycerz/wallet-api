@@ -2,4 +2,4 @@ module Processes
   
 end
 
-require_dependency 'transaction_point/lib/transaction_point'
+require_dependency 'ranking_point/lib/ranking_point'

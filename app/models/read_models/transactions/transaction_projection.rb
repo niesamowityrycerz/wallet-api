@@ -2,7 +2,7 @@ module ReadModels
   module Transactions 
     class TransactionProjection < ApplicationRecord
       has_one :credibility_point
-      has_one :faith_point
+      has_one :trust_point
       # status column is of type Integer;
       # Rails will do the mapping and transalte: 
       # 0 -> pending, 1 -> rejected, 2 -> accepted, 3 -> closed, 4 -> corrected, 5 -> :settled

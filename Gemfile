@@ -46,6 +46,16 @@ gem 'classy_hash'
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
 # gem 'rack-cors'
 
+#Backgroud processes manager 
+gem 'sidekiq'
+# sidekiq UI
+gem 'sinatra' 
+
+# TAKE CARE OF THAT 
+# redis -> place to store the jobs
+gem 'redis-rails', '~> 5.0', '>= 5.0.2'
+gem 'redis'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]

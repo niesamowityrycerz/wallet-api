@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_10_100407) do
+ActiveRecord::Schema.define(version: 2021_03_11_102307) do
 
   create_table "credibility_points", force: :cascade do |t|
     t.float "points"
@@ -50,16 +50,6 @@ ActiveRecord::Schema.define(version: 2021_03_10_100407) do
     t.index ["created_at"], name: "index_event_store_events_in_streams_on_created_at"
     t.index ["stream", "event_id"], name: "index_event_store_events_in_streams_on_stream_and_event_id", unique: true
     t.index ["stream", "position"], name: "index_event_store_events_in_streams_on_stream_and_position", unique: true
-  end
-
-  create_table "faith_points", force: :cascade do |t|
-    t.float "points"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "creditor_id"
-    t.integer "transaction_projection_id"
-    t.index ["creditor_id"], name: "index_faith_points_on_creditor_id"
-    t.index ["transaction_projection_id"], name: "index_faith_points_on_transaction_projection_id"
   end
 
   create_table "oauth_access_tokens", force: :cascade do |t|
@@ -127,7 +117,19 @@ ActiveRecord::Schema.define(version: 2021_03_10_100407) do
     t.string "doubts"
     t.datetime "date_of_settlement"
     t.float "credibility_points"
-    t.float "faith_points"
+    t.float "trust_points"
+    t.float "penalty_points"
+    t.float "adjusted_credibility_points"
+  end
+
+  create_table "trust_points", force: :cascade do |t|
+    t.float "points"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "creditor_id"
+    t.integer "transaction_projection_id"
+    t.index ["creditor_id"], name: "index_trust_points_on_creditor_id"
+    t.index ["transaction_projection_id"], name: "index_trust_points_on_transaction_projection_id"
   end
 
   create_table "users", force: :cascade do |t|

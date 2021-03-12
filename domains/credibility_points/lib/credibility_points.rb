@@ -1,0 +1,3 @@
+module CredibilityPoints
+  
+end

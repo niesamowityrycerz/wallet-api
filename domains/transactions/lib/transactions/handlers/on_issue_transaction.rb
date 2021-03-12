@@ -16,8 +16,7 @@ module Transactions
               creditor_conditions: repayment_condition_repository.creditor_conditions
             }
           )
-          transaction.repayment_conditions = repayment_condition_repository
-          
+
           transaction.place(params)
         end
       end

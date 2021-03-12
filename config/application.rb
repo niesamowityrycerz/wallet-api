@@ -24,8 +24,10 @@ module WalletApi
 
     config.eager_load_paths << Rails.root.join('lib')
     config.eager_load_paths << Rails.root.join('domains',   'transactions', 'lib')
-    config.eager_load_paths << Rails.root.join('domains',   'transaction_points', 'lib')
-    config.eager_load_paths << Rails.root.join('domains', 'processes')
+    config.eager_load_paths << Rails.root.join('domains',   'credibility_points', 'lib')
+    config.eager_load_paths << Rails.root.join('domains',   'trust_points', 'lib')
+    config.eager_load_paths << Rails.root.join('domains',   'warnings', 'lib')
+    config.eager_load_paths << Rails.root.join('domains',   'processes')
 
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration can go into files in config/initializers
@@ -35,6 +37,10 @@ module WalletApi
     # Only loads a smaller set of middleware suitable for API only apps.
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
+
+    # configure rails to use sidekiq as a background processes manager(intead of ActiveJob)
+    config.active_job.queue_adapter = :sidekiq
+    
     config.api_only = true
   end
 end

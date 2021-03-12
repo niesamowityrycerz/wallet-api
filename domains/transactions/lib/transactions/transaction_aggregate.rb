@@ -71,7 +71,8 @@ module Transactions
       apply Events::SettlementTermsAdded.strict(
         {
           transaction_uid: @id,
-          max_date_of_settlement: params[:max_date_of_settlement]
+          max_date_of_settlement: params[:max_date_of_settlement],
+          status: :debtor_terms_added
         }
       )
     end
@@ -133,6 +134,7 @@ module Transactions
       @maturity_in_days = event.data.fetch(:maturity_in_days)
       @date_of_placement = Date.today
       @creditor_id = event.data.fetch(:creditor_id)
+      @repayment_conditions = Repositories::RepaymentCondition.new.with_condition(event.data.fetch(:creditor_id))
     end
 
     on Events::TransactionAccepted do |event| 
@@ -140,7 +142,7 @@ module Transactions
     end
 
     on Events::SettlementTermsAdded do |event|
-      @status = :settlement_terms_added
+      @status = event.data.fetch(:status)
     end
 
     on Events::TransactionRejected do |event| 
