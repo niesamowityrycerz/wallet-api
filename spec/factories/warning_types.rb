@@ -1,5 +1,5 @@
 FactoryBot.define do
   factory :warning_type do
-    name { "MyString" }
+    name { 'transaction expired' }
   end
 end

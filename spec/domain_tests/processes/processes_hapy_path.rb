@@ -68,18 +68,4 @@ RSpec.describe 'RankingPoint Processes manager', type: :unit do
     end
   end
 
-  context 'when adds settlement terms' do 
-    it 'checks flow' do 
-      params = {
-        transaction_uid: @transaction_uid,
-        creditor_id: 1,
-        debtor_id: 2,
-        max_date_of_settlement: Date,
-        settlement_method_id: Integer,
-        currency_id: Integer
-      }
-      add_settlement_terms = Transaction::Commands::AddSettlementTerms
-
-    end
-  end
 end

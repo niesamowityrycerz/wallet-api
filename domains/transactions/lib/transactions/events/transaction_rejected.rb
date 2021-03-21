@@ -3,7 +3,8 @@ module Transactions
     class TransactionRejected < Event
       SCHEMA = {
         transaction_uid: String,
-        status: Symbol
+        status: Symbol,
+        reason_for_closing: String 
       }
     end
   end

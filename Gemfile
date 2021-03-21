@@ -64,7 +64,13 @@ group :development, :test do
   gem 'factory_bot_rails'
   gem 'ruby_event_store-rspec'
   gem 'pry'
+  
 end
+
+# it should be here 
+group :test do 
+  gem 'rspec-sidekiq'
+end 
 
 group :development do
   gem 'listen', '>= 3.0.5', '< 3.2'

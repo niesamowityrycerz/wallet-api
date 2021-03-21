@@ -27,11 +27,13 @@ module TrustPoints
     end
 
     def allot_trust_points(params)
+
       apply Events::TrustPointsAlloted.strict(
         {
           transaction_uid: @id,
           trust_points: @trust_points,
-          creditor_id: @creditor_id
+          creditor_id: @creditor_id,
+          status: :points_alloted
         }
       )
     end
@@ -43,7 +45,7 @@ module TrustPoints
     end
 
     on Events::TrustPointsAlloted do |event|
-      @status = :alloted
+      @status = event.data.fetch(:status)
     end
 
   end

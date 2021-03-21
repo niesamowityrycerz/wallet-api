@@ -6,7 +6,7 @@ module Warnings
       end
 
       def with_warning(transaction_uid, &block)
-        stream_name = "Warning$#{transaction_uid}"
+        stream_name = "TransactionWarning$#{transaction_uid}"
         repository.with_aggregate(WarningAggregate.new(transaction_uid), stream_name, &block)
       end
 

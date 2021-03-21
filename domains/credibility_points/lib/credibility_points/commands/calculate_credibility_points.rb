@@ -4,8 +4,7 @@ module CredibilityPoints
       SCHEMA = {
         transaction_uid: String,
         debtor_id: Integer,
-        due_money: Float,
-        status: Symbol
+        due_money: Float
       }
     end
   end

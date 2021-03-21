@@ -8,7 +8,11 @@ module Warnings
 
         repository = Repositories::Warning.new
         repository.with_warning(transaction_uid) do |warning|
-          warning.send_expiration_warning(command.data)
+          params = command.data.merge({
+            warning_type_id: WarningType.find_by!(name: 'transaction expired').id,
+            warning_uid: SecureRandom.uuid # warnig identifier 
+          })
+          warning.send_expiration_warning(params)
         end
       end
     end

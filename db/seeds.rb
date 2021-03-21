@@ -41,3 +41,9 @@ WriteModels::RepaymentCondition.create!(
   }
 )
 
+# warnings 
+transaction_expired = WarningType.create(name: 'transaction expired')
+user = User.first 
+WriteModels::Warning.create(user_id: user.id, warning_type_id: transaction_expired.id)
+
+

@@ -1,5 +1,5 @@
 FactoryBot.define do 
-  factory :user, aliases: [ :creditor ] do 
+  factory :user, aliases: [ :creditor, :debtor ] do 
     email                 { Faker::Internet.email  }
     password              { 'password1'}
     password_confirmation { 'password1'}

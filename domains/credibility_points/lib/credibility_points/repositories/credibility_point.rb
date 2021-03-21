@@ -6,7 +6,7 @@ module CredibilityPoints
       end
 
       def with_credibility_point(transaction_uid, &block)
-        stream_name = "RankingCredibilityPoints$#{transaction_uid}"
+        stream_name = "CredibilityPoint$#{transaction_uid}"
         repository.with_aggregate(CredibilityPointAggregate.new(transaction_uid), stream_name, &block)
       end
 

@@ -4,7 +4,8 @@ module TrustPoints
       SCHEMA = {
         transaction_uid: String,
         trust_points: Float,
-        creditor_id: Integer
+        creditor_id: Integer,
+        status: Symbol
       }
     end
   end

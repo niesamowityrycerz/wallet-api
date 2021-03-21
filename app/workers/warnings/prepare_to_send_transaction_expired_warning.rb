@@ -3,22 +3,26 @@ module Warnings
     # build sidekiq worker
     include Sidekiq::Worker
 
-
+    #sidekiq_options queue: 'warnings'
 
     # every Sidekiq worker has this method
-    # execure warning job 
-    def perform(transaction_uid)
-      binding.pry
-      puts "Something happend - #{transaction_uid}"
+    def perform(transaction_uid, debtor_id)
+      puts "Warnings happend - #{transaction_uid}"
       Rails.configuration.command_bus.call(Warnings::Commands::SendTransactionExpiredWarning.new(
         {
-          transaction_uid: transaction_uid   
+          transaction_uid: transaction_uid,
+          debtor_id: debtor_id
         }
       ))
     end
 
-    # stop executing warning job  
-
+    # cancel job method
+    # it is a class method -> no instance needed to access this method
+    def self.cancel_warning(transaction_uid)
+      Sidekiq::ScheduledSet.new.select do |job|
+        job.klass == "Warnings::PrepareToSendTransactionExpiredWarning" && job.args[0] == transaction_uid
+      end.map(&:delete)
+    end
 
   end
 end

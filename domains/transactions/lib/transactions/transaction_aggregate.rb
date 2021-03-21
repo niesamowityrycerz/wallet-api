@@ -5,8 +5,9 @@ module Transactions
     include AggregateRoot
 
     MaximumDateOfTransactionSettlementUnavailable = Class.new(StandardError)
-    RepaymentTypeUnavaiable = Class.new(StandardError)
-    CurrencyUnavaiable = Class.new(StandardError)
+    RepaymentTypeUnavaiable                       = Class.new(StandardError)
+    CurrencyUnavaiable                            = Class.new(StandardError)
+    InvalidAmount                                 = Class.new(StandardError)
 
     attr_accessor :repayment_conditions
 
@@ -47,18 +48,20 @@ module Transactions
       )
     end
 
-    def reject_transaction
+    def reject_transaction(params)
       apply Events::TransactionRejected.strict(
         {
           transaction_uid: @id,
-          status: :rejected
+          status: :rejected,
+          reason_for_closing: params[:reason_for_closing]
         }
       )
 
       apply Events::CreditorInformed.strict(
         {
           transaction_uid: @id,
-          creditor_informed: true 
+          creditor_informed: true,
+          reason_for_closing: params[:reason_for_closing]
         }
       )
     end
@@ -72,7 +75,8 @@ module Transactions
         {
           transaction_uid: @id,
           max_date_of_settlement: params[:max_date_of_settlement],
-          status: :debtor_terms_added
+          status: :debtor_terms_added,
+          debtor_id: @debtor_id
         }
       )
     end
@@ -82,8 +86,8 @@ module Transactions
         {
           transaction_uid: @id,
           status: :closed,
-          reason_for_closing: params[:reason_for_closing]
-        }
+          reason_for_closing: ( params[:reason_for_closing] if params.key?(:reason_for_closing) )
+        }.compact
       )
     end
 
@@ -126,6 +130,16 @@ module Transactions
       )
     end
 
+    def inform_admin(params) 
+      apply Events::AdminInformed.strict(
+        {
+          transaction_uid: @id,
+          message_to_admin: params[:message_to_admin],
+          status: :passed_to_admin 
+        }
+      )
+    end
+
     # "To restore the state of your aggregate you need to use AggregateRoot::Repository."
     # AggregateRoot::Repository.new.load(Transactions::TransactionAggregate.new(need to fulfill id), stream_name of events I want to restore)
     on Events::TransactionIssued do |event|
@@ -134,6 +148,7 @@ module Transactions
       @maturity_in_days = event.data.fetch(:maturity_in_days)
       @date_of_placement = Date.today
       @creditor_id = event.data.fetch(:creditor_id)
+      @debtor_id = event.data.fetch(:debtor_id)
       @repayment_conditions = Repositories::RepaymentCondition.new.with_condition(event.data.fetch(:creditor_id))
     end
 
@@ -166,6 +181,10 @@ module Transactions
     end
 
     on Events::TransactionSettled do |event|
+      @status = event.data.fetch(:status)
+    end
+    
+    on Events::AdminInformed do |event|
       @status = event.data.fetch(:status)
     end
   end

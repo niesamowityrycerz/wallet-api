@@ -4,7 +4,8 @@ module Transactions
       SCHEMA = {
         transaction_uid: String,
         max_date_of_settlement: Date,
-        status: Symbol
+        status: Symbol,
+        debtor_id: Integer
       }
     end
   end

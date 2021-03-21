@@ -6,7 +6,7 @@ module TrustPoints
       end
 
       def with_trust_point(transaction_uid, &block)
-        stream_name = "RankingTrustPoints$#{transaction_uid}"
+        stream_name = "TrustPoint$#{transaction_uid}"
         repository.with_aggregate(TrustPointAggregate.new(transaction_uid), stream_name, &block)
       end
 

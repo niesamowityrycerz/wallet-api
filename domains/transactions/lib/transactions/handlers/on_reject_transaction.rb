@@ -8,7 +8,7 @@ module Transactions
         repository = Repositories::Transaction.new
 
         repository.with_transaction(transaction_uid) do |transaction|
-          transaction.reject_transaction
+          transaction.reject_transaction(command.data)
         end
       end
       

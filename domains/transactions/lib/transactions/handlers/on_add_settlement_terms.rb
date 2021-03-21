@@ -1,6 +1,8 @@
 module Transactions
   module Handlers 
     class OnAddSettlementTerms
+      include CommandHandler
+      
       def call(command)
         transaction_uid = command.data[:transaction_uid]
 

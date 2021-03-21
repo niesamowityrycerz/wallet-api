@@ -24,21 +24,25 @@ Rails.configuration.to_prepare do
     store.subscribe(ReadModels::Transactions::Handlers::OnTransactionCheckedOut,                       to: [Transactions::Events::TransactionCheckedOut])
     store.subscribe(ReadModels::Transactions::Handlers::OnTransactionCorrected,                        to: [Transactions::Events::TransactionCorrected])
     store.subscribe(ReadModels::Transactions::Handlers::OnTransactionSettled,                          to: [Transactions::Events::TransactionSettled])
+    store.subscribe(ReadModels::Transactions::Handlers::OnAdminInformed,                               to: [Transactions::Events::AdminInformed])
 
 
     store.subscribe(ReadModels::CredibilityPoints::Handlers::OnCredibilityPointsAlloted,               to: [CredibilityPoints::Events::CredibilityPointsAlloted])
+    store.subscribe(ReadModels::CredibilityPoints::Handlers::OnPenaltyPointsAdded,                     to: [CredibilityPoints::Events::PenaltyPointsAdded])
 
 
     store.subscribe(ReadModels::TrustPoints::Handlers::OnTrustPointsAlloted,                           to: [TrustPoints::Events::TrustPointsAlloted])
-    
+
+    store.subscribe(ReadModels::Warnings::Handlers::OnTransactionExpiredWarningSent,                   to: [Warnings::Events::TransactionExpiredWarningSent])
 
     # Processes(System)
     store.subscribe(Processes::RankingPoint, to: [
       Transactions::Events::SettlementTermsAdded,
       Transactions::Events::TransactionSettled,
       CredibilityPoints::Events::CredibilityPointsCalculated,
-      TrustPoints::Events::TrustPointsCalculated
-
+      TrustPoints::Events::TrustPointsCalculated,
+      Warnings::Events::TransactionExpiredWarningSent, # calculate penalty credibility points
+      TrustPoints::Events::TrustPointsAlloted
     ])
     
   end
@@ -54,17 +58,20 @@ Rails.configuration.to_prepare do
     bus.register(Transactions::Commands::CheckOutTransaction,    Transactions::Handlers::OnCheckOutTransaction.new)
     bus.register(Transactions::Commands::CorrectTransaction,     Transactions::Handlers::OnCorrectTransaction.new)
     bus.register(Transactions::Commands::SettleTransaction,      Transactions::Handlers::OnSettleTransaction.new)
+    bus.register(Transactions::Commands::InformAdmin,            Transactions::Handlers::OnInformAdmin.new)
+
 
 
     bus.register(CredibilityPoints::Commands::CalculateCredibilityPoints, CredibilityPoints::Handlers::OnCalculateCredibilityPoints.new)
     bus.register(CredibilityPoints::Commands::AllotCredibilityPoints,     CredibilityPoints::Handlers::OnAllotCredibilityPoints.new)
+    bus.register(CredibilityPoints::Commands::AddPenaltyPoints,           CredibilityPoints::Handlers::OnAddPenaltyPoints.new)
 
 
 
     bus.register(TrustPoints::Commands::CalculateTrustPoints,             TrustPoints::Handlers::OnCalculateTrustPoints.new)
     bus.register(TrustPoints::Commands::AllotTrustPoints,                 TrustPoints::Handlers::OnAllotTrustPoints.new)
 
-    bus.register(Warnings::Commands::SendTransactionExpiredWarning,     Warnings::Handlers::OnSendTransactionExpiredWarning.new)
+    bus.register(Warnings::Commands::SendTransactionExpiredWarning,       Warnings::Handlers::OnSendTransactionExpiredWarning.new)
   end
 
 end

@@ -29,19 +29,26 @@ RSpec.describe 'Transaction flow', type: :unit do
       currency_id: zloty.id 
     }
 
-    issue_transaction = Transactions::Commands::IssueTransaction.send(@issue_tran_params)
-    command_bus.call(issue_transaction)
+    @issue_transaction = Transactions::Commands::IssueTransaction.send(@issue_tran_params)
+    
 
   end
 
   context 'when happy_path' do 
     it 'issues transaction' do 
+      expect {
+        command_bus.call(@issue_transaction)
+      }.to change { ReadModels::Transactions::TransactionProjection.count }.from(0).to(1)
+        .and change { WriteModels::FinancialTransaction.count }.from(0).to(1)
+
       expect(event_store).to have_published(
         an_event(Transactions::Events::TransactionIssued)
       ).in_stream("Transaction$#{@transaction_uid}").strict 
     end
 
-    it 'accepts transaction' do 
+    it 'accepts transaction' do
+      command_bus.call(@issue_transaction)
+      
       accept_transaction = Transactions::Commands::AcceptTransaction.send({transaction_uid: @transaction_uid})
       command_bus.call(accept_transaction)
 
@@ -52,36 +59,8 @@ RSpec.describe 'Transaction flow', type: :unit do
     end
 
 
-    #### Tu jest wersja testu z Background procesem -> jest event ###
-    it 'adds settlement terms' do
-      settlement_terms = Transactions::Commands::AddSettlementTerms.send(@settlement_terms_params)
-      command_bus.call(settlement_terms)
-
-      expect(event_store).to have_published(
-        an_event(Transactions::Events::TransactionIssued),
-        an_event(Transactions::Events::SettlementTermsAdded)
-      ).in_stream("Transaction$#{@transaction_uid}").strict
-
-      expect(event_store).to have_published(
-        an_event(Warnings::Events::TransactionExpiredWarningSent).with_data(transaction_uid: @transaction_uid)
-      ).in_stream("Warning$#{@transaction_uid}").strict
-    end
-
-    it 'rejects transaction' do 
-      reject_transaction = Transactions::Commands::RejectTransaction.send({transaction_uid: @transaction_uid})
-
-      expect {
-        command_bus.call(reject_transaction)
-      }.to change { ReadModels::Transactions::TransactionProjection.find_by!(transaction_uid: @transaction_uid).creditor_informed }.from(false).to(true)
-
-      expect(event_store).to have_published(
-        an_event(Transactions::Events::TransactionIssued),
-        an_event(Transactions::Events::TransactionRejected),
-        an_event(Transactions::Events::CreditorInformed)
-      ).in_stream("Transaction$#{@transaction_uid}").strict 
-    end
-
     it 'closes transaction' do
+      command_bus.call(@issue_transaction)
       params = {
         transaction_uid: @transaction_uid,
         reason_for_closing: 'Błędna transakcja'
@@ -99,6 +78,7 @@ RSpec.describe 'Transaction flow', type: :unit do
     end
 
     it 'checks out transaction' do
+      command_bus.call(@issue_transaction)
       params = {
         transaction_uid: @transaction_uid,
         doubts: 'Amount is incorrect.It Should be less.'
@@ -115,7 +95,8 @@ RSpec.describe 'Transaction flow', type: :unit do
       ).in_stream("Transaction$#{@transaction_uid}").strict
     end
 
-    it 'corrects transaction' do 
+    it 'corrects transaction' do
+      command_bus.call(@issue_transaction)
       transaction = ReadModels::Transactions::TransactionProjection.find_by!(transaction_uid: @transaction_uid)
       before = {
         description: transaction.description,
@@ -146,6 +127,7 @@ RSpec.describe 'Transaction flow', type: :unit do
     end
 
     it 'settles transaction' do 
+      command_bus.call(@issue_transaction)
       params = {
         transaction_uid: @transaction_uid,
         date_of_settlement: Date.today,
@@ -157,7 +139,7 @@ RSpec.describe 'Transaction flow', type: :unit do
       expect {
         command_bus.call(settle_transaction)
       }.to change { WriteModels::CredibilityPoints::CredibilityPoint.all.count }.by(1)
-       .and change { WriteModels::TrustPoints::FaithPoint.all.count }.by(1)
+       .and change { WriteModels::TrustPoints::TrustPoint.all.count }.by(1)
 
       expect(event_store).to have_published(
         an_event(Transactions::Events::TransactionIssued),
@@ -166,7 +148,7 @@ RSpec.describe 'Transaction flow', type: :unit do
 
       expect(event_store).to have_published(
         an_event(CredibilityPoints::Events::CredibilityPointsCalculated),
-        an_event(TrustPoints::Events::FaithPointsCalculated)
+        an_event(TrustPoints::Events::TrustPointsCalculated)
       ).in_stream("TransactionPoint$#{@transaction_uid}").strict
     end
   end 

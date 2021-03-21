@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_11_102307) do
+ActiveRecord::Schema.define(version: 2021_03_21_191120) do
 
   create_table "credibility_points", force: :cascade do |t|
     t.float "points"
@@ -50,6 +50,19 @@ ActiveRecord::Schema.define(version: 2021_03_11_102307) do
     t.index ["created_at"], name: "index_event_store_events_in_streams_on_created_at"
     t.index ["stream", "event_id"], name: "index_event_store_events_in_streams_on_stream_and_event_id", unique: true
     t.index ["stream", "position"], name: "index_event_store_events_in_streams_on_stream_and_position", unique: true
+  end
+
+  create_table "financial_transactions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "debtor_id"
+    t.integer "creditor_id"
+    t.float "amount"
+    t.integer "transaction_projection_id"
+    t.datetime "date_of_transaction"
+    t.index ["creditor_id"], name: "index_financial_transactions_on_creditor_id"
+    t.index ["debtor_id"], name: "index_financial_transactions_on_debtor_id"
+    t.index ["transaction_projection_id"], name: "index_financial_transactions_on_transaction_projection_id"
   end
 
   create_table "oauth_access_tokens", force: :cascade do |t|
@@ -118,8 +131,21 @@ ActiveRecord::Schema.define(version: 2021_03_11_102307) do
     t.datetime "date_of_settlement"
     t.float "credibility_points"
     t.float "trust_points"
-    t.float "penalty_points"
+    t.float "penalty_points", default: 0.0
     t.float "adjusted_credibility_points"
+    t.boolean "admin_informed", default: false
+    t.string "message_to_admin"
+  end
+
+  create_table "transaction_warning_projections", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "warning_type_name"
+    t.string "transaction_uid"
+    t.string "warning_uid"
+    t.float "penalty_points"
+    t.integer "user_id"
+    t.index ["user_id"], name: "index_transaction_warning_projections_on_user_id"
   end
 
   create_table "trust_points", force: :cascade do |t|
@@ -148,6 +174,18 @@ ActiveRecord::Schema.define(version: 2021_03_11_102307) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "warnings", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id"
+    t.integer "warning_type_id"
+    t.string "transaction_uid"
+    t.float "penalty_points"
+    t.string "warning_uid"
+    t.index ["user_id"], name: "index_warnings_on_user_id"
+    t.index ["warning_type_id"], name: "index_warnings_on_warning_type_id"
   end
 
 end
