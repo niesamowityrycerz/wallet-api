@@ -11,7 +11,7 @@ module ReadModels
             }
           )
 
-          WriteModels::TrustPoints::TrustPoint.create!(
+          WriteModels::TrustPoint.create!(
             creditor_id: event.data.fetch(:creditor_id),
             points: event.data.fetch(:trust_points),
             transaction_projection_id: transaction_projection.id

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_21_191120) do
+ActiveRecord::Schema.define(version: 2021_03_24_212758) do
 
   create_table "credibility_points", force: :cascade do |t|
     t.float "points"
@@ -135,6 +135,7 @@ ActiveRecord::Schema.define(version: 2021_03_21_191120) do
     t.float "adjusted_credibility_points"
     t.boolean "admin_informed", default: false
     t.string "message_to_admin"
+    t.string "reason_for_rejection"
   end
 
   create_table "transaction_warning_projections", force: :cascade do |t|

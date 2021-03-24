@@ -16,16 +16,14 @@ Rails.configuration.to_prepare do
   # READ_MODEL(event handlers) to event 
   Rails.configuration.event_store.tap do |store|
     store.subscribe(ReadModels::Transactions::Handlers::OnTransactionIssued,                           to: [Transactions::Events::TransactionIssued])
-    store.subscribe(ReadModels::Transactions::Handlers::OnTransactionAcceptedRejectedPendingOrClosed,  to: [Transactions::Events::TransactionAccepted,
-                                                                                                            Transactions::Events::TransactionRejected,
+    store.subscribe(ReadModels::Transactions::Handlers::OnTransactionAcceptedOrClosed,                 to: [Transactions::Events::TransactionAccepted,
                                                                                                             Transactions::Events::TransactionClosed])
-    store.subscribe(ReadModels::Transactions::Handlers::OnCreditorInformed,                            to: [Transactions::Events::CreditorInformed])
+    store.subscribe(ReadModels::Transactions::Handlers::OnTransactionRejected,                         to: [Transactions::Events::TransactionRejected])                                                                               
     store.subscribe(ReadModels::Transactions::Handlers::OnSettlementTermsAdded,                        to: [Transactions::Events::SettlementTermsAdded])
     store.subscribe(ReadModels::Transactions::Handlers::OnTransactionCheckedOut,                       to: [Transactions::Events::TransactionCheckedOut])
     store.subscribe(ReadModels::Transactions::Handlers::OnTransactionCorrected,                        to: [Transactions::Events::TransactionCorrected])
     store.subscribe(ReadModels::Transactions::Handlers::OnTransactionSettled,                          to: [Transactions::Events::TransactionSettled])
-    store.subscribe(ReadModels::Transactions::Handlers::OnAdminInformed,                               to: [Transactions::Events::AdminInformed])
-
+    
 
     store.subscribe(ReadModels::CredibilityPoints::Handlers::OnCredibilityPointsAlloted,               to: [CredibilityPoints::Events::CredibilityPointsAlloted])
     store.subscribe(ReadModels::CredibilityPoints::Handlers::OnPenaltyPointsAdded,                     to: [CredibilityPoints::Events::PenaltyPointsAdded])
@@ -58,8 +56,6 @@ Rails.configuration.to_prepare do
     bus.register(Transactions::Commands::CheckOutTransaction,    Transactions::Handlers::OnCheckOutTransaction.new)
     bus.register(Transactions::Commands::CorrectTransaction,     Transactions::Handlers::OnCorrectTransaction.new)
     bus.register(Transactions::Commands::SettleTransaction,      Transactions::Handlers::OnSettleTransaction.new)
-    bus.register(Transactions::Commands::InformAdmin,            Transactions::Handlers::OnInformAdmin.new)
-
 
 
     bus.register(CredibilityPoints::Commands::CalculateCredibilityPoints, CredibilityPoints::Handlers::OnCalculateCredibilityPoints.new)

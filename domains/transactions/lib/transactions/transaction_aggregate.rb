@@ -53,15 +53,7 @@ module Transactions
         {
           transaction_uid: @id,
           status: :rejected,
-          reason_for_closing: params[:reason_for_closing]
-        }
-      )
-
-      apply Events::CreditorInformed.strict(
-        {
-          transaction_uid: @id,
-          creditor_informed: true,
-          reason_for_closing: params[:reason_for_closing]
+          reason_for_rejection: params[:reason_for_rejection]
         }
       )
     end
@@ -130,16 +122,6 @@ module Transactions
       )
     end
 
-    def inform_admin(params) 
-      apply Events::AdminInformed.strict(
-        {
-          transaction_uid: @id,
-          message_to_admin: params[:message_to_admin],
-          status: :passed_to_admin 
-        }
-      )
-    end
-
     # "To restore the state of your aggregate you need to use AggregateRoot::Repository."
     # AggregateRoot::Repository.new.load(Transactions::TransactionAggregate.new(need to fulfill id), stream_name of events I want to restore)
     on Events::TransactionIssued do |event|
@@ -164,10 +146,6 @@ module Transactions
       @status = event.data.fetch(:status)
     end
 
-    on Events::CreditorInformed do |event|
-      @status = event.data.fetch(:creditor_informed)
-    end
-
     on Events::TransactionClosed do |event|
       @status = event.data.fetch(:status)
     end
@@ -181,10 +159,6 @@ module Transactions
     end
 
     on Events::TransactionSettled do |event|
-      @status = event.data.fetch(:status)
-    end
-    
-    on Events::AdminInformed do |event|
       @status = event.data.fetch(:status)
     end
   end

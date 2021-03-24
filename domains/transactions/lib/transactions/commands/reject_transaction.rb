@@ -3,7 +3,7 @@ module Transactions
     class RejectTransaction < Command
       SCHEMA = {
         transaction_uid: String,
-        reason_for_closing: String
+        reason_for_rejection: String
       }
     end
   end

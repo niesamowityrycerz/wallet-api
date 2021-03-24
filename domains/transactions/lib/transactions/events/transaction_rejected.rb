@@ -4,7 +4,7 @@ module Transactions
       SCHEMA = {
         transaction_uid: String,
         status: Symbol,
-        reason_for_closing: String 
+        reason_for_rejection: String 
       }
     end
   end

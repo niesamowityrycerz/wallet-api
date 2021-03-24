@@ -1,5 +1,4 @@
 class Command 
-  
   def initialize(data)
     @data = data
   end
@@ -11,9 +10,7 @@ class Command
     # but because every command type class inherits from Command class
     # self will differ; for example: for IssueTransaction class 
     # self is equal to Transactions::IssueTransaction 
-
-
     ClassyHash.validate(data, self::SCHEMA)
-    self.new(data)
+    new(data)
   end
 end

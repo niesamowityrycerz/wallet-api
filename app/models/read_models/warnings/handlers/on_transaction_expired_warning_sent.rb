@@ -34,26 +34,12 @@ module ReadModels
           )
 
           warning = WriteModels::Warning.find_by!(warning_uid: event.data.fetch(:warning_uid))
-          financial_transaction = WriteModels::Transaction.find_by!(transaction_uid: transaction_uid)
+          financial_transaction = WriteModels::FinancialTransaction.find_by!(transaction_uid: transaction_uid)
           financial_projection.transaction_warnings.create(warning: warning)
 
-          # link event to main Transaction stream as last element 
-          #event_store.link(
-          #  event.event_id,
-          #  stream_name: stream_name(event.data.fetch(:transaction_uid)),
-          #  expected_version: :auto
-          #)
+
         end
 
-        private 
-
-        def event_store 
-          Rails.configuration.event_store
-        end
-
-        def stream_name(transaction_uid)
-          "Transaction$#{transaction_uid}"
-        end
       end
     end
   end
