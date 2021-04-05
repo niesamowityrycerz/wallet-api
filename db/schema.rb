@@ -10,17 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_24_212758) do
-
-  create_table "credibility_points", force: :cascade do |t|
-    t.float "points"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "debtor_id"
-    t.integer "transaction_projection_id"
-    t.index ["debtor_id"], name: "index_credibility_points_on_debtor_id"
-    t.index ["transaction_projection_id"], name: "index_credibility_points_on_transaction_projection_id"
-  end
+ActiveRecord::Schema.define(version: 2021_03_30_195936) do
 
   create_table "currencies", force: :cascade do |t|
     t.string "name"
@@ -147,16 +137,6 @@ ActiveRecord::Schema.define(version: 2021_03_24_212758) do
     t.float "penalty_points"
     t.integer "user_id"
     t.index ["user_id"], name: "index_transaction_warning_projections_on_user_id"
-  end
-
-  create_table "trust_points", force: :cascade do |t|
-    t.float "points"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "creditor_id"
-    t.integer "transaction_projection_id"
-    t.index ["creditor_id"], name: "index_trust_points_on_creditor_id"
-    t.index ["transaction_projection_id"], name: "index_trust_points_on_transaction_projection_id"
   end
 
   create_table "users", force: :cascade do |t|

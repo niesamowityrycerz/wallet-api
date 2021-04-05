@@ -9,7 +9,7 @@ module Transactions
     CurrencyUnavaiable                            = Class.new(StandardError)
     InvalidAmount                                 = Class.new(StandardError)
 
-    attr_accessor :repayment_conditions
+    attr_accessor :repayment_conditions, :due_money
 
     def initialize(id)
       @id = id
@@ -34,7 +34,8 @@ module Transactions
           currency_id: params[:currency_id],
           date_of_transaction: ( params[:date_of_transaction] if params.key?(:date_of_transaction) ),
           maturity_in_days: params[:creditor_conditions][:maturity_in_days],
-          settlement_method_id: params[:creditor_conditions][:settlement_method_id]
+          settlement_method_id: params[:creditor_conditions][:settlement_method_id],
+          state: :pending
         }.compact
       )
     end
@@ -43,7 +44,7 @@ module Transactions
       apply Events::TransactionAccepted.strict(
         {
           transaction_uid: @id,
-          status: :accepted
+          state: :accepted
         }
       )
     end
@@ -52,7 +53,7 @@ module Transactions
       apply Events::TransactionRejected.strict(
         {
           transaction_uid: @id,
-          status: :rejected,
+          state: :rejected,
           reason_for_rejection: params[:reason_for_rejection]
         }
       )
@@ -60,14 +61,14 @@ module Transactions
 
     def add_settlement_terms(params)
       raise MaximumDateOfTransactionSettlementUnavailable.new 'Date of transaction settlement invalid' unless @repayment_conditions.maturity_date_valid?(params[:max_date_of_settlement], @date_of_placement, @maturity_in_days)
-      raise RepaymentTypeUnavaiable.new 'Repayment method is unavailable' unless @repayment_conditions.settlement_method_allowed?(params[:settlement_method_id])
+      raise RepaymentTypeUnavaiable.new 'Repayment method is unavailable' unless @repayment_conditions.settlement_method_allowed?(params[:debtor_settlement_method_id])
       raise CurrencyUnavaiable.new 'Currency is unavailable' unless @repayment_conditions.currency_allowed?(params[:currency_id]) 
 
       apply Events::SettlementTermsAdded.strict(
         {
           transaction_uid: @id,
           max_date_of_settlement: params[:max_date_of_settlement],
-          status: :debtor_terms_added,
+          state: :debtor_terms_added,
           debtor_id: @debtor_id
         }
       )
@@ -77,7 +78,7 @@ module Transactions
       apply Events::TransactionClosed.strict(
         {
           transaction_uid: @id,
-          status: :closed,
+          state: :closed,
           reason_for_closing: ( params[:reason_for_closing] if params.key?(:reason_for_closing) )
         }.compact
       )
@@ -88,7 +89,7 @@ module Transactions
         {
           transaction_uid: @id,
           doubts: params[:doubts],
-          status: :under_scrutiny 
+          state: :under_scrutiny 
         }
       )
     end
@@ -101,23 +102,20 @@ module Transactions
           description: ( params[:description] if params.key?(:description) ),
           currency_id: ( params[:currency_id] if params.key?(:currency_id) ),
           date_of_transaction: ( params[:date_of_transaction] if params.key?(:date_of_transaction) ),
-          status: :corrected
+          state: :corrected
         }.compact
       )
     end
 
     def settle(params)
-      raise InvalidAmount.new 'Not enough!' unless params[:amount] == @due_money
-      # warning when transaction settled after predefined date
-
       apply Events::TransactionSettled.strict(
         {
           transaction_uid: @id,
-          amount: params[:amount],
           date_of_settlement: params[:date_of_settlement],
-          status: :settled,
-          debtor_id: params[:debtor_id],
-          creditor_id: @creditor_id
+          state: :settled,
+          debtor_id: @debtor_id, # odtworzenie stanu agregatu 
+          creditor_id: @creditor_id,
+          amount: @due_money
         }
       )
     end
@@ -125,7 +123,7 @@ module Transactions
     # "To restore the state of your aggregate you need to use AggregateRoot::Repository."
     # AggregateRoot::Repository.new.load(Transactions::TransactionAggregate.new(need to fulfill id), stream_name of events I want to restore)
     on Events::TransactionIssued do |event|
-      @state = :initialized
+      @state = event.data.fetch(:state)
       @due_money = event.data.fetch(:amount)
       @maturity_in_days = event.data.fetch(:maturity_in_days)
       @date_of_placement = Date.today
@@ -135,31 +133,31 @@ module Transactions
     end
 
     on Events::TransactionAccepted do |event| 
-      @status = event.data.fetch(:status)
+      @state = event.data.fetch(:state)
     end
 
     on Events::SettlementTermsAdded do |event|
-      @status = event.data.fetch(:status)
+      @state = event.data.fetch(:state)
     end
 
     on Events::TransactionRejected do |event| 
-      @status = event.data.fetch(:status)
+      @state = event.data.fetch(:state)
     end
 
     on Events::TransactionClosed do |event|
-      @status = event.data.fetch(:status)
+      @state = event.data.fetch(:state)
     end
 
     on Events::TransactionCheckedOut do |event|
-      @state = event.data.fetch(:status)
+      @state = event.data.fetch(:state)
     end
 
     on Events::TransactionCorrected do |event|
-      @state = event.data.fetch(:status)
+      @state = event.data.fetch(:state)
     end
 
     on Events::TransactionSettled do |event|
-      @status = event.data.fetch(:status)
+      @state = event.data.fetch(:state)
     end
   end
 end

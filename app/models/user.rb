@@ -5,8 +5,7 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable, :lockable
 
   has_many :repayment_conditions, foreign_key: :creditor_id, dependent: :destroy
-  has_many :credibility_points,   foreign_key: :debtor_id
-  has_many :trust_points,         foreign_key: :creditor_id
+
   has_many :transaction_warnings
   has_many :transaction_warning_projections, class_name: 'ReadModels::Warnings::TransactionWarningProjection'
   has_many :financial_ransactions,  foreign_key: :creditor_id, class_name: 'WriteModels::FinancialTransactions'

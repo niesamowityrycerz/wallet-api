@@ -12,8 +12,6 @@ Rails.configuration.to_prepare do
     config.default_event_store = Rails.configuration.event_store
   end
 
-  # subscribe event handlers below
-  # READ_MODEL(event handlers) to event 
   Rails.configuration.event_store.tap do |store|
     store.subscribe(ReadModels::Transactions::Handlers::OnTransactionIssued,                           to: [Transactions::Events::TransactionIssued])
     store.subscribe(ReadModels::Transactions::Handlers::OnTransactionAcceptedOrClosed,                 to: [Transactions::Events::TransactionAccepted,
@@ -25,28 +23,23 @@ Rails.configuration.to_prepare do
     store.subscribe(ReadModels::Transactions::Handlers::OnTransactionSettled,                          to: [Transactions::Events::TransactionSettled])
     
 
-    store.subscribe(ReadModels::CredibilityPoints::Handlers::OnCredibilityPointsAlloted,               to: [CredibilityPoints::Events::CredibilityPointsAlloted])
-    store.subscribe(ReadModels::CredibilityPoints::Handlers::OnPenaltyPointsAdded,                     to: [CredibilityPoints::Events::PenaltyPointsAdded])
-
-
-    store.subscribe(ReadModels::TrustPoints::Handlers::OnTrustPointsAlloted,                           to: [TrustPoints::Events::TrustPointsAlloted])
+    store.subscribe(ReadModels::RankingPoints::Handlers::OnCredibilityPointsAlloted,               to: [RankingPoints::Events::CredibilityPointsAlloted])
+    store.subscribe(ReadModels::RankingPoints::Handlers::OnTrustPointsAlloted,                     to: [RankingPoints::Events::TrustPointsAlloted])
+    store.subscribe(ReadModels::RankingPoints::Handlers::OnPenaltyPointsAdded,                     to: [RankingPoints::Events::PenaltyPointsAdded])
 
     store.subscribe(ReadModels::Warnings::Handlers::OnTransactionExpiredWarningSent,                   to: [Warnings::Events::TransactionExpiredWarningSent])
 
     # Processes(System)
-    store.subscribe(Processes::RankingPoint, to: [
+    store.subscribe(Processes::Transaction, to: [
       Transactions::Events::SettlementTermsAdded,
       Transactions::Events::TransactionSettled,
-      CredibilityPoints::Events::CredibilityPointsCalculated,
-      TrustPoints::Events::TrustPointsCalculated,
-      Warnings::Events::TransactionExpiredWarningSent, # calculate penalty credibility points
-      TrustPoints::Events::TrustPointsAlloted
+      Warnings::Events::TransactionExpiredWarningSent, 
+      RankingPoints::Events::TrustPointsAlloted,
     ])
+
     
   end
-  
-  # Register command handlers below
-  # Command to handler
+
   Rails.configuration.command_bus.tap do |bus|
     bus.register(Transactions::Commands::IssueTransaction,       Transactions::Handlers::OnIssueTransaction.new)
     bus.register(Transactions::Commands::AcceptTransaction,      Transactions::Handlers::OnAcceptTransaction.new)
@@ -57,15 +50,9 @@ Rails.configuration.to_prepare do
     bus.register(Transactions::Commands::CorrectTransaction,     Transactions::Handlers::OnCorrectTransaction.new)
     bus.register(Transactions::Commands::SettleTransaction,      Transactions::Handlers::OnSettleTransaction.new)
 
-
-    bus.register(CredibilityPoints::Commands::CalculateCredibilityPoints, CredibilityPoints::Handlers::OnCalculateCredibilityPoints.new)
-    bus.register(CredibilityPoints::Commands::AllotCredibilityPoints,     CredibilityPoints::Handlers::OnAllotCredibilityPoints.new)
-    bus.register(CredibilityPoints::Commands::AddPenaltyPoints,           CredibilityPoints::Handlers::OnAddPenaltyPoints.new)
-
-
-
-    bus.register(TrustPoints::Commands::CalculateTrustPoints,             TrustPoints::Handlers::OnCalculateTrustPoints.new)
-    bus.register(TrustPoints::Commands::AllotTrustPoints,                 TrustPoints::Handlers::OnAllotTrustPoints.new)
+    bus.register(RankingPoints::Commands::AllotCredibilityPoints,           RankingPoints::Handlers::OnAllotCredibilityPoints.new)
+    bus.register(RankingPoints::Commands::AddPenaltyPoints,                 RankingPoints::Handlers::OnAddPenaltyPoints.new)
+    bus.register(RankingPoints::Commands::AllotTrustPoints,                 RankingPoints::Handlers::OnAllotTrustPoints.new)
 
     bus.register(Warnings::Commands::SendTransactionExpiredWarning,       Warnings::Handlers::OnSendTransactionExpiredWarning.new)
   end

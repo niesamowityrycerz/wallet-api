@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe 'Transaction flow with exceptions', type: :unit do 
+RSpec.describe 'Transaction actions when exceptions', type: :unit do 
 
   let!(:creditor)            { create(:user) }
   let!(:debtor)              { create(:user) }
@@ -30,82 +30,80 @@ RSpec.describe 'Transaction flow with exceptions', type: :unit do
       creditor_id: creditor.id,
       debtor_id: debtor.id,
       max_date_of_settlement: Date.today + rand(1..10).day,
-      settlement_method_id: one_instalment.id,
-      currency_id: euro.id 
+      debtor_settlement_method_id: one_instalment.id,
+      currency_id: zloty.id 
     }
   end
 
 
-  context 'when exceptions' do 
-    context 'when creditor do not have repayment conditions' do 
-      it 'attempts to issue transaction' do
-        @issue_tran_params[:creditor_id], @issue_tran_params[:debtor_id] = @issue_tran_params[:debtor_id], @issue_tran_params[:creditor_id]
-        issue_transaction = Transactions::Commands::IssueTransaction.send(@issue_tran_params)
+  context 'when creditor does not have repayment conditions' do 
+    it 'attempts to issue transaction' do
+      @issue_tran_params[:creditor_id], @issue_tran_params[:debtor_id] = @issue_tran_params[:debtor_id], @issue_tran_params[:creditor_id]
+      issue_transaction = Transactions::Commands::IssueTransaction.new(@issue_tran_params)
+      expect {
+        command_bus.call(issue_transaction)
+      }.to raise_error(Transactions::Repositories::RepaymentCondition::RepaymentConditionsDoNotExist)
+    end
+  end 
+
+  context 'when debtor adds unsupported settlement terms' do 
+    context 'when currency is invalid' do 
+      it 'attempt to adds settlement terms' do
+        issue_transaction = Transactions::Commands::IssueTransaction.new(@issue_tran_params)
+        command_bus.call(issue_transaction)
+
+        @settlement_terms_params[:currency_id] = euro.id
+        settlement_terms = Transactions::Commands::AddSettlementTerms.new(@settlement_terms_params)
+
         expect {
-          command_bus.call(issue_transaction)
-        }.to raise_error(Transactions::Repositories::RepaymentCondition::RepaymentConditionsDoNotExist)
+          command_bus.call(settlement_terms)
+        }.to raise_error(Transactions::TransactionAggregate::CurrencyUnavaiable)
       end
     end 
 
-    context 'when debtor adds wrong settlement terms' do 
-      context 'when currency is invalid' do 
-        it 'attempt to adds settlement terms' do
-          issue_transaction = Transactions::Commands::IssueTransaction.send(@issue_tran_params)
-          command_bus.call(issue_transaction)
+    context 'when settlement method is invalid' do 
+      it 'attempts to adds settlement terms' do
+        issue_transaction = Transactions::Commands::IssueTransaction.new(@issue_tran_params)
+        command_bus.call(issue_transaction)
 
-          @settlement_terms_params[:currency_id] = euro.id
-          settlement_terms = Transactions::Commands::AddSettlementTerms.send(@settlement_terms_params)
-
-          expect {
-            command_bus.call(settlement_terms)
-          }.to raise_error(Transactions::TransactionAggregate::CurrencyUnavaiable)
-        end
-      end 
-
-      context 'when settlement method is invalid' do 
-        it 'attempts to adds settlement terms' do
-          issue_transaction = Transactions::Commands::IssueTransaction.send(@issue_tran_params)
-          command_bus.call(issue_transaction)
-
-          @settlement_terms_params[:settlement_method_id] = many_installments.id
-          settlement_terms = Transactions::Commands::AddSettlementTerms.send(@settlement_terms_params)
-          
-          expect {
-            command_bus.call(settlement_terms)
-          }.to raise_error(Transactions::TransactionAggregate::RepaymentTypeUnavaiable)
-        end
-      end
-
-      context 'when exceded maturity' do 
-        it 'attempt to add settlement terms' do 
-          issue_transaction = Transactions::Commands::IssueTransaction.send(@issue_tran_params)
-          command_bus.call(issue_transaction)
-
-          @settlement_terms_params[:max_date_of_settlement] = Date.today + 20.day 
-          settlement_terms = Transactions::Commands::AddSettlementTerms.send(@settlement_terms_params)
-          
-          expect {
-            command_bus.call(settlement_terms)
-          }.to raise_error(Transactions::TransactionAggregate::MaximumDateOfTransactionSettlementUnavailable)
-        end
+        @settlement_terms_params[:debtor_settlement_method_id] = many_installments.id
+        settlement_terms = Transactions::Commands::AddSettlementTerms.new(@settlement_terms_params)
+        
+        expect {
+          command_bus.call(settlement_terms)
+        }.to raise_error(Transactions::TransactionAggregate::RepaymentTypeUnavaiable)
       end
     end
 
-    context 'when exceeded characters in doubts column' do 
-      it 'checks out transaction ' do
-        issue_transaction  = Transactions::Commands::IssueTransaction.new(@issue_tran_params)
+    context 'when exceded maturity' do 
+      it 'attempt to add settlement terms' do 
+        issue_transaction = Transactions::Commands::IssueTransaction.new(@issue_tran_params)
         command_bus.call(issue_transaction)
 
-        params = {
-          transaction_uid: @transaction_uid,
-          doubts: 'i'*51
-        }
-
-        check_out_transaction = Transactions::Commands::CheckOutTransaction.new(params)
+        @settlement_terms_params[:max_date_of_settlement] = Date.today + 20.day 
+        settlement_terms = Transactions::Commands::AddSettlementTerms.new(@settlement_terms_params)
+        
         expect {
-          command_bus.call(check_out_transaction)
-        }.to raise_error(ActiveRecord::RecordInvalid, 'Validation failed: Doubts 50 characters is maximum!')
+          command_bus.call(settlement_terms)
+        }.to raise_error(Transactions::TransactionAggregate::MaximumDateOfTransactionSettlementUnavailable)
       end
-    end 
+    end
+  end
+
+  context 'when exceeded characters in doubts column' do 
+    it 'checks out transaction ' do
+      issue_transaction  = Transactions::Commands::IssueTransaction.new(@issue_tran_params)
+      command_bus.call(issue_transaction)
+
+      params = {
+        transaction_uid: @transaction_uid,
+        doubts: 'i'*51
+      }
+
+      check_out_transaction = Transactions::Commands::CheckOutTransaction.new(params)
+      expect {
+        command_bus.call(check_out_transaction)
+      }.to raise_error(ActiveRecord::RecordInvalid, 'Validation failed: Doubts 50 characters is maximum!')
+    end
   end 
 end

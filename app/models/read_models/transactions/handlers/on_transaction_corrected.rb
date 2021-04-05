@@ -10,7 +10,7 @@ module ReadModels
               currency_id: ( event.data.fetch(:currency_id) if event.data.key?(:currency_id) ),
               description: ( event.data.fetch(:description) if event.data.key?(:description) ),
               date_of_transaction: ( event.data.fetch(:date_of_transaction) if event.data.key?(:date_of_transaction) ),
-              status: event.data.fetch(:status)
+              status: event.data.fetch(:state)
             }
           )
         end

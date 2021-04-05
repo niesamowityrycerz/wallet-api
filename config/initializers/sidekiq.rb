@@ -1,3 +1,4 @@
+
 Sidekiq.configure_server do |config|
   config.redis = { url: 'redis://localhost:6379' }
 end
@@ -11,3 +12,4 @@ end
 Sidekiq.default_worker_options = {
   retry: false
 }
+

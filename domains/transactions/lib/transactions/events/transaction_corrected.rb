@@ -7,7 +7,7 @@ module Transactions
         description: [ :optional, String ],
         currency_id: [ :optional, Integer ],
         date_of_transaction: [ :optional, Date ],
-        status: Symbol
+        state: Symbol
       }
     end
   end

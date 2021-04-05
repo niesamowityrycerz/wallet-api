@@ -3,7 +3,7 @@ module Transactions
     class TransactionRejected < Event
       SCHEMA = {
         transaction_uid: String,
-        status: Symbol,
+        state: Symbol,
         reason_for_rejection: String 
       }
     end

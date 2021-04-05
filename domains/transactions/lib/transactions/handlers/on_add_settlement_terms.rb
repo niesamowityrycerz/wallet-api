@@ -8,7 +8,6 @@ module Transactions
 
         repository = Repositories::Transaction.new
         repository.with_transaction(transaction_uid) do |transaction|
-          # Do not interfere with the ReadModels 
           transaction.add_settlement_terms(command.data)
         end
       end

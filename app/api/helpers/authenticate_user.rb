@@ -10,10 +10,5 @@ module Helpers
       @current_user ||= User.find_by(id: doorkeeper_token.resource_owner_id) if doorkeeper_token
     end
 
-    
-    #def user_signed_in?
-    #  binding.pry
-    #end
-
   end 
 end

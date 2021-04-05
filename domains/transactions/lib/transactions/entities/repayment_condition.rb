@@ -26,9 +26,8 @@ module Transactions
         date_of_placement + maturity.day >= max_date_of_settlement
       end
 
-      def settlement_method_allowed?(method_id)
-        repayment_method = SettlementMethod.find_by!(id: method_id)
-        if repayment_method.name == 'all' || method_id == repayment_method.id
+      def settlement_method_allowed?(debtor_method_id)
+        if debtor_method_id == settlement_method_id
           true 
         else  
           false 

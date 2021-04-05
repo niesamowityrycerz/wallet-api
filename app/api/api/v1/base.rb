@@ -6,6 +6,7 @@ module Api
       format :json
 
       mount Api::V1::Users::Base
+      mount Api::V1::Transactions::Base
     end
   end
 end

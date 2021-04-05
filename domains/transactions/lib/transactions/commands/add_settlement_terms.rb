@@ -5,7 +5,7 @@ module Transactions
         transaction_uid: String,
         debtor_id: Integer,
         max_date_of_settlement: Date,
-        settlement_method_id: Integer,
+        debtor_settlement_method_id: Integer,
         currency_id: Integer
       }
     end

@@ -6,7 +6,7 @@ module ReadModels
           transaction_projection = ReadModels::Transactions::TransactionProjection.find_by!(transaction_uid: event.data.fetch(:transaction_uid))
           transaction_projection.update!(
             {
-              status: event.data.fetch(:status),
+              status: event.data.fetch(:state),
               reason_for_closing: ( event.data.fetch(:reason_for_closing) if event.data.key?(:reason_for_closing) )
             }.compact
           )

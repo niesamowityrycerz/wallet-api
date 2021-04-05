@@ -3,7 +3,7 @@ module Transactions
     class TransactionAccepted < Event 
       SCHEMA = {
         transaction_uid: String,
-        status: Symbol
+        state: Symbol
       }
     end
   end

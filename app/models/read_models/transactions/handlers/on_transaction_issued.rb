@@ -17,7 +17,8 @@ module ReadModels
               currency_id: event.data.fetch(:currency_id),
               description: event.data.fetch(:description),
               maturity_in_days: event.data.fetch(:maturity_in_days),
-              date_of_transaction: ( event.data.fetch(:date_of_transaction) if event.data.key?(:date_of_transaction) )
+              date_of_transaction: ( event.data.fetch(:date_of_transaction) if event.data.key?(:date_of_transaction) ),
+              status: event.data.fetch(:state)
             }.compact
           )
 

@@ -10,7 +10,8 @@ module Transactions
         currency_id: Integer,
         date_of_transaction: [ :optional, Date ],
         maturity_in_days: Integer,
-        settlement_method_id: Integer
+        settlement_method_id: Integer,
+        state: Symbol
       }
     end
   end

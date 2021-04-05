@@ -6,6 +6,7 @@ module Transactions
       def call(command)
         transaction_uid = command.data[:transaction_uid]
         repository = Repositories::Transaction.new 
+        
         repository.with_transaction(transaction_uid) do |transaction|
           transaction.close_transaction(command.data)
         end

@@ -7,7 +7,7 @@ module ReadModels
           transaction_projection.update!(
             {
               date_of_settlement: event.data.fetch(:date_of_settlement),
-              status: event.data.fetch(:status)
+              status: event.data.fetch(:state)
             }
           )
         end

@@ -1,7 +1,6 @@
 module Transactions
   module Handlers
     class OnIssueTransaction 
-      # access to methods defined in ComandHandler module 
       include CommandHandler
       # code to submit transaction
       def call(command)

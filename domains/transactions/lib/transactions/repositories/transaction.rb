@@ -14,6 +14,11 @@ module Transactions
         repository.with_aggregate(TransactionAggregate.new(transaction_uid), stream_name, &block)
       end
 
+      def with_transaction_data(transaction_uid)
+        stream_name = "Transaction$#{transaction_uid}"
+        repository.load(TransactionAggregate.new(transaction_uid), stream_name)
+      end
+
       private 
       attr_reader :repository 
 

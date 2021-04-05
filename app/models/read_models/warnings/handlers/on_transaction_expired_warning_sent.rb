@@ -7,7 +7,7 @@ module ReadModels
           transaction_projection = ReadModels::Transactions::TransactionProjection.find_by!(transaction_uid: event.data.fetch(:transaction_uid))
           transaction_projection.update!(
             {
-              status: event.data.fetch(:status)
+              status: event.data.fetch(:state)
             }
           )
           
@@ -16,7 +16,7 @@ module ReadModels
           warning_type = WarningType.find_by!(id: event.data.fetch(:warning_type_id))
           # create -> new record(dynamic)
           # find_or_create_by -> change the exisiting record(static)
-          ReadModels::Warnings::TransactionWarningProjection.create(
+          ReadModels::Warnings::TransactionWarningProjection.create!(
             {
               user_id: event.data.fetch(:user_id),
               warning_type_name: warning_type.name,
@@ -32,14 +32,7 @@ module ReadModels
             transaction_uid: transaction_uid,
             warning_uid: event.data.fetch(:warning_uid)
           )
-
-          warning = WriteModels::Warning.find_by!(warning_uid: event.data.fetch(:warning_uid))
-          financial_transaction = WriteModels::FinancialTransaction.find_by!(transaction_uid: transaction_uid)
-          financial_projection.transaction_warnings.create(warning: warning)
-
-
         end
-
       end
     end
   end
