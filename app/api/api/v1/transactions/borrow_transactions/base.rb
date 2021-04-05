@@ -2,7 +2,7 @@ module Api
   module V1
     module Transactions
       module BorrowTransactions
-        class Base < Api::V1::Transactions
+        class Base < Api::V1::Transactions::Base
 
           resource :borrow_transactions do 
             mount Api::V1::Transactions::BorrowTransactions::All

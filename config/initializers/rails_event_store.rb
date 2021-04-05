@@ -30,7 +30,7 @@ Rails.configuration.to_prepare do
     store.subscribe(ReadModels::Warnings::Handlers::OnTransactionExpiredWarningSent,                   to: [Warnings::Events::TransactionExpiredWarningSent])
 
     # Processes(System)
-    store.subscribe(Processes::Transaction, to: [
+    store.subscribe(Processes::TransactionPoint, to: [
       Transactions::Events::SettlementTermsAdded,
       Transactions::Events::TransactionSettled,
       Warnings::Events::TransactionExpiredWarningSent, 

@@ -7,39 +7,24 @@
 #   Character.create(name: 'Luke', movie: movies.first)
 
 
-# User 
-2.times do 
-  User.create!(
-    email: Faker::Internet.email,
-    password: 'password1',
-    password_confirmation: 'password1'
-  )
-end
+# Delete all record from all tables 
+Currency.delete_all
+User.delete_all
+SettlementMethod.delete_all
+WriteModels::RepaymentCondition.delete_all 
 
-# Currency
+
+# Currencies
 Currency.create!(name: 'Zloty', code: 'PLN')
 Currency.create!(name: 'Euro',  code: 'EUR')
 Currency.create!(name: 'US Dollar', code: 'USD')
 
-# Settlement method
+# Settlement methods
 SettlementMethod.create!(name: 'one instalment')
 SettlementMethod.create!(name: 'multiple instalments')
 
-# repayment_conditions
-creditor = User.first 
-debtor   = User.second 
-zloty = Currency.find_by!(name: 'Zloty')
-one_instalment_method = SettlementMethod.find_by!(name: 'one instalment')
+Transactions::RunAll.new(users=2, tran_quantity=2).call
 
-WriteModels::RepaymentCondition.create!(
-  {
-    maturity_in_days: rand(1..5),
-    creditor_id: creditor.id,
-    debtor_id:   debtor.id,
-    currency_id: zloty.id,
-    settlement_method_id: one_settlement_method.id,
-  }
-)
 
 # warnings 
 transaction_expired = WarningType.create(name: 'transaction expired')

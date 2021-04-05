@@ -1,5 +1,5 @@
 module Processes
-  class Transaction
+  class TransactionPoint
     def initialize(event_store=Rails.configuration.event_store,
                     command_bus=Rails.configuration.command_bus)
       @command_bus = command_bus
