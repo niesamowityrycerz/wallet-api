@@ -7,15 +7,17 @@ RSpec.describe 'Filters applied on transactions', type: :request do
   let(:admin)                     { create(:user, :admin) }
   let(:application)               { create(:application) }
   let(:access_token)              { create(:access_token, application: application, resource_owner_id: admin.id) }
+  
 
   before(:all) do 
     per_user_transaction = 5
+    pln = create(:currency, name: "Złoty Polski", code: 'PLN')
     users = create_list(:user, 10)
 
     users.each do |creditor|
       debtor_ids = users.map { |user| user.id } 
       debtor_ids.select! { |id| id != creditor.id }
-      create_list(:transaction_projection, 5, creditor_id: creditor.id, debtor_id: debtor_ids.sample, status: %i[pending accepted rejected].sample)
+      create_list(:transaction_projection, 5, creditor_id: creditor.id, debtor_id: debtor_ids.sample, status: %i[pending accepted rejected].sample, currency_id: pln.id)
     end
   end
 
@@ -36,7 +38,9 @@ RSpec.describe 'Filters applied on transactions', type: :request do
       get "/api/v1/transactions", params: params, headers: { 'Authorization': 'Bearer ' + access_token.token }
       amount_range = (params[:transaction_filters][:amount][:min]...params[:transaction_filters][:amount][:max])
       expected = ReadModels::Transactions::TransactionProjection.where(amount: amount_range).to_json
+      binding.pry 
       expect(response.body).to eq(expected)
+
     end
 
 

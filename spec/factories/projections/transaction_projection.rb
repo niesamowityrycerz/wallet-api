@@ -5,6 +5,6 @@ FactoryBot.define do
     amount                    { rand(1.0..1000.0).round(2) }
     description               { 'test' }
     status                    { :pending }
-                 
+    
   end 
 end

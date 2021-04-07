@@ -28,7 +28,6 @@ class TransactionQuery
   end
 
   def given_status(status_array)
-    binding.pry 
     mapper = {
       "pending": 0,
       "accepted": 1,

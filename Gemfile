@@ -52,9 +52,11 @@ gem 'sidekiq'
 gem 'sinatra' 
 
 # TAKE CARE OF THAT 
-# redis -> place to store the jobs
+# redis -> place to store the jobs in development and production env 
 gem 'redis-rails', '~> 5.0', '>= 5.0.2'
 gem 'redis'
+
+gem 'jsonapi-serializer'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

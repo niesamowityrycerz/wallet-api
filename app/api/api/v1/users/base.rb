@@ -5,6 +5,7 @@ module Api
 
         resource :users do 
           mount Api::V1::Users::Index
+          mount Api::V1::Users::All
         end
 
       end 

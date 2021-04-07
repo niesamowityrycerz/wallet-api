@@ -16,8 +16,10 @@ module Api
             transactions = ReadModels::Transactions::TransactionProjection.where(debtor_id: current_user.id, creditor_id: current_user.id)
           end 
 
+          filtered_data = ::TransactionQuery.new(params, transactions).call
           binding.pry 
-          ::TransactionQuery.new(params, transactions).call
+          ::TransactionSerializer.new(filtered_data)
+          binding.pry 
         end
 
       end
