@@ -11,7 +11,8 @@
 Currency.delete_all
 User.delete_all
 SettlementMethod.delete_all
-WriteModels::RepaymentCondition.delete_all 
+WriteModels::RepaymentCondition.delete_all
+ReadModels::Transactions::TransactionProjection.delete_all
 
 
 # Currencies
@@ -23,7 +24,7 @@ Currency.create!(name: 'US Dollar', code: 'USD')
 SettlementMethod.create!(name: 'one instalment')
 SettlementMethod.create!(name: 'multiple instalments')
 
-Transactions::RunAll.new(users=2, tran_quantity=2).call
+Transactions::RunAll.new(users=10, per_user_transaction=5).call
 
 
 # warnings 
