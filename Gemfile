@@ -70,6 +70,7 @@ end
 # it should be here 
 group :test do 
   gem 'rspec-sidekiq'
+  gem 'database_cleaner'
 end 
 
 group :development do

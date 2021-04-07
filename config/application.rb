@@ -27,6 +27,9 @@ module WalletApi
     config.eager_load_paths << Rails.root.join('domains',   'ranking_points', 'lib')
     config.eager_load_paths << Rails.root.join('domains',   'warnings', 'lib')
     config.eager_load_paths << Rails.root.join('domains',   'processes')
+    #config.eager_load_paths << Rails.root.join('queries')
+    config.paths.add File.join('app', 'api'), glob: File.join('**', '*.rb')
+    config.autoload_paths += Dir[Rails.root.join('app', 'api', '*')]
 
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration can go into files in config/initializers

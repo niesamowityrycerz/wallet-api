@@ -6,15 +6,9 @@ module Api
           authenticate_user!
         end
 
-        desc 'get user by id '
+        desc 'get user'
         route_param :id, type: Integer do 
           get do
-            #if user_signed_in? 
-            #  current_user
-            #  200
-            #else  
-            #  present 'nie działa'
-            #end
             current_user
           end
         end

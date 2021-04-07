@@ -4,11 +4,7 @@ FactoryBot.define do
     date_of_transaction       { Date.today - rand(1..5).day }
     amount                    { rand(1.0..1000.0).round(2) }
     description               { 'test' }
-
-    trait :pending do 
-      status { 'pending' }
-    end
-                    
-                                     
+    status                    { :pending }
+                 
   end 
 end
