@@ -9,8 +9,6 @@ module Transactions
     def call
       create_players(@users)
       add_repayment_methods(@users)
-
-      
       issue_transaction(@per_user_transaction)
       Transactions::AcceptTransaction.new(get_transaction_uids, @accept_quantity).call
     end

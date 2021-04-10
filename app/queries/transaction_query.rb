@@ -1,15 +1,14 @@
 class TransactionQuery
-  def initialize(filters, transactions)
+  def initialize(filters, transactions, current_user)
     @filters = filters
     @all_transactions = transactions
+    @current_user = current_user
   end
 
   def call
-    # call filters 
-    if @filters == {} 
-      @all_transactions
-    else
+    if @filters != {} 
       @filters = @filters[:transaction_filters]
+      type_of_transactions(@filters[:type]) if @filters[:type] && @current_user.admin 
       amount_range(@filters[:amount]) if @filters[:amount]
       transaction_date_range(@filters[:date_of_transaction]) if @filters[:date_of_transaction]
       given_status(@filters[:status]) if @filters[:status] 
@@ -44,8 +43,12 @@ class TransactionQuery
     @all_transactions
   end
 
-  def given_debtors(debtors_array)
-    #TODO
+  def type_of_transactions(type)
+    if type == "borrow"
+      @all_transactions  = @all_transactions.where("debtor_id = ?", @current_user.id)
+    elsif typ == "lend"
+      @all_transactions = @all_transactions.where("creditor_id = ?", @current_user.id)
+    end
   end
 
 

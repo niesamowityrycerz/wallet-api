@@ -18,7 +18,8 @@ module ReadModels
               description: event.data.fetch(:description),
               maturity_in_days: event.data.fetch(:maturity_in_days),
               date_of_transaction: ( event.data.fetch(:date_of_transaction) if event.data.key?(:date_of_transaction) ),
-              status: event.data.fetch(:state)
+              status: event.data.fetch(:state),
+              settlement_method_id: event.data.fetch(:settlement_method_id)
             }.compact
           )
 

@@ -8,11 +8,18 @@
 
 
 # Delete all record from all tables 
-Currency.delete_all
-User.delete_all
-SettlementMethod.delete_all
-WriteModels::RepaymentCondition.delete_all
-ReadModels::Transactions::TransactionProjection.delete_all
+# Currency.delete_all
+# User.delete_all
+# SettlementMethod.delete_all
+# WriteModels::RepaymentCondition.delete_all
+# ReadModels::Transactions::TransactionProjection.delete_all
+
+# Create my own OAuth Application
+# create Doorkeeper::Application in console 
+# wallet_app = Doorkeeper::Application.create(name: "Wallet Development Client", redirect_uri: "", scopes: "")
+# "2xODT1L_HhxEd5cZCJqAsMRXBDJ7y-AgfJlOKFMmzmM" secret -> client_secret 
+# "C0NMy86Pb4VR7kmZP5YOAS_oscJpGgRmL3_uUCmdPqY" uid -> client_uid
+
 
 
 # Currencies
@@ -23,6 +30,10 @@ Currency.create!(name: 'US Dollar', code: 'USD')
 # Settlement methods
 SettlementMethod.create!(name: 'one instalment')
 SettlementMethod.create!(name: 'multiple instalments')
+
+# admin 
+User.create!(username: "admin", email: "admin@wp.pl", password: "password1", password_confirmation: "password1", admin: true)
+
 
 Transactions::RunAll.new(users=10, per_user_transaction=5).call
 

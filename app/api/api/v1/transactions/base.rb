@@ -15,7 +15,8 @@ module Api
               optional :min, type: Integer
             end
             optional :status, type: Array
-            optional :debtors, type: Array
+            optional :users, type: Array
+            optional :type, type: String 
           end
         end
 
@@ -29,8 +30,20 @@ module Api
         ) 
 
         resource :transactions do 
-          mount Api::V1::Transactions::Index
+          mount Api::V1::Transactions::All
         end 
+
+        resource :transaction do
+          mount Api::V1::Transactions::Index
+          mount Api::V1::Transactions::IssueTransaction
+          mount Api::V1::Transactions::AcceptTransaction
+          mount Api::V1::Transactions::RejectTransaction
+          mount Api::V1::Transactions::CheckOutTransaction
+          mount Api::V1::Transactions::CorrectTransaction
+          mount Api::V1::Transactions::SettleTransaction
+        end
+
+  
 
         
       end
