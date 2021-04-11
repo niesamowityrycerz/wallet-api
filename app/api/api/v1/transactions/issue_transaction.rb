@@ -7,7 +7,6 @@ module Api
         end
 
         desc 'Issue transaction'
-
         resource :new do 
 
           params do 
@@ -37,7 +36,6 @@ module Api
           end
 
         end
-
       end
     end
   end

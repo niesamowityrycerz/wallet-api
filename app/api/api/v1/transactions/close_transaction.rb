@@ -1,32 +1,27 @@
 module Api 
-  module V1 
-    module Transactions
-      class CheckOutTransaction < Base 
+  module V1
+    module Transactions 
+      class CloseTransaction < Base 
 
         before do 
           authenticate_user!
         end
 
-        desc 'Debtor checks out'
-        resource :checkout do 
-
-          params do 
-            requires :doubts, type: String 
-          end
-
+        desc 'Close transaction'
+        resource :close do 
           post do 
             transaction = ReadModels::Transactions::TransactionProjection.find_by!(transaction_uid: params[:transaction_uid])
-            if transaction.debtor_id == current_user.id 
+            if current_user.admin || transaction.creditor_id == current_user.id 
               Rails.configuration.command_bus.call(
-                ::Transactions::Commands::CheckOutTransaction.new(params)
+                ::Transactions::Commands::CloseTransaction.new(params)
               )
               redirect "/api/v1/transaction/#{params[:transaction_uid]}", permanent: true
             else
               403
             end
           end
-        end 
-
+        end
+        
       end
     end
   end

@@ -59,18 +59,24 @@ RSpec.describe 'Transaction actions', type: :unit do
   
       params = {
         transaction_uid: transaction_uid,
-        description: 'zmieniony opis',
-        amount: 111.0,
-        date_of_transaction: Date.today - rand(10..50).day,
-        currency_id: euro.id
+        amount: 111.0
       }
   
       expect {
         command_bus.call(Transactions::Commands::CorrectTransaction.new(params))
-      }.to change { ReadModels::Transactions::TransactionProjection.find_by!(transaction_uid: transaction_uid).description }.from(before[:description]).to(params[:description])
-        .and change { ReadModels::Transactions::TransactionProjection.find_by!(transaction_uid: transaction_uid).amount }.from(before[:amount]).to(params[:amount])
-        .and change { ReadModels::Transactions::TransactionProjection.find_by!(transaction_uid: transaction_uid).date_of_transaction }.from(before[:date_of_transaction]).to(params[:date_of_transaction])
-        .and change { ReadModels::Transactions::TransactionProjection.find_by!(transaction_uid: transaction_uid).currency_id }.from(before[:currency_id]).to(params[:currency_id])
+      }.to change { ReadModels::Transactions::TransactionProjection.find_by!(transaction_uid: transaction_uid).amount }.from(before[:amount]).to(params[:amount])
+      
+      expect {
+        command_bus.call(Transactions::Commands::CorrectTransaction.new(params))
+      }.not_to change { ReadModels::Transactions::TransactionProjection.find_by!(transaction_uid: transaction_uid).description }.from(before[:description])
+
+      expect {
+        command_bus.call(Transactions::Commands::CorrectTransaction.new(params))
+      }.not_to change { ReadModels::Transactions::TransactionProjection.find_by!(transaction_uid: transaction_uid).date_of_transaction }.from(before[:date_of_transaction])
+
+      expect {
+        command_bus.call(Transactions::Commands::CorrectTransaction.new(params))
+      }.not_to change { ReadModels::Transactions::TransactionProjection.find_by!(transaction_uid: transaction_uid).currency_id }.from(before[:currency_id])
       
       expect(event_store).to have_published(
         an_event(Transactions::Events::TransactionCorrected)
