@@ -25,7 +25,7 @@ RSpec.describe 'Transaction actions on happy path', type: :unit do
     @settlement_terms_params = {  
       transaction_uid: transaction_uid,
       debtor_id: debtor.id,
-      max_date_of_settlement: Date.today + rand(1..9).day,
+      anticipated_date_of_settlement: Date.today + rand(1..9).day,
       debtor_settlement_method_id: one_instalment.id,
       currency_id: zloty.id 
     }
@@ -42,12 +42,13 @@ RSpec.describe 'Transaction actions on happy path', type: :unit do
     ).in_stream("Transaction$#{transaction_uid}").strict 
   end
 
-  it 'accepts transaction' do      
+  it 'accepts transaction' do
+    command_bus.call(Transactions::Commands::IssueTransaction.new(@issue_tran_params))
     command_bus.call(Transactions::Commands::AcceptTransaction.new({transaction_uid: transaction_uid}))
 
     expect(event_store).to have_published(
       an_event(Transactions::Events::TransactionAccepted)
-    ).in_stream("Transaction$#{transaction_uid}").strict 
+    ).in_stream("Transaction$#{transaction_uid}")
   end
 
   it 'closes transaction' do

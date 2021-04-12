@@ -13,7 +13,27 @@ module RankingPoints
       private 
 
       def penalty_for_day(counter)
-        penalty_for_day_schema = [
+        penalty_for_day_schema.each do |step|
+          if counter > step[:start] && counter < step[:end] 
+            @penalty_1 = step[:value]
+            break
+          end
+        end
+        @penalty_1
+      end
+
+      def penalty_for_amount(amount)
+        penalty_for_amount_schema.each do |step|
+          if amount > step[:start] && amount < step[:end] 
+            @penalty_2 = step[:value]
+            break
+          end
+        end
+        @penalty_2
+      end
+
+      def penalty_for_day_schema
+        [
           {
             start: 0,
             end: 3,
@@ -35,18 +55,10 @@ module RankingPoints
             value: 20
           }
         ]
-          
-        penalty_for_day_schema.each do |step|
-          if counter > step[:start] && counter < step[:end] 
-            @penalty_1 = step[:value]
-            break
-          end
-        end
-        return @penalty_1
       end
 
-      def penalty_for_amount(amount)
-        penalty_for_amount_schema = [
+      def penalty_for_amount_schema
+        [
           {
             start: 1,
             end: 25,
@@ -63,13 +75,6 @@ module RankingPoints
             value: 15
           }
         ]
-        penalty_for_amount_schema.each do |step|
-          if amount > step[:start] && amount < step[:end] 
-            @penalty_2 = step[:value]
-            break
-          end
-        end
-        return @penalty_2
       end
       
     end

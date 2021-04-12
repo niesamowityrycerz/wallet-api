@@ -1,4 +1,6 @@
 require 'rails_helper'
+require 'shared_examples/transactions/correct_transaction'
+
 
 RSpec.describe 'Transaction actions', type: :unit do 
   
@@ -25,12 +27,18 @@ RSpec.describe 'Transaction actions', type: :unit do
     @settlement_terms_params = {  
       transaction_uid: transaction_uid,
       debtor_id: debtor.id,
-      max_date_of_settlement: Date.today + rand(1..9).day,
+      anticipated_date_of_settlement: Date.today + rand(1..9).day,
       debtor_settlement_method_id: one_instalment.id,
       currency_id: zloty.id 
     }
     command_bus.call(Transactions::Commands::IssueTransaction.new(@issue_tran_params))
   end
+
+  it_should_behave_like 'on correcting transaction', attribute = { amount: 111.0 }
+  it_should_behave_like 'on correcting transaction', attribute = { description: "Corrected description" }
+  it_should_behave_like 'on correcting transaction', attribute = { currency_id: (Currency.ids.select { |id| id != zloty.id }).sample }
+  it_should_behave_like 'on correcting transaction', attribute = { date_of_transaction: Date.today - rand(100..200) }
+
 
   context 'when debtor has doubts' do 
     it 'checks out transaction' do
@@ -45,41 +53,6 @@ RSpec.describe 'Transaction actions', type: :unit do
   
       expect(event_store).to have_published(
         an_event(Transactions::Events::TransactionCheckedOut)
-      ).in_stream("Transaction$#{transaction_uid}")
-    end
-  
-    it 'corrects transaction' do
-      transaction_p = ReadModels::Transactions::TransactionProjection.find_by!(transaction_uid: transaction_uid)
-      before = {
-        description: transaction_p.description,
-        amount: transaction_p.amount,
-        currency_id: transaction_p.currency_id,
-        date_of_transaction: transaction_p.date_of_transaction
-      }
-  
-      params = {
-        transaction_uid: transaction_uid,
-        amount: 111.0
-      }
-  
-      expect {
-        command_bus.call(Transactions::Commands::CorrectTransaction.new(params))
-      }.to change { ReadModels::Transactions::TransactionProjection.find_by!(transaction_uid: transaction_uid).amount }.from(before[:amount]).to(params[:amount])
-      
-      expect {
-        command_bus.call(Transactions::Commands::CorrectTransaction.new(params))
-      }.not_to change { ReadModels::Transactions::TransactionProjection.find_by!(transaction_uid: transaction_uid).description }.from(before[:description])
-
-      expect {
-        command_bus.call(Transactions::Commands::CorrectTransaction.new(params))
-      }.not_to change { ReadModels::Transactions::TransactionProjection.find_by!(transaction_uid: transaction_uid).date_of_transaction }.from(before[:date_of_transaction])
-
-      expect {
-        command_bus.call(Transactions::Commands::CorrectTransaction.new(params))
-      }.not_to change { ReadModels::Transactions::TransactionProjection.find_by!(transaction_uid: transaction_uid).currency_id }.from(before[:currency_id])
-      
-      expect(event_store).to have_published(
-        an_event(Transactions::Events::TransactionCorrected)
       ).in_stream("Transaction$#{transaction_uid}")
     end
   end

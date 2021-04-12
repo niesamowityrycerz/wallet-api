@@ -32,6 +32,7 @@ module RankingPoints
       penalty_sum = penalty_points.sum { |penalty| penalty.points }
       @adjusted_points = credibility_points - penalty_sum
 
+
       apply Events::CredibilityPointsAlloted.strict(
         {
           credibility_points: credibility_points,

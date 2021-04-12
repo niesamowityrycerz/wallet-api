@@ -1,10 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe 'Ranking points flow', type: :unit do
-  let(:transaction_uid)    { SecureRandom.uuid }
-  let(:debtor)             { create(:debtor) }
-  let!(:tran_projection)    { create(:transaction_projection, transaction_uid: transaction_uid, debtor_id: debtor.id) }
-  let!(:warning_type)      { create(:warning_type) }
+  let(:transaction_uid)      { SecureRandom.uuid }
+  let(:debtor)               { create(:debtor) }
+  let!(:tran_projection)     { create(:transaction_projection, transaction_uid: transaction_uid, debtor_id: debtor.id) }
+  let!(:warning_type)        { create(:warning_type) }
   let(:creditor)             { create(:user) }
   let(:zloty)                { create(:currency) }
   let(:one_instalment)       { create(:settlement_method) }
@@ -38,9 +38,8 @@ RSpec.describe 'Ranking points flow', type: :unit do
     command_bus.call(Transactions::Commands::IssueTransaction.new(@issue_tran_params))
   end
 
-  # settle transaction and check points 
   context 'when transaction expired' do 
-    it 'sends warnig and settles transaction' do
+    it 'sends warning and settles transaction' do
       expect {
         command_bus.call(Warnings::Commands::SendTransactionExpiredWarning.new(@transaction_expired_params))
       }.to change { ReadModels::Warnings::TransactionWarningProjection.count }.by(1)
