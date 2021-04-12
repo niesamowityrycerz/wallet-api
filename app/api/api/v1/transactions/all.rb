@@ -17,7 +17,7 @@ module Api
           end 
 
           filtered_data = ::TransactionQuery.new(params, transactions, current_user).call
-          ::AllTransactionsSerializer.new(filtered_data).serializable_hash
+          ::Transactions::AllTransactionsSerializer.new(filtered_data).serializable_hash
         end
 
       end

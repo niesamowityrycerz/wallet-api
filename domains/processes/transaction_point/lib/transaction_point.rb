@@ -79,10 +79,10 @@ module Processes
 
     # calculate when to send warning 
     def timer(event)
-      due_day = event.data.fetch(:max_date_of_settlement)
+      debtor_due_day = event.data.fetch(:max_date_of_settlement)
       today = Date.today 
       # get difference in minutes 
-      ((due_day - today)*24*60).to_i 
+      ((debtor_due_day - today)*24*60).to_i 
     end
   end
 end

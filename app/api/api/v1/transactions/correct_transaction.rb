@@ -17,7 +17,7 @@ module Api
             optional :date_of_transaction, type: Date 
           end
 
-          post do 
+          put do 
             transaction = ReadModels::Transactions::TransactionProjection.find_by!(transaction_uid: params[:transaction_uid])
             if transaction.creditor_id == current_user.id 
               Rails.configuration.command_bus.call(

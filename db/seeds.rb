@@ -37,6 +37,8 @@ User.create!(username: "admin", email: "admin@wp.pl", password: "password1", pas
 
 Transactions::RunAll.new(users=10, per_user_transaction=5).call
 
+Warnings::RunAll.new()
+
 
 # warnings 
 transaction_expired = WarningType.create(name: 'transaction expired')

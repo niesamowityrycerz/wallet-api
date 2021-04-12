@@ -19,7 +19,7 @@ module Api
           else 
             403 
           end
-          ::TransactionSerializer.new(transaction, { params: { current_user: current_user } }).serializable_hash
+          ::Transactions::TransactionSerializer.new(transaction, { params: { current_user: current_user } }).serializable_hash
         end
       end 
 

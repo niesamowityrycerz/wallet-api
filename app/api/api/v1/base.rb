@@ -7,6 +7,7 @@ module Api
 
       mount Api::V1::Users::Base
       mount Api::V1::Transactions::Base
+      mount Api::V1::Warnings::Base 
     end
   end
 end

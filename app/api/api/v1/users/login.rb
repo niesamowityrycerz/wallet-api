@@ -3,7 +3,6 @@ module Api
     module Users 
       class Login < Base 
 
-        post 
       end
     end
   end

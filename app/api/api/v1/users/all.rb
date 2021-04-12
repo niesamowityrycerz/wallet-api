@@ -7,7 +7,7 @@ module Api
 
         get do 
           users = User.all 
-          ::UserSerializer.new(users).serializable_hash
+          ::Users::UserSerializer.new(users).serializable_hash
         end
       end
     end

@@ -11,7 +11,7 @@ module Api
           get do
             if current_user.admin || current_user.id == params[:id]
               user = User.find_by!(id: params[:id])
-              ::UserSerializer.new(user).serializable_hash
+              ::Users::UserSerializer.new(user).serializable_hash
             else 
               status 403
             end 
