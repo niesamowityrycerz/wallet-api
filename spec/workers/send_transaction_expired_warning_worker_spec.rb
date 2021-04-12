@@ -18,17 +18,4 @@ RSpec.describe 'Send transaction expired warning worker', type: :unit do
       expect((job_executed_at - job_put_in_queue_at).round(3)).to eq(execute.to_f)
     end
   end 
-
-
-
-  it 'invokes PrepareToSendTransactionExpiredWarning job' do
-    execute = 5
-
-    Warnings::PrepareToSendTransactionExpiredWarning.perform_in(execute.seconds, transaction_uid, debtor.id)
-    expect(Warnings::PrepareToSendTransactionExpiredWarning).to have_enqueued_sidekiq_job(transaction_uid, debtor.id)
-    # ensure execution of job
-    binding.pry 
-  end
-
-
 end

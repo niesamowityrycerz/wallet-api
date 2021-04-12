@@ -9,9 +9,8 @@ module Processes
     attr_reader :command_bus, :event_store
 
     def call(event)
-      if settlement_terms_added?(event)
-        # timer
-        Warnings::PrepareToSendTransactionExpiredWarning.perform_in(timer(event), event.data.fetch(:transaction_uid), event.data.fetch(:debtor_id))
+      if transaction_accepted?(event)
+        Warnings::PrepareToSendTransactionExpiredWarning.perform_in(time_to_expire(event), event.data.fetch(:transaction_uid), event.data.fetch(:debtor_id))
       elsif transaction_settled?(event)
         Warnings::PrepareToSendTransactionExpiredWarning.cancel_warning(event.data.fetch(:transaction_uid))
         command_bus.call(
@@ -19,7 +18,8 @@ module Processes
             {
               transaction_uid: event.data.fetch(:transaction_uid),
               debtor_id: event.data.fetch(:debtor_id),
-              due_money: event.data.fetch(:amount)
+              due_money: event.data.fetch(:amount),
+              expire_on: event.data.fetch(:expire_on)
             }
           )
         )
@@ -33,7 +33,7 @@ module Processes
         )
       elsif transaction_expired?(event)
         # send new warning every 24h 
-        Warnings::PrepareToSendTransactionExpiredWarning.perform_in(10.minutes, event.data.fetch(:transaction_uid), event.data.fetch(:user_id)) 
+        Warnings::PrepareToSendTransactionExpiredWarning.perform_in(24.hours, event.data.fetch(:transaction_uid), event.data.fetch(:user_id)) 
         command_bus.call(
           RankingPoints::Commands::AddPenaltyPoints.new(
             {
@@ -77,12 +77,15 @@ module Processes
       event.data.fetch(:state) == :corrected 
     end
 
-    # calculate when to send warning 
-    def timer(event)
-      debtor_due_day = event.data.fetch(:max_date_of_settlement)
+    def transaction_accepted?(event)
+      event.data.fetch(:state) == :accepted
+    end
+
+    def time_to_expire(event)
       today = Date.today 
-      # get difference in minutes 
-      ((debtor_due_day - today)*24*60).to_i 
+      due_day = event.data.fetch(:expire_on)
+      today = Date.today 
+      ((due_day - today)*24*60).to_i 
     end
   end
 end

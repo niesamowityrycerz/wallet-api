@@ -29,7 +29,7 @@ RSpec.describe 'Transaction actions when exceptions', type: :unit do
       transaction_uid: @transaction_uid,
       creditor_id: creditor.id,
       debtor_id: debtor.id,
-      max_date_of_settlement: Date.today + rand(1..10).day,
+      anticipated_date_of_settlement: Date.today + rand(1..10).day,
       debtor_settlement_method_id: one_instalment.id,
       currency_id: zloty.id 
     }
@@ -80,12 +80,12 @@ RSpec.describe 'Transaction actions when exceptions', type: :unit do
         issue_transaction = Transactions::Commands::IssueTransaction.new(@issue_tran_params)
         command_bus.call(issue_transaction)
 
-        @settlement_terms_params[:max_date_of_settlement] = Date.today + 20.day 
+        @settlement_terms_params[:anticipated_date_of_settlement] = Date.today + 20.day 
         settlement_terms = Transactions::Commands::AddSettlementTerms.new(@settlement_terms_params)
         
         expect {
           command_bus.call(settlement_terms)
-        }.to raise_error(Transactions::TransactionAggregate::MaximumDateOfTransactionSettlementUnavailable)
+        }.to raise_error(Transactions::TransactionAggregate::AnticipatedDateOfSettlementInvalid)
       end
     end
   end

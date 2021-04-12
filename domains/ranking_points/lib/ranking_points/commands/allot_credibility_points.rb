@@ -4,7 +4,8 @@ module RankingPoints
       SCHEMA = {
         transaction_uid: String,  
         debtor_id: Integer,
-        due_money: Float
+        due_money: Float,
+        expire_on: Date
       }
     end
   end

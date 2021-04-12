@@ -6,7 +6,7 @@ module ReadModels
           transaction_projection = ReadModels::Transactions::TransactionProjection.find_by!(transaction_uid: event.data.fetch(:transaction_uid))
           transaction_projection.update!( 
             {
-              max_date_of_settlement: event.data.fetch(:max_date_of_settlement)
+              anticipated_date_of_settlement: event.data.fetch(:anticipated_date_of_settlement)
             }
           )
         end

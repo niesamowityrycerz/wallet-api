@@ -4,10 +4,10 @@ module Transactions
   class TransactionAggregate
     include AggregateRoot
 
-    MaximumDateOfTransactionSettlementUnavailable = Class.new(StandardError)
-    RepaymentTypeUnavaiable                       = Class.new(StandardError)
-    CurrencyUnavaiable                            = Class.new(StandardError)
-    InvalidAmount                                 = Class.new(StandardError)
+    AnticipatedDateOfSettlementInvalid = Class.new(StandardError)
+    RepaymentTypeUnavaiable            = Class.new(StandardError)
+    CurrencyUnavaiable                 = Class.new(StandardError)
+    InvalidAmount                      = Class.new(StandardError)
 
     attr_accessor :repayment_conditions, :due_money
 
@@ -18,6 +18,7 @@ module Transactions
       @due_money = nil
       @date_of_placement = nil
       @maturity_in_days = nil
+      @expire_on = nil 
       @creditor_id = nil
       @debtor_id = nil 
       
@@ -44,7 +45,9 @@ module Transactions
       apply Events::TransactionAccepted.strict(
         {
           transaction_uid: @id,
-          state: :accepted
+          state: :accepted,
+          expire_on: @expire_on,
+          debtor_id: @debtor_id
         }
       )
     end
@@ -60,14 +63,16 @@ module Transactions
     end
 
     def add_settlement_terms(params)
-      raise MaximumDateOfTransactionSettlementUnavailable.new 'Date of transaction settlement invalid' unless @repayment_conditions.maturity_date_valid?(params[:max_date_of_settlement], @date_of_placement, @maturity_in_days)
+      unless @repayment_conditions.maturity_date_valid?(params[:anticipated_date_of_settlement], @date_of_placement, @maturity_in_days)
+        raise AnticipatedDateOfSettlementInvalid.new 'Anticipated date of transaction settlement is invalid'
+      end 
       raise RepaymentTypeUnavaiable.new 'Repayment method is unavailable' unless @repayment_conditions.settlement_method_allowed?(params[:debtor_settlement_method_id])
       raise CurrencyUnavaiable.new 'Currency is unavailable' unless @repayment_conditions.currency_allowed?(params[:currency_id]) 
 
       apply Events::SettlementTermsAdded.strict(
         {
           transaction_uid: @id,
-          max_date_of_settlement: params[:max_date_of_settlement],
+          anticipated_date_of_settlement: params[:anticipated_date_of_settlement],
           state: :debtor_terms_added,
           debtor_id: @debtor_id
         }
@@ -113,9 +118,10 @@ module Transactions
           transaction_uid: @id,
           date_of_settlement: params[:date_of_settlement],
           state: :settled,
-          debtor_id: @debtor_id, # odtworzenie stanu agregatu 
+          debtor_id: @debtor_id, 
           creditor_id: @creditor_id,
-          amount: @due_money
+          amount: @due_money,
+          expire_on: @expire_on 
         }
       )
     end
@@ -127,6 +133,7 @@ module Transactions
       @due_money = event.data.fetch(:amount)
       @maturity_in_days = event.data.fetch(:maturity_in_days)
       @date_of_placement = Date.today
+      @expire_on = Date.today + event.data.fetch(:maturity_in_days)
       @creditor_id = event.data.fetch(:creditor_id)
       @debtor_id = event.data.fetch(:debtor_id)
       @repayment_conditions = Repositories::RepaymentCondition.new.with_condition(event.data.fetch(:creditor_id))

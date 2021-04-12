@@ -28,7 +28,7 @@ module RankingPoints
     end
 
     def allot_credibility_points(params)
-      credibility_points = Calculators::CalculateCredibilityPoints.new(params[:debtor_id], params[:due_money]).call
+      credibility_points = Calculators::CalculateCredibilityPoints.new(params[:debtor_id], params[:due_money], params[:expire_on]).call
       penalty_sum = penalty_points.sum { |penalty| penalty.points }
       @adjusted_points = credibility_points - penalty_sum
 

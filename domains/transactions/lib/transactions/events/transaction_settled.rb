@@ -7,7 +7,8 @@ module Transactions
         state: Symbol,
         debtor_id: Integer,
         creditor_id: Integer,
-        amount: Float
+        amount: Float,
+        expire_on: Date
       }
     end
   end

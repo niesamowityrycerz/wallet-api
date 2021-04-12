@@ -11,7 +11,6 @@ RSpec.describe 'Transaction actions', type: :unit do
   
   let!(:repayment_condition)   { create(:repayment_condition, :maturity_in_10_days, creditor: creditor, currency: zloty, settlement_method: one_instalment) }
 
-  # REPAYMENT CONDITION READ MODEL WYCIAGANY Z EVENT STREAMU 
   before(:each) do
     @issue_tran_params = {
       transaction_uid: transaction_uid,
@@ -26,7 +25,7 @@ RSpec.describe 'Transaction actions', type: :unit do
     @settlement_terms_params = {  
       transaction_uid: transaction_uid,
       debtor_id: debtor.id,
-      max_date_of_settlement: Date.today + rand(1..9).day,
+      anticipated_date_of_settlement: Date.today + rand(1..9).day,
       debtor_settlement_method_id: one_instalment.id,
       currency_id: zloty.id 
     }
