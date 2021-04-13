@@ -10,6 +10,11 @@ module ReadModels
               status: event.data.fetch(:state)
             }
           )
+
+          ranking_position = WriteModels::CreditorsRanking.find_by!(creditor_id: event.data.fetch(:creditor_id))
+          ranking_position.credit_transactions += 1
+          ranking_position.trust_points += event.data.fetch(:trust_points)
+          ranking_position.save!
         end
       end
     end

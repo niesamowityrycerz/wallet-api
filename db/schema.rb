@@ -10,13 +10,31 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_12_095222) do
+ActiveRecord::Schema.define(version: 2021_04_13_120534) do
+
+  create_table "creditors_ranking", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "creditor_id"
+    t.float "trust_points", default: 0.0
+    t.integer "credit_transactions", default: 0
+    t.index ["creditor_id"], name: "index_creditors_ranking_on_creditor_id"
+  end
 
   create_table "currencies", force: :cascade do |t|
     t.string "name"
     t.string "code"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "debtors_ranking", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "debtor_id"
+    t.float "adjusted_credibility_points", default: 0.0
+    t.integer "debt_transactions", default: 0
+    t.index ["debtor_id"], name: "index_debtors_ranking_on_debtor_id"
   end
 
   create_table "event_store_events", force: :cascade do |t|

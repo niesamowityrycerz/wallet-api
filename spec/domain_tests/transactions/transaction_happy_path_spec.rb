@@ -3,8 +3,8 @@ require 'rails_helper'
 RSpec.describe 'Transaction actions on happy path', type: :unit do 
   
   let(:transaction_uid)         { SecureRandom.uuid }
-  let(:creditor)                { create(:user) }
-  let(:debtor)                  { create(:user) }
+  let(:creditor)                { create(:creditor, :with_ranking_position) }
+  let(:debtor)                  { create(:debtor, :with_ranking_position) }
   let(:zloty)                   { create(:currency) }
   let(:euro)                    { create(:currency, :euro) }
   let(:one_instalment)          { create(:settlement_method) }
@@ -44,6 +44,7 @@ RSpec.describe 'Transaction actions on happy path', type: :unit do
 
   it 'accepts transaction' do
     command_bus.call(Transactions::Commands::IssueTransaction.new(@issue_tran_params))
+
     command_bus.call(Transactions::Commands::AcceptTransaction.new({transaction_uid: transaction_uid}))
 
     expect(event_store).to have_published(
@@ -60,12 +61,12 @@ RSpec.describe 'Transaction actions on happy path', type: :unit do
     expect {
       command_bus.call(Transactions::Commands::CloseTransaction.new(params))
     }.to change { ReadModels::Transactions::TransactionProjection.find_by!(transaction_uid: transaction_uid).status }.from('pending').to('closed') 
+     .and change { User.find_by!(id: creditor.id).debtors_ranking.debtors_transactions}
 
     expect(event_store).to have_published(
       an_event(Transactions::Events::TransactionClosed).with_data(reason_for_closing: params[:reason_for_closing])
     ).in_stream("Transaction$#{transaction_uid}").strict
   end
-
 
   it 'rejects transaction' do
     params = {

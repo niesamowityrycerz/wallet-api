@@ -84,7 +84,8 @@ module Transactions
         {
           transaction_uid: @id,
           state: :closed,
-          reason_for_closing: ( params[:reason_for_closing] if params.key?(:reason_for_closing) )
+          reason_for_closing: ( params[:reason_for_closing] if params.key?(:reason_for_closing) ),
+          creditor_id: @creditor_id
         }.compact
       )
     end
