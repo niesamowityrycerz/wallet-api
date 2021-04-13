@@ -2,7 +2,7 @@ module Transactions
   module Handlers
     class OnIssueTransaction 
       include CommandHandler
-      # code to submit transaction
+      
       def call(command)
         transaction_uid = command.data[:transaction_uid]
 

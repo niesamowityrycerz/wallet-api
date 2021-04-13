@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_13_120534) do
+ActiveRecord::Schema.define(version: 2021_04_13_133854) do
 
   create_table "creditors_ranking", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -130,7 +130,6 @@ ActiveRecord::Schema.define(version: 2021_04_13_120534) do
     t.string "description"
     t.integer "settlement_method_id"
     t.integer "status", default: 0
-    t.integer "maturity_in_days"
     t.date "date_of_transaction"
     t.boolean "creditor_informed", default: false
     t.string "reason_for_closing"
@@ -142,6 +141,7 @@ ActiveRecord::Schema.define(version: 2021_04_13_120534) do
     t.float "adjusted_credibility_points"
     t.string "reason_for_rejection"
     t.date "anticipated_date_of_settlement"
+    t.date "max_date_of_settlement"
   end
 
   create_table "transaction_warning_projections", force: :cascade do |t|

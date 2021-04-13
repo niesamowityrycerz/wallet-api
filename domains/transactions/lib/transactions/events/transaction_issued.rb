@@ -9,7 +9,7 @@ module Transactions
         description: String,
         currency_id: Integer,
         date_of_transaction: [ :optional, Date ],
-        maturity_in_days: Integer,
+        max_date_of_settlement: Date,
         settlement_method_id: Integer,
         state: Symbol
       }

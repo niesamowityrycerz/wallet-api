@@ -11,6 +11,7 @@ module ReadModels
             }
           )
 
+
           ranking_position =  WriteModels::DebtorsRanking.find_by!(debtor_id: event.data.fetch(:debtor_id))
           ranking_position.debt_transactions += 1
           ranking_position.adjusted_credibility_points += event.data.fetch(:adjusted_credibility_points)

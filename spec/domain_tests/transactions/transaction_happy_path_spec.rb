@@ -53,6 +53,7 @@ RSpec.describe 'Transaction actions on happy path', type: :unit do
   end
 
   it 'closes transaction' do
+    command_bus.call(Transactions::Commands::IssueTransaction.new(@issue_tran_params))
     params = {
       transaction_uid: transaction_uid,
       reason_for_closing: 'Błędna transakcja'
@@ -61,11 +62,10 @@ RSpec.describe 'Transaction actions on happy path', type: :unit do
     expect {
       command_bus.call(Transactions::Commands::CloseTransaction.new(params))
     }.to change { ReadModels::Transactions::TransactionProjection.find_by!(transaction_uid: transaction_uid).status }.from('pending').to('closed') 
-     .and change { User.find_by!(id: creditor.id).debtors_ranking.debtors_transactions}
 
     expect(event_store).to have_published(
       an_event(Transactions::Events::TransactionClosed).with_data(reason_for_closing: params[:reason_for_closing])
-    ).in_stream("Transaction$#{transaction_uid}").strict
+    ).in_stream("Transaction$#{transaction_uid}")
   end
 
   it 'rejects transaction' do

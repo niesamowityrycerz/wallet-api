@@ -2,10 +2,10 @@ require 'rails_helper'
 
 RSpec.describe 'Ranking points flow', type: :unit do
   let(:transaction_uid)      { SecureRandom.uuid }
-  let(:debtor)               { create(:debtor) }
+  let(:creditor)             { create(:creditor, :with_ranking_position) }
+  let(:debtor)               { create(:debtor, :with_ranking_position) }
   let!(:tran_projection)     { create(:transaction_projection, transaction_uid: transaction_uid, debtor_id: debtor.id) }
   let!(:warning_type)        { create(:warning_type) }
-  let(:creditor)             { create(:user) }
   let(:zloty)                { create(:currency) }
   let(:one_instalment)       { create(:settlement_method) }
   let!(:repayment_condition) { create(:repayment_condition, :maturity_in_10_days, creditor: creditor, currency: zloty, settlement_method: one_instalment) }

@@ -1,43 +1,22 @@
 module Transactions
   class RunAll
-    def initialize(users=1,per_user_transaction=1, to_accept_quantity=1)
-      @users = users
+    def initialize(per_user_transaction=1)
       @per_user_transaction = per_user_transaction
-      @accept_quantity = to_accept_quantity
     end
 
-    def call
-      create_players(@users)
-      add_repayment_methods(@users)
+    def call(accept_q=1, reject_q=1, settle_q=1, checkout_q=1)
       issue_transaction(@per_user_transaction)
-      Transactions::AcceptTransaction.new(get_transaction_uids, @accept_quantity).call
+      @transactions = ReadModels::Transactions::TransactionProjection.all 
+
+      Transactions::AcceptTransaction.new(to_accept(accept_q)).call
+      Transactions::RejectTransaction.new(to_reject(reject_q)).call
+      Transactions::SettleTransaction.new(to_reject(settle_q), not_on_time = 5).call
+      Transactions::CheckOutTransaction.new(to_checkout_and_correct(checkout_q)).call
+      Transactions::CorrectTransaction.new(to_checkout_and_correct(checkout_q)).call
+
     end
 
     private 
-
-    def create_players(quantity)
-      quantity.times do |i|
-        User.create!({
-          username: Faker::Internet.username + i.to_s,
-          email: Faker::Internet.email,
-          password: 'password1',
-          password_confirmation: 'password1'
-        })
-      end 
-    end
-
-    def add_repayment_methods(_players)
-      User.ids.each do |creditor|
-        WriteModels::RepaymentCondition.create!(
-          {
-            maturity_in_days: rand(1..5),
-            creditor_id: creditor,
-            currency_id: Currency.ids.sample,
-            settlement_method_id: SettlementMethod.find_by!(name: 'one instalment').id,
-          }
-        )
-      end
-    end
 
     def issue_transaction(per_user_transaction)
       User.ids.each do |creditor|
@@ -46,10 +25,34 @@ module Transactions
       end
     end
 
-    def get_transaction_uids(quantity=1)
+    def to_accept(q)
+      accept = @transactions.sample(q)
+      @transactions -= accept
+      get_transaction_uids(accept)
+    end 
+
+    def to_reject(q)
+      reject = @transactions.sample(q)
+      @transactions -= reject 
+      get_transaction_uids(reject)
+    end 
+
+    def to_settle(q)
+      settle = @transactions.sample(q)
+      @transactions -= settle 
+      get_transaction_uids(settle)
+    end
+
+    def to_checkout_and_correct(q)
+      checkout = @transactions.sample(q)
+      @transactions -= checkout 
+      get_transaction_uids(checkout)
+    end
+
+    def get_transaction_uids(transactions)
       transaction_uids = []
-      ReadModels::Transactions::TransactionProjection.all.each do |transaction|
-        transaction_uids << transaction.transaction_uid
+      transactions.each do |tran|
+        transaction_uids << tran.transaction_uid
       end
       transaction_uids
     end

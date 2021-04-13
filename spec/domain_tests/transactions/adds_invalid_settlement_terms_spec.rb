@@ -85,7 +85,7 @@ RSpec.describe 'Transaction actions when exceptions', type: :unit do
         
         expect {
           command_bus.call(settlement_terms)
-        }.to raise_error(Transactions::TransactionAggregate::AnticipatedDateOfSettlementInvalid)
+        }.to raise_error(Transactions::TransactionAggregate::AnticipatedDateOfSettlementUnavailable)
       end
     end
   end

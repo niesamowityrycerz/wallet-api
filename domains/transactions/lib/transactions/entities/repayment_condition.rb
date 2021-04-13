@@ -20,10 +20,6 @@ module Transactions
         }
       end
 
-      def maturity_date_valid?(anticipated_date_of_settlement, date_of_placement, maturity)
-        date_of_placement + maturity.day >= anticipated_date_of_settlement
-      end
-
       def settlement_method_allowed?(debtor_method_id)
         if debtor_method_id == settlement_method_id
           true 

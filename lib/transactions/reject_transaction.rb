@@ -1,5 +1,5 @@
 module Transactions
-  class AcceptTransaction 
+  class RejectTransaction 
     def initialize(transaction_uids)
       @transaction_uids = transaction_uids
     end

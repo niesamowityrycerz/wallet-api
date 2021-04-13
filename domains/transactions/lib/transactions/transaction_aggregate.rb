@@ -4,10 +4,10 @@ module Transactions
   class TransactionAggregate
     include AggregateRoot
 
-    AnticipatedDateOfSettlementInvalid = Class.new(StandardError)
-    RepaymentTypeUnavaiable            = Class.new(StandardError)
-    CurrencyUnavaiable                 = Class.new(StandardError)
-    InvalidAmount                      = Class.new(StandardError)
+    AnticipatedDateOfSettlementUnavailable = Class.new(StandardError)
+    RepaymentTypeUnavaiable                = Class.new(StandardError)
+    CurrencyUnavaiable                     = Class.new(StandardError)
+    InvalidAmount                          = Class.new(StandardError)
 
     attr_accessor :repayment_conditions, :due_money
 
@@ -17,8 +17,7 @@ module Transactions
       @repayment_conditions = nil
       @due_money = nil
       @date_of_placement = nil
-      @maturity_in_days = nil
-      @expire_on = nil 
+      @max_date_of_settlement = nil
       @creditor_id = nil
       @debtor_id = nil 
       
@@ -34,7 +33,7 @@ module Transactions
           description: params[:description],
           currency_id: params[:currency_id],
           date_of_transaction: ( params[:date_of_transaction] if params.key?(:date_of_transaction) ),
-          maturity_in_days: params[:creditor_conditions][:maturity_in_days],
+          max_date_of_settlement: Date.today + params[:creditor_conditions][:maturity_in_days],
           settlement_method_id: params[:creditor_conditions][:settlement_method_id],
           state: :pending
         }.compact
@@ -46,7 +45,7 @@ module Transactions
         {
           transaction_uid: @id,
           state: :accepted,
-          expire_on: @expire_on,
+          expire_on: @max_date_of_settlement,
           debtor_id: @debtor_id
         }
       )
@@ -63,9 +62,7 @@ module Transactions
     end
 
     def add_settlement_terms(params)
-      unless @repayment_conditions.maturity_date_valid?(params[:anticipated_date_of_settlement], @date_of_placement, @maturity_in_days)
-        raise AnticipatedDateOfSettlementInvalid.new 'Anticipated date of transaction settlement is invalid'
-      end 
+      raise AnticipatedDateOfSettlementUnavailable.new 'Date unavailable' unless params[:anticipated_date_of_settlement] <= @max_date_of_settlement
       raise RepaymentTypeUnavaiable.new 'Repayment method is unavailable' unless @repayment_conditions.settlement_method_allowed?(params[:debtor_settlement_method_id])
       raise CurrencyUnavaiable.new 'Currency is unavailable' unless @repayment_conditions.currency_allowed?(params[:currency_id]) 
 
@@ -122,7 +119,7 @@ module Transactions
           debtor_id: @debtor_id, 
           creditor_id: @creditor_id,
           amount: @due_money,
-          expire_on: @expire_on 
+          expire_on: @max_date_of_settlement 
         }
       )
     end
@@ -132,9 +129,8 @@ module Transactions
     on Events::TransactionIssued do |event|
       @state = event.data.fetch(:state)
       @due_money = event.data.fetch(:amount)
-      @maturity_in_days = event.data.fetch(:maturity_in_days)
+      @max_date_of_settlement = event.data.fetch(:max_date_of_settlement)
       @date_of_placement = Date.today
-      @expire_on = Date.today + event.data.fetch(:maturity_in_days)
       @creditor_id = event.data.fetch(:creditor_id)
       @debtor_id = event.data.fetch(:debtor_id)
       @repayment_conditions = Repositories::RepaymentCondition.new.with_condition(event.data.fetch(:creditor_id))

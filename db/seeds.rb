@@ -23,6 +23,7 @@
 
 
 # Currencies
+start = Time.now 
 Currency.create!(name: 'Zloty', code: 'PLN')
 Currency.create!(name: 'Euro',  code: 'EUR')
 Currency.create!(name: 'US Dollar', code: 'USD')
@@ -31,18 +32,26 @@ Currency.create!(name: 'US Dollar', code: 'USD')
 SettlementMethod.create!(name: 'one instalment')
 SettlementMethod.create!(name: 'multiple instalments')
 
-# admin 
-User.create!(username: "admin", email: "admin@wp.pl", password: "password1", password_confirmation: "password1", admin: true)
 
+Users::RunAll.new(users_quantity=10).call
+Transactions::RunAll.new(per_user_transaction=5).call(accept_q=10, reject_q=10, settle=10, checkout=10)
 
-Transactions::RunAll.new(users=10, per_user_transaction=5).call
+User.create({
+  username: "ADMIN",
+  email: 'admin@wp.pl',
+  password: 'password1',
+  password_confirmation: 'password1',
+  admin: true
+})
+stop = Time.now 
+stop - start 
 
-Warnings::RunAll.new()
+#Warnings::RunAll.new()
 
 
 # warnings 
-transaction_expired = WarningType.create(name: 'transaction expired')
-user = User.first 
-WriteModels::Warning.create(user_id: user.id, warning_type_id: transaction_expired.id)
+#transaction_expired = WarningType.create(name: 'transaction expired')
+#user = User.first 
+#WriteModels::Warning.create(user_id: user.id, warning_type_id: transaction_expired.id)
 
 

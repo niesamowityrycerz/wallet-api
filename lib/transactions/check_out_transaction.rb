@@ -1,5 +1,5 @@
 module Transactions
-  class AcceptTransaction 
+  class CheckOutTransaction
     def initialize(transaction_uids)
       @transaction_uids = transaction_uids
     end
@@ -14,8 +14,9 @@ module Transactions
     def prepare_command(transaction_uids)
       commands = []
       transaction_uids.each do |tran_uid|
-        commands << Transactions::Commands::AcceptTransaction.new({
-          transaction_uid: tran_uid
+        commands << Transactions::Commands::CheckOutTransaction.new({
+          transaction_uid: tran_uid,
+          doubts: Faker::Quote.famous_last_words[0..40]
         })
       end
       commands 
@@ -26,6 +27,5 @@ module Transactions
         Rails.configuration.command_bus.call(command)
       end 
     end
-
   end
 end

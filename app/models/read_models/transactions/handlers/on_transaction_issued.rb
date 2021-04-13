@@ -2,11 +2,7 @@ module ReadModels
   module Transactions 
     module Handlers
       class OnTransactionIssued 
-        # this creates new object
-        # of the TransactionProjection read model
-        # by default rails_event_store require handlers to respond to #call method
         def call(event)
-          # create new record in transaction_projections tables
           transaction_uid = event.data.fetch(:transaction_uid)
           ReadModels::Transactions::TransactionProjection.create!(
             {
@@ -16,7 +12,7 @@ module ReadModels
               amount: event.data.fetch(:amount),
               currency_id: event.data.fetch(:currency_id),
               description: event.data.fetch(:description),
-              maturity_in_days: event.data.fetch(:maturity_in_days),
+              max_date_of_settlement: event.data.fetch(:max_date_of_settlement),
               date_of_transaction: ( event.data.fetch(:date_of_transaction) if event.data.key?(:date_of_transaction) ),
               status: event.data.fetch(:state),
               settlement_method_id: event.data.fetch(:settlement_method_id)
