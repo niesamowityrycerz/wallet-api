@@ -30,6 +30,10 @@ gem 'devise'
 # doorkeeper
 gem 'doorkeeper'
 
+# handle pagination 
+gem 'kaminari'
+
+
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 

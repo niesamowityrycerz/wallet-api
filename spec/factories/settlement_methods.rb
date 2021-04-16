@@ -4,6 +4,7 @@ FactoryBot.define do
 
     trait :multiple_instalments do 
       name { 'many instalments' }
-    end
+    end  
+    
   end
 end

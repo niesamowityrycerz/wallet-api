@@ -24,13 +24,6 @@ RSpec.describe 'Transaction actions', type: :unit do
       date_of_transaction: Date.today 
     }
 
-    @settlement_terms_params = {  
-      transaction_uid: transaction_uid,
-      debtor_id: debtor.id,
-      anticipated_date_of_settlement: Date.today + rand(1..9).day,
-      debtor_settlement_method_id: one_instalment.id,
-      currency_id: zloty.id 
-    }
     command_bus.call(Transactions::Commands::IssueTransaction.new(@issue_tran_params))
   end
 
@@ -55,5 +48,20 @@ RSpec.describe 'Transaction actions', type: :unit do
         an_event(Transactions::Events::TransactionCheckedOut)
       ).in_stream("Transaction$#{transaction_uid}")
     end
-  end
+
+    context 'when exceeded characters in doubts column' do 
+      it 'raises error' do
+        params = {
+          transaction_uid: transaction_uid,
+          doubts: 'i'*51
+        }
+
+        check_out_transaction = Transactions::Commands::CheckOutTransaction.new(params)
+        expect {
+          command_bus.call(check_out_transaction)
+        }.to raise_error(ActiveRecord::RecordInvalid, 'Validation failed: Doubts 50 characters is maximum!')
+      end
+    end 
+  end 
+
 end 

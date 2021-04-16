@@ -34,36 +34,52 @@ RSpec.describe 'Ranking Points flow ', type: :unit do
       debtor_id: debtor.id
     }
 
+    @debtor_terms = {
+      transaction_uid: transaction_uid,
+      anticipated_date_of_settlement: Date.today + rand(1..3),
+      debtor_settlement_method_id: one_instalment.id 
+    }
+
+
     command_bus.call(Transactions::Commands::IssueTransaction.new(@issue_tran_params))
+    command_bus.call(Transactions::Commands::AcceptTransaction.new({transaction_uid: transaction_uid}))
+    command_bus.call(Transactions::Commands::AddDebtorTerms.new(@debtor_terms))
   end
 
-  context 'when transaction pending' do 
-    it 'it settles transaction and checks points' do 
-      expect {
-        command_bus.call(Transactions::Commands::SettleTransaction.new(@settle_params))
-      }.to change { ReadModels::Transactions::TransactionProjection.find_by!(transaction_uid: transaction_uid).date_of_settlement }.from(nil).to(Date.today)
+  context 'when transaction accepted' do 
+    context 'when debtor terms added' do
+      context 'when transaction pending' do 
+        it 'it settles transaction and checks points' do 
+          binding.pry 
+          expect {
+            command_bus.call(Transactions::Commands::SettleTransaction.new(@settle_params))
+          }.to change { ReadModels::Transactions::TransactionProjection.find_by!(transaction_uid: transaction_uid).date_of_settlement }.from(nil).to(Date.today)
 
-      ranking_points = event_store.read.stream("RankingPoint$#{transaction_uid}").to_a
+          ranking_points = event_store.read.stream("RankingPoint$#{transaction_uid}").to_a
 
-      transaction_projection = ReadModels::Transactions::TransactionProjection.find_by!(transaction_uid: transaction_uid)
+          transaction_projection = ReadModels::Transactions::TransactionProjection.find_by!(transaction_uid: transaction_uid)
 
-      cred_points  = event_store.read.stream("RankingPoint$#{transaction_uid}").to_a.first.data[:credibility_points]
-      trust_points = event_store.read.stream("RankingPoint$#{transaction_uid}").to_a.second.data[:trust_points]
+          cred_points  = event_store.read.stream("RankingPoint$#{transaction_uid}").to_a.first.data[:credibility_points]
+          trust_points = event_store.read.stream("RankingPoint$#{transaction_uid}").to_a.second.data[:trust_points]
 
-      expect(transaction_projection.credibility_points).to eq(cred_points)
-      expect(transaction_projection.adjusted_credibility_points).to eq(cred_points)
-      expect(transaction_projection.trust_points).to eq(trust_points)
+          expect(transaction_projection.credibility_points).to eq(cred_points)
+          expect(transaction_projection.adjusted_credibility_points).to eq(cred_points)
+          expect(transaction_projection.trust_points).to eq(trust_points)
 
-      expect(event_store).to have_published(
-        an_event(Transactions::Events::TransactionIssued),
-        an_event(Transactions::Events::TransactionSettled),
-        an_event(Transactions::Events::TransactionClosed)
-      ).in_stream("Transaction$#{transaction_uid}").strict
-      
-      expect(event_store).to have_published(
-        an_event(RankingPoints::Events::TrustPointsAlloted),
-        an_event(RankingPoints::Events::CredibilityPointsAlloted)
-      ).in_stream("RankingPoint$#{transaction_uid}")
+          expect(event_store).to have_published(
+            an_event(Transactions::Events::TransactionIssued),
+            an_event(Transactions::Events::TransactionAccepted),
+            an_event(Transactions::Events::DebtorTermsAdded),
+            an_event(Transactions::Events::TransactionSettled),
+            an_event(Transactions::Events::TransactionClosed)
+          ).in_stream("Transaction$#{transaction_uid}")
+          
+          expect(event_store).to have_published(
+            an_event(RankingPoints::Events::TrustPointsAlloted),
+            an_event(RankingPoints::Events::CredibilityPointsAlloted)
+          ).in_stream("RankingPoint$#{transaction_uid}")
+        end
+      end
     end
-  end 
+  end
 end 

@@ -3,10 +3,14 @@ module Api
     module Rankings
       class DebtorsRanking < Base 
 
+        desc "Show debtors ranking"
+
         resource :debtors do 
           get do 
-            ranking = WriteModels::DebtorsRanking.all
-            ranking.order("adjusted_credibility_points DESC")
+            users = User.all.select { |user| user.admin == false }
+            ranking = ::DebtorsRankingQuery.new(users)
+            ::Ranking::RankingSerializer.new(ranking).serializable_hash
+
           end
         end
       end

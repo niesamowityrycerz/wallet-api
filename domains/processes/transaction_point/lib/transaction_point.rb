@@ -10,6 +10,7 @@ module Processes
 
     def call(event)
       if transaction_accepted?(event)
+        binding.pry
         Warnings::PrepareToSendTransactionExpiredWarning.perform_in(time_to_expire(event), event.data.fetch(:transaction_uid), event.data.fetch(:debtor_id))
       elsif transaction_settled?(event)
         Warnings::PrepareToSendTransactionExpiredWarning.cancel_warning(event.data.fetch(:transaction_uid))
@@ -59,10 +60,6 @@ module Processes
 
     def transaction_settled?(event)
       event.data.fetch(:state) == :settled
-    end
-
-    def settlement_terms_added?(event)
-      event.data.fetch(:state) == :debtor_terms_added
     end
 
     def transaction_expired?(event)

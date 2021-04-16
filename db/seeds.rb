@@ -16,7 +16,7 @@
 
 # Create my own OAuth Application
 # create Doorkeeper::Application in console 
-# wallet_app = Doorkeeper::Application.create(name: "Wallet Development Client", redirect_uri: "", scopes: "")
+wallet_app = Doorkeeper::Application.create(name: "Wallet Development Client", redirect_uri: "", scopes: "")
 # "2xODT1L_HhxEd5cZCJqAsMRXBDJ7y-AgfJlOKFMmzmM" secret -> client_secret 
 # "C0NMy86Pb4VR7kmZP5YOAS_oscJpGgRmL3_uUCmdPqY" uid -> client_uid
 
@@ -32,9 +32,14 @@ Currency.create!(name: 'US Dollar', code: 'USD')
 SettlementMethod.create!(name: 'one instalment')
 SettlementMethod.create!(name: 'multiple instalments')
 
+# Waring types
+WarningType.create(name: 'transaction expired')
+
 
 Users::RunAll.new(users_quantity=10).call
 Transactions::RunAll.new(per_user_transaction=5).call(accept_q=10, reject_q=10, settle=10, checkout=10)
+Warnings::RunAll.new(warnings_q=15)
+
 
 User.create({
   username: "ADMIN",
@@ -46,12 +51,7 @@ User.create({
 stop = Time.now 
 stop - start 
 
-#Warnings::RunAll.new()
 
 
-# warnings 
-#transaction_expired = WarningType.create(name: 'transaction expired')
-#user = User.first 
-#WriteModels::Warning.create(user_id: user.id, warning_type_id: transaction_expired.id)
 
 

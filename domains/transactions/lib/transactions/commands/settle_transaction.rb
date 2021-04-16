@@ -2,8 +2,7 @@ module Transactions
   module Commands 
     class SettleTransaction < Command
       SCHEMA = {
-        transaction_uid: String,
-        date_of_settlement: Date
+        transaction_uid: String
       }
     end
   end

@@ -21,14 +21,6 @@ RSpec.describe 'Transaction actions on happy path', type: :unit do
       currency_id: zloty.id,
       date_of_transaction: Date.today 
     }
-
-    @settlement_terms_params = {  
-      transaction_uid: transaction_uid,
-      debtor_id: debtor.id,
-      anticipated_date_of_settlement: Date.today + rand(1..9).day,
-      debtor_settlement_method_id: one_instalment.id,
-      currency_id: zloty.id 
-    }
   end
 
   it 'issues transaction' do 

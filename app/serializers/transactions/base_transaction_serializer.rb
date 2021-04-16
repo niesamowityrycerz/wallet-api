@@ -2,7 +2,7 @@ module Transactions
   class BaseTransactionSerializer 
     include JSONAPI::Serializer
 
-    attributes :amount, :status, :maturity_in_days
+    attributes :amount, :status
 
     attribute :currency do |transaction|
       Currency.find_by!(id: transaction.currency_id).code
@@ -19,5 +19,10 @@ module Transactions
     attribute :issued_at do |transaction|
       transaction.created_at
     end
+
+    attribute :maturity_on do |transaction|
+      transaction.max_date_of_settlement
+    end
+
   end 
 end 

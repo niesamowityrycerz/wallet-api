@@ -6,7 +6,8 @@ module Api
 
     helpers Doorkeeper::Grape::Helpers
     helpers(
-      ::Helpers::AuthenticateUser
+      ::Helpers::AuthenticateUser,
+      ::Helpers::Pagination
     )
 
     mount Api::V1::Base

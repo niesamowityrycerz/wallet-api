@@ -30,7 +30,7 @@ module Users
       users.each do |creditor|
         WriteModels::RepaymentCondition.create!(
           {
-            maturity_in_days: rand(1..5),
+            maturity_in_days: rand(5..10),
             creditor_id: creditor.id,
             currency_id: Currency.ids.sample,
             settlement_method_id: SettlementMethod.find_by!(name: 'one instalment').id,

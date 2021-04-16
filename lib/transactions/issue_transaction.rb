@@ -24,7 +24,7 @@ module Transactions
                         amount:      rand(1.0..100.0).round(2),
                         description: 'test',
                         currency_id: Currency.find_by!(code: 'PLN').id,
-                        date_of_transaction: Date.today + rand(1..10) 
+                        date_of_transaction: Date.today - rand(1..10) 
                       })
       end 
       commands

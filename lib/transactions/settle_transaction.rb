@@ -17,7 +17,7 @@ module Transactions
       transaction_uids.each do |tran_uid|
         commands << Transactions::Commands::SettleTransaction.new({
           transaction_uid: tran_uid,
-          date_of_settlement: date + rand(1..3)
+          date_of_settlement: date + rand(3..8)
         })
       end
       command_pipeline(commands)

@@ -17,7 +17,7 @@ Rails.configuration.to_prepare do
     store.subscribe(ReadModels::Transactions::Handlers::OnTransactionAcceptedOrClosed,                 to: [Transactions::Events::TransactionAccepted,
                                                                                                             Transactions::Events::TransactionClosed])
     store.subscribe(ReadModels::Transactions::Handlers::OnTransactionRejected,                         to: [Transactions::Events::TransactionRejected])                                                                               
-    store.subscribe(ReadModels::Transactions::Handlers::OnSettlementTermsAdded,                        to: [Transactions::Events::SettlementTermsAdded])
+    store.subscribe(ReadModels::Transactions::Handlers::OnDebtorTermsAdded,                            to: [Transactions::Events::DebtorTermsAdded])
     store.subscribe(ReadModels::Transactions::Handlers::OnTransactionCheckedOut,                       to: [Transactions::Events::TransactionCheckedOut])
     store.subscribe(ReadModels::Transactions::Handlers::OnTransactionCorrected,                        to: [Transactions::Events::TransactionCorrected])
     store.subscribe(ReadModels::Transactions::Handlers::OnTransactionSettled,                          to: [Transactions::Events::TransactionSettled])
@@ -31,9 +31,8 @@ Rails.configuration.to_prepare do
 
     # Processes(System)
     store.subscribe(Processes::TransactionPoint, to: [
-      Transactions::Events::SettlementTermsAdded,
       Transactions::Events::TransactionSettled,
-      Warnings::Events::TransactionExpiredWarningSent, 
+      Warnings::Events::TransactionExpiredWarningSent,  
       RankingPoints::Events::TrustPointsAlloted,
     ])
 
@@ -44,7 +43,7 @@ Rails.configuration.to_prepare do
     bus.register(Transactions::Commands::IssueTransaction,       Transactions::Handlers::OnIssueTransaction.new)
     bus.register(Transactions::Commands::AcceptTransaction,      Transactions::Handlers::OnAcceptTransaction.new)
     bus.register(Transactions::Commands::RejectTransaction,      Transactions::Handlers::OnRejectTransaction.new)
-    bus.register(Transactions::Commands::AddSettlementTerms,     Transactions::Handlers::OnAddSettlementTerms.new)
+    bus.register(Transactions::Commands::AddDebtorTerms,         Transactions::Handlers::OnAddDebtorTerms.new)
     bus.register(Transactions::Commands::CloseTransaction,       Transactions::Handlers::OnCloseTransaction.new)
     bus.register(Transactions::Commands::CheckOutTransaction,    Transactions::Handlers::OnCheckOutTransaction.new)
     bus.register(Transactions::Commands::CorrectTransaction,     Transactions::Handlers::OnCorrectTransaction.new)

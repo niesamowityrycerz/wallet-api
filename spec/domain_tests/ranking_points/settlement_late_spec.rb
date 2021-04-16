@@ -35,41 +35,56 @@ RSpec.describe 'Ranking points flow', type: :unit do
       debtor_id: debtor.id
     }
 
+    @debtor_terms = {
+      transaction_uid: transaction_uid,
+      anticipated_date_of_settlement: Date.today + rand(1..3),
+      debtor_settlement_method_id: one_instalment.id 
+    }
+
     command_bus.call(Transactions::Commands::IssueTransaction.new(@issue_tran_params))
+    command_bus.call(Transactions::Commands::AcceptTransaction.new({transaction_uid: transaction_uid}))
+    command_bus.call(Transactions::Commands::AddDebtorTerms.new(@debtor_terms))
   end
 
-  context 'when transaction expired' do 
-    it 'sends warning and settles transaction' do
-      expect {
-        command_bus.call(Warnings::Commands::SendTransactionExpiredWarning.new(@transaction_expired_params))
-      }.to change { ReadModels::Warnings::TransactionWarningProjection.count }.by(1)
-       .and change { WriteModels::Warning.count }.by(1)
-      
-      warning_uid = event_store.read.stream("RankingPoint$#{transaction_uid}").to_a[-1].data[:warning_uid]
-      penalty_points = event_store.read.stream("RankingPoint$#{transaction_uid}").to_a[-1].data[:penalty_points]
+  context 'when transaction accepted' do 
+    context 'when debtor terms added' do
+      context 'when transaction expired' do 
+        it 'sends warning and settles transaction' do
+          expect {
+            command_bus.call(Warnings::Commands::SendTransactionExpiredWarning.new(@transaction_expired_params))
+          }.to change { ReadModels::Warnings::TransactionWarningProjection.count }.by(1)
+          .and change { WriteModels::Warning.count }.by(1)
+          
+          warning_uid = event_store.read.stream("RankingPoint$#{transaction_uid}").to_a[-1].data[:warning_uid]
+          penalty_points = event_store.read.stream("RankingPoint$#{transaction_uid}").to_a[-1].data[:penalty_points]
 
-      expect(ReadModels::Warnings::TransactionWarningProjection.find_by!(warning_uid: warning_uid).penalty_points).to eq(penalty_points)
-      
-      expect {
-        command_bus.call(Transactions::Commands::SettleTransaction.new(@settle_params))
-      }.to change { ReadModels::Transactions::TransactionProjection.find_by!(transaction_uid: transaction_uid).status }.from('penalty_points_alloted').to('closed')
+          expect(ReadModels::Warnings::TransactionWarningProjection.find_by!(warning_uid: warning_uid).penalty_points).to eq(penalty_points)
+          
+          expect {
+            command_bus.call(Transactions::Commands::SettleTransaction.new(@settle_params))
+          }.to change { ReadModels::Transactions::TransactionProjection.find_by!(transaction_uid: transaction_uid).status }.from('penalty_points_alloted').to('closed')
 
 
-      expect(event_store).not_to have_published(
-        an_event(Warnings::Events::TransactionExpiredWarningSent),
-        an_event(Transactions::Events::TransactionSettled),
-        an_event(Transactions::Events::TransactionClosed)
-      ).in_stream("Transaction$#{transaction_uid}")
+          expect(event_store).not_to have_published(
+            an_event(Transactions::Events::TransactionIssued),
+            an_event(Transactions::Events::TransactionAccepted),
+            an_event(Transactions::Events::DebtorTermsAdded),
+            an_event(Warnings::Events::TransactionExpiredWarningSent),
+            an_event(Transactions::Events::TransactionSettled),
+            an_event(Transactions::Events::TransactionClosed)
+          ).in_stream("Transaction$#{transaction_uid}")
 
-      expect(event_store).to have_published(
-        an_event(Warnings::Events::TransactionExpiredWarningSent)
-      ).in_stream("TransactionWarning$#{transaction_uid}")
+          expect(event_store).to have_published(
+            an_event(Warnings::Events::TransactionExpiredWarningSent)
+          ).in_stream("TransactionWarning$#{transaction_uid}")
 
-      expect(event_store).to have_published(
-        an_event(RankingPoints::Events::PenaltyPointsAdded),
-        an_event(RankingPoints::Events::CredibilityPointsAlloted),
-        an_event(RankingPoints::Events::TrustPointsAlloted)
-      ).in_stream("RankingPoint$#{transaction_uid}")
+          expect(event_store).to have_published(
+            an_event(RankingPoints::Events::PenaltyPointsAdded),
+            an_event(RankingPoints::Events::CredibilityPointsAlloted),
+            an_event(RankingPoints::Events::TrustPointsAlloted)
+          ).in_stream("RankingPoint$#{transaction_uid}")
+        end
+      end
     end
   end
 end

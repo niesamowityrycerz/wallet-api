@@ -1,6 +1,6 @@
 module Transactions
   module Handlers 
-    class OnAddSettlementTerms
+    class OnAddDebtorTerms
       include CommandHandler
       
       def call(command)
@@ -8,7 +8,7 @@ module Transactions
 
         repository = Repositories::Transaction.new
         repository.with_transaction(transaction_uid) do |transaction|
-          transaction.add_settlement_terms(command.data)
+          transaction.add_debtor_terms(command.data)
         end
       end
     end

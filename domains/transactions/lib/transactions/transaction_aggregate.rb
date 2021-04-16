@@ -8,6 +8,8 @@ module Transactions
     RepaymentTypeUnavaiable                = Class.new(StandardError)
     CurrencyUnavaiable                     = Class.new(StandardError)
     InvalidAmount                          = Class.new(StandardError)
+    TransactionNotAccepted                 = Class.new(StandardError)
+    DebtorTermsNotAdded                    = Class.new(StandardError)
 
     attr_accessor :repayment_conditions, :due_money
 
@@ -18,6 +20,7 @@ module Transactions
       @due_money = nil
       @date_of_placement = nil
       @max_date_of_settlement = nil
+      @date_of_settlement = nil
       @creditor_id = nil
       @debtor_id = nil 
       
@@ -61,17 +64,17 @@ module Transactions
       )
     end
 
-    def add_settlement_terms(params)
+    def add_debtor_terms(params)
+      raise TransactionNotAccepted.new 'Accept transaction first!' unless @state == :accepted
       raise AnticipatedDateOfSettlementUnavailable.new 'Date unavailable' unless params[:anticipated_date_of_settlement] <= @max_date_of_settlement
       raise RepaymentTypeUnavaiable.new 'Repayment method is unavailable' unless @repayment_conditions.settlement_method_allowed?(params[:debtor_settlement_method_id])
-      raise CurrencyUnavaiable.new 'Currency is unavailable' unless @repayment_conditions.currency_allowed?(params[:currency_id]) 
 
-      apply Events::SettlementTermsAdded.strict(
+      apply Events::DebtorTermsAdded.strict(
         {
           transaction_uid: @id,
           anticipated_date_of_settlement: params[:anticipated_date_of_settlement],
-          state: :debtor_terms_added,
-          debtor_id: @debtor_id
+          state: :debtors_terms_added,
+          debtor_settlement_method_id: params[:debtor_settlement_method_id]
         }
       )
     end
@@ -111,10 +114,11 @@ module Transactions
     end
 
     def settle(params)
+      raise DebtorTermsNotAdded.new 'Fill settlement terms first!' unless @state == :debtors_terms_added
       apply Events::TransactionSettled.strict(
         {
           transaction_uid: @id,
-          date_of_settlement: params[:date_of_settlement],
+          date_of_settlement: Date.today,
           state: :settled,
           debtor_id: @debtor_id, 
           creditor_id: @creditor_id,
@@ -140,7 +144,7 @@ module Transactions
       @state = event.data.fetch(:state)
     end
 
-    on Events::SettlementTermsAdded do |event|
+    on Events::DebtorTermsAdded do |event|
       @state = event.data.fetch(:state)
     end
 
@@ -162,6 +166,7 @@ module Transactions
 
     on Events::TransactionSettled do |event|
       @state = event.data.fetch(:state)
+      @date_of_settlement = event.data.fetch(:date_of_settlement)
     end
   end
 end

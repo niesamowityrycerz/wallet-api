@@ -1,22 +1,33 @@
 class TransactionQuery
-  def initialize(filters, transactions, current_user)
+  def initialize(filters, pagination, transactions, current_user)
     @filters = filters
+    @pagination = pagination
     @all_transactions = transactions
     @current_user = current_user
   end
 
   def call
-    if @filters != {} 
-      @filters = @filters[:transaction_filters]
-      type_of_transactions(@filters[:type]) if @filters[:type] && @current_user.admin 
-      amount_range(@filters[:amount]) if @filters[:amount]
-      transaction_date_range(@filters[:date_of_transaction]) if @filters[:date_of_transaction]
-      given_status(@filters[:status]) if @filters[:status] 
+    if !@filters[:transaction_filters].nil?
+      @tran_filters = @filters[:transaction_filters]
+      type_of_transactions(@tran_filters[:type]) if @tran_filters[:type] && @current_user.admin 
+      amount_range(@tran_filters[:amount]) if @tran_filters[:amount]
+      transaction_date_range(@tran_filters[:date_of_transaction]) if @tran_filters[:date_of_transaction]
+      given_status(@tran_filters[:status]) if @tran_filters[:status] 
     end
-    @all_transactions
+    paginate(@pagination)
   end
 
   private 
+
+  # workaround:
+  # default option set in helpers/pagination.rb doesn't work 
+  def paginate(info)
+    if info.nil? 
+      @all_transactions.page(1)
+    else 
+      @all_transactions.page(info[:page])
+    end
+  end
 
   def amount_range(amount_range)
     @all_transactions = @all_transactions.where("amount <= ? AND amount >= ?", amount_range[:max], amount_range[:min] )

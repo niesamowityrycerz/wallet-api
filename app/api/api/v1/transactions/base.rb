@@ -6,17 +6,17 @@ module Api
 
         params :transaction_filters do |_options|
           optional :filters, type: Hash do 
-            optional :date_of_transaction, type: Hash do 
-              optional :from, type: Date 
-              optional :to, type: Date
+            optional :date_of_transaction, type: Date 
+            optional :amount, type: Hash
+            given :amount do 
+              requires :max, type: Integer
+              requires :min, type: Integer
+              all_or_none_of :max, :min 
             end
-            optional :amount, type: Hash do 
-              optional :max, type: Integer
-              optional :min, type: Integer
-            end
-            optional :status, type: Array
-            optional :users, type: Array
-            optional :type, type: String 
+            optional :status, type: Array, values: %i[pending rejected closed]
+            optional :users, type: Array, values: (1..1000)
+            optional :type, type: String, values: %w[borrow lend]
+            
           end
         end
 
@@ -36,14 +36,14 @@ module Api
         resource :transaction do
           mount Api::V1::Transactions::Index
           mount Api::V1::Transactions::IssueTransaction
-          route_param :transaction_uid do 
-            mount Api::V1::Transactions::AcceptTransaction
-            mount Api::V1::Transactions::RejectTransaction
-            mount Api::V1::Transactions::CheckOutTransaction
-            mount Api::V1::Transactions::CorrectTransaction
-            mount Api::V1::Transactions::SettleTransaction
-            mount Api::V1::Transactions::CloseTransaction
-          end 
+          mount Api::V1::Transactions::AcceptTransaction
+          mount Api::V1::Transactions::RejectTransaction
+          mount Api::V1::Transactions::CheckOutTransaction
+          mount Api::V1::Transactions::CorrectTransaction
+          mount Api::V1::Transactions::SettleTransaction
+          mount Api::V1::Transactions::CloseTransaction
+          mount Api::V1::Transactions::FillSettlementTerms
+         
         end
 
   
