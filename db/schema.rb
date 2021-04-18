@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_13_133854) do
+ActiveRecord::Schema.define(version: 2021_04_17_094316) do
 
   create_table "creditors_ranking", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -71,6 +71,24 @@ ActiveRecord::Schema.define(version: 2021_04_13_133854) do
     t.index ["creditor_id"], name: "index_financial_transactions_on_creditor_id"
     t.index ["debtor_id"], name: "index_financial_transactions_on_debtor_id"
     t.index ["transaction_projection_id"], name: "index_financial_transactions_on_transaction_projection_id"
+  end
+
+  create_table "group_members", force: :cascade do |t|
+    t.boolean "founder"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "group_id"
+    t.integer "member_id"
+    t.index ["group_id"], name: "index_group_members_on_group_id"
+    t.index ["member_id"], name: "index_group_members_on_member_id"
+  end
+
+  create_table "groups", force: :cascade do |t|
+    t.string "name"
+    t.date "from"
+    t.date "to"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "oauth_access_tokens", force: :cascade do |t|

@@ -14,6 +14,9 @@ class User < ApplicationRecord
   has_one :debtors_ranking, class_name: 'WriteModels::DebtorsRanking', foreign_key: 'debtor_id', dependent: :destroy
   has_one :creditors_ranking, class_name: 'WriteModels::CreditorsRanking', foreign_key: 'creditor_id', dependent: :destroy 
 
+  has_many :group_members, foreign_key: 'member_id'
+  has_many :groups, through: :group_members
+
   def self.authenticate(email, password)
     user = User.find_for_authentication(email: email)
     user&.valid_password?(password) ? user : nil
