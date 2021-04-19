@@ -33,6 +33,9 @@ gem 'doorkeeper'
 # handle pagination 
 gem 'kaminari'
 
+# handle friendships
+gem 'has_friendship'
+
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
