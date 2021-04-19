@@ -6,7 +6,6 @@ FactoryBot.define do
     username              { Faker::Internet.username }
 
     trait :admin do 
-      username { 'ADMIN' }
       admin    { true }
     end
 

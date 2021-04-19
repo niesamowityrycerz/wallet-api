@@ -17,9 +17,26 @@ class User < ApplicationRecord
   has_many :group_members, foreign_key: 'member_id'
   has_many :groups, through: :group_members
 
+  before_create :alter_admin_username
+  after_create :add_to_ranking
+
+  
+
   def self.authenticate(email, password)
     user = User.find_for_authentication(email: email)
     user&.valid_password?(password) ? user : nil
   end
 
+  private 
+
+  def alter_admin_username 
+    if self.admin == true 
+      self.username = self.username + "_admin"
+    end
+  end
+
+  def add_to_ranking 
+    WriteModels::DebtorsRanking.create!(debtor_id: self.id)
+    WriteModels::CreditorsRanking.create!(creditor_id: self.id)
+  end
 end
