@@ -17,6 +17,9 @@ class User < ApplicationRecord
   has_many :group_members, foreign_key: 'member_id'
   has_many :groups, through: :group_members
 
+  # enable friendship(gem)
+  has_friendship
+
   before_create :alter_admin_username
   after_create :add_to_ranking
 
@@ -26,6 +29,10 @@ class User < ApplicationRecord
     user = User.find_for_authentication(email: email)
     user&.valid_password?(password) ? user : nil
   end
+
+  #def self.friendship_errors(requested_user)
+  #  binding.pry
+  #end
 
   private 
 

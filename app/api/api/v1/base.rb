@@ -9,6 +9,7 @@ module Api
       mount Api::V1::Transactions::Base
       mount Api::V1::Warnings::Base
       mount Api::V1::Rankings::Base
+      mount Api::V1::Friends::Base
     end
   end
 end
