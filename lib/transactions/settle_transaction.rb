@@ -1,8 +1,8 @@
 module Transactions
   class SettleTransaction 
-    def initialize(transaction_uids, not_on_time)
-      @not_on_time = transaction_uids.sample(not_on_time)
-      @on_time = transaction_uids - @not_on_time
+    def initialize(transaction_uids, on_time)
+      @on_time = transaction_uids.sample(on_time)
+      @not_on_time = transaction_uids - @on_time
     end
 
     def call

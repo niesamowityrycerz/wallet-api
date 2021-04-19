@@ -4,13 +4,15 @@ module Transactions
       @per_user_transaction = per_user_transaction
     end
 
-    def call(accept_q=1, reject_q=1, settle_q=1, checkout_q=1)
+    def call(accept_q=1, reject_q=1, settle_on_time_q=1, checkout_q=1)
       issue_transaction(@per_user_transaction)
       @transactions = ReadModels::Transactions::TransactionProjection.all 
 
-      Transactions::AcceptTransaction.new(to_accept(accept_q)).call
+      accept_n_settle_uids = to_accept_and_settle(accept_q)
+      Transactions::AcceptTransaction.new(accept_n_settle_uids).call
       Transactions::RejectTransaction.new(to_reject(reject_q)).call
-      Transactions::SettleTransaction.new(to_reject(settle_q), not_on_time = 5).call
+      Transactions::DebtorAddsTerms.new.call
+      Transactions::SettleTransaction.new(accept_n_settle_uids, settle_on_time_q).call
       Transactions::CheckOutTransaction.new(to_checkout_and_correct(checkout_q)).call
       Transactions::CorrectTransaction.new(to_checkout_and_correct(checkout_q)).call
 
@@ -25,23 +27,18 @@ module Transactions
       end
     end
 
-    def to_accept(q)
-      accept = @transactions.sample(q)
-      @transactions -= accept
-      get_transaction_uids(accept)
+    def to_accept_and_settle(q)
+      accept_n_settle = @transactions.sample(q)
+      @transactions -= accept_n_settle
+      get_transaction_uids(accept_n_settle)
     end 
 
     def to_reject(q)
       reject = @transactions.sample(q)
-      @transactions -= reject 
+      @transactions -= reject
       get_transaction_uids(reject)
+      
     end 
-
-    def to_settle(q)
-      settle = @transactions.sample(q)
-      @transactions -= settle 
-      get_transaction_uids(settle)
-    end
 
     def to_checkout_and_correct(q)
       checkout = @transactions.sample(q)
