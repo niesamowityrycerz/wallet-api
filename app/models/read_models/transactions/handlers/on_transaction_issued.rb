@@ -15,7 +15,9 @@ module ReadModels
               max_date_of_settlement: event.data.fetch(:max_date_of_settlement),
               date_of_transaction: ( event.data.fetch(:date_of_transaction) if event.data.key?(:date_of_transaction) ),
               status: event.data.fetch(:state),
-              settlement_method_id: event.data.fetch(:settlement_method_id)
+              settlement_method_id: ( event.data.fetch(:settlement_method_id) if event.data.key?(:settlement_method_id) ),
+              group_transaction: ( event.data.fetch(:group_transaction) if event.data.key?(:group_transaction) ),
+              group_uid: ( event.data.fetch(:group_uid) if event.data.key?(:group_uid) )
             }.compact
           )
 
@@ -33,21 +35,26 @@ module ReadModels
 
           # link published event to additional stream 
           # nie działa 
-          event_store.link(
-            event.event_id,
-            stream_name: stream_name(event.data[:creditor_id]),
-            expected_version: :auto
-          )
+          binding.pry
+          if event.data.key?(:group_transaction)
+            event_store.link(
+              event.event_id,
+              stream_name: stream_name(event.data.fetch(:group_uid)),
+              expected_version: :auto
+            )
+          end 
         end
 
         private 
 
         def event_store 
+          binding.pry
           Rails.configuration.event_store 
         end
 
-        def stream_name(creditor_id)
-          "TransactionPlacedByUser_#{creditor_id}"
+        def stream_name(group_uid)
+          binding
+          "Group$#{group_uid}"
         end
 
       end

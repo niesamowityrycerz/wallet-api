@@ -14,7 +14,7 @@ class User < ApplicationRecord
   has_one :debtors_ranking, class_name: 'WriteModels::DebtorsRanking', foreign_key: 'debtor_id', dependent: :destroy
   has_one :creditors_ranking, class_name: 'WriteModels::CreditorsRanking', foreign_key: 'creditor_id', dependent: :destroy 
 
-  has_many :group_members, foreign_key: 'member_id'
+  has_many :group_members, foreign_key: 'member_id', class_name: 'WriteModels::GroupMembers'
   has_many :groups, through: :group_members
 
   # enable friendship(gem)

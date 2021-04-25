@@ -14,7 +14,7 @@ module Api
         end
 
         resource :delete do 
-          post do 
+          delete do 
             deleted_friend = User.find_by!(id: params[:friend_id])
             if !friendship_errors
               current_user.remove_friend(deleted_friend) 

@@ -2,15 +2,15 @@ require 'rails_helper'
 
 RSpec.describe 'Transaction actions', type: :unit do 
 
-  let(:transaction_uid)        { SecureRandom.uuid }
-  let!(:creditor)              { create(:user) }
-  let!(:debtor)                { create(:user) }
-  let!(:zloty)                 { create(:currency) }
-  let!(:euro)                  { create(:currency, :euro) }
-  let!(:one_instalment)        { create(:settlement_method) }
-  let(:many_installments)      { create(:settlement_method, :multiple_instalments) }
+  let(:transaction_uid)       { SecureRandom.uuid }
+  let(:creditor)              { create(:user) }
+  let(:debtor)                { create(:user) }
+  let(:zloty)                 { create(:currency) }
+  let!(:euro)                 { create(:currency, :euro) }
+  let(:one_instalment)        { create(:settlement_method) }
+  let(:many_installments)     { create(:settlement_method, :multiple_instalments) }
   
-  let!(:repayment_condition)   { create(:repayment_condition, :maturity_in_10_days, creditor: creditor, currency: zloty, settlement_method: one_instalment) }
+  let!(:repayment_condition)  { create(:repayment_condition, :maturity_in_10_days, creditor: creditor, currency: zloty, settlement_method: one_instalment) }
 
   before(:each) do
     @issue_tran_params = {
@@ -32,9 +32,9 @@ RSpec.describe 'Transaction actions', type: :unit do
     command_bus.call(Transactions::Commands::IssueTransaction.new(@issue_tran_params))
   end
 
-  context 'when transaction issued' do 
-    context 'when transaction not accepted' do 
-      it 'raises error' do 
+  context 'when transaction is issued' do 
+    context 'when transaction is not accepted' do 
+      it 'raises error on attempt to add debtor terms' do 
         expect {
           command_bus.call(Transactions::Commands::AddDebtorTerms.new(@debtor_terms_params))
         }.to raise_error(Transactions::TransactionAggregate::TransactionNotAccepted)
@@ -42,7 +42,7 @@ RSpec.describe 'Transaction actions', type: :unit do
     end 
 
 
-    context 'when transaction accepted' do 
+    context 'when transaction is accepted' do 
 
       before(:each) do 
         command_bus.call(Transactions::Commands::AcceptTransaction.new({transaction_uid: transaction_uid}))
@@ -70,5 +70,6 @@ RSpec.describe 'Transaction actions', type: :unit do
         end
       end
     end
+
   end 
 end

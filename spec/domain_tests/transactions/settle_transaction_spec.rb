@@ -34,7 +34,7 @@ RSpec.describe 'Transaction actions', type: :unit do
   end
 
 
-  context 'when settlement on time' do 
+  context 'when settle on time' do 
     context 'when transaction accepted' do 
       context 'when debtor terms added' do
         it 'settles transaction' do 

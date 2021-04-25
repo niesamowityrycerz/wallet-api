@@ -18,15 +18,18 @@ module Transactions
       @state = nil
       @repayment_conditions = nil
       @due_money = nil
+      @due_money_per_memeber = nil
       @date_of_placement = nil
       @max_date_of_settlement = nil
       @date_of_settlement = nil
       @creditor_id = nil
-      @debtor_id = nil 
+      @debtor_id = nil
+      @group_uid = nil 
       
     end
 
     def place(params)
+
       apply Events::TransactionIssued.strict( 
         { 
           creditor_id: params[:creditor_id],
@@ -36,9 +39,11 @@ module Transactions
           description: params[:description],
           currency_id: params[:currency_id],
           date_of_transaction: ( params[:date_of_transaction] if params.key?(:date_of_transaction) ),
-          max_date_of_settlement: Date.today + params[:creditor_conditions][:maturity_in_days],
-          settlement_method_id: params[:creditor_conditions][:settlement_method_id],
-          state: :pending
+          settlement_method_id: ( params[:creditor_conditions][:settlement_method_id] if params.key?(:creditor_conditions) ),
+          max_date_of_settlement: ( params.key?(:creditor_conditions) ? Date.today + params[:creditor_conditions][:maturity_in_days] : params[:max_date_of_settlement] ),
+          state: :pending,
+          group_uid: ( params[:group_uid] if params.key?(:group_uid) ),
+          group_transaction: ( params[:group_transaction] if params.key?(:group_transaction) )
         }.compact
       )
     end
@@ -133,11 +138,11 @@ module Transactions
     on Events::TransactionIssued do |event|
       @state = event.data.fetch(:state)
       @due_money = event.data.fetch(:amount)
-      @max_date_of_settlement = event.data.fetch(:max_date_of_settlement)
       @date_of_placement = Date.today
       @creditor_id = event.data.fetch(:creditor_id)
       @debtor_id = event.data.fetch(:debtor_id)
-      @repayment_conditions = Repositories::RepaymentCondition.new.with_condition(event.data.fetch(:creditor_id))
+      @repayment_conditions = Repositories::RepaymentCondition.new.with_condition(event.data.fetch(:creditor_id)) unless event.data.key?(:group_transaction)
+      @max_date_of_settlement = event.data.fetch(:max_date_of_settlement) 
     end
 
     on Events::TransactionAccepted do |event| 

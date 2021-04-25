@@ -29,11 +29,21 @@ Rails.configuration.to_prepare do
 
     store.subscribe(ReadModels::Warnings::Handlers::OnTransactionExpiredWarningSent,                   to: [Warnings::Events::TransactionExpiredWarningSent])
 
+    
+    store.subscribe(ReadModels::Groups::Handlers::OnGroupRegistered,                   to: [Groups::Events::GroupRegistered])
+    store.subscribe(ReadModels::Groups::Handlers::OnInvitationAcceptedOrRejected,      to: [Groups::Events::InvitationAccepted,
+                                                                                            Groups::Events::InvitationRejected])
+    store.subscribe(ReadModels::Groups::Handlers::OnGroupTransactionIssued,             to: [Groups::Events::GroupTransactionIssued])                                                                                        
+
     # Processes(System)
     store.subscribe(Processes::TransactionPoint, to: [
       Transactions::Events::TransactionSettled,
       Warnings::Events::TransactionExpiredWarningSent,  
       RankingPoints::Events::TrustPointsAlloted,
+    ])
+
+    store.subscribe(Processes::GroupTransactions, to: [
+      Groups::Events::GroupTransactionIssued
     ])
 
     
@@ -54,6 +64,12 @@ Rails.configuration.to_prepare do
     bus.register(RankingPoints::Commands::AllotTrustPoints,                 RankingPoints::Handlers::OnAllotTrustPoints.new)
 
     bus.register(Warnings::Commands::SendTransactionExpiredWarning,       Warnings::Handlers::OnSendTransactionExpiredWarning.new)
+
+    bus.register(Groups::Commands::RegisterGroup,                         Groups::Handlers::OnRegisterGroup.new)
+    bus.register(Groups::Commands::AddGroupSettlementTerms,               Groups::Handlers::OnAddGroupSettlementTerms.new)
+    bus.register(Groups::Commands::AcceptInvitation,                      Groups::Handlers::OnAcceptInvitation.new)
+    bus.register(Groups::Commands::RejectInvitation,                      Groups::Handlers::OnRejectInvitation.new)
+    bus.register(Groups::Commands::IssueGroupTransaction,                 Groups::Handlers::OnIssueGroupTransaction.new)
   end
 
 end

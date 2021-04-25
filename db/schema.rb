@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_19_112451) do
+ActiveRecord::Schema.define(version: 2021_04_25_185529) do
 
   create_table "creditors_ranking", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -94,6 +94,36 @@ ActiveRecord::Schema.define(version: 2021_04_19_112451) do
     t.index ["member_id"], name: "index_group_members_on_member_id"
   end
 
+  create_table "group_projections", force: :cascade do |t|
+    t.string "group_uid"
+    t.string "name"
+    t.integer "leader_id"
+    t.date "from"
+    t.date "to"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "members"
+    t.date "transactions_expired_on"
+    t.string "currency"
+    t.integer "state"
+    t.string "invited_users"
+  end
+
+  create_table "group_transaction_projections", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "debtors_ids"
+    t.integer "creditor_id"
+    t.string "group_uid"
+    t.string "description"
+    t.float "total_amount"
+    t.integer "currency_id"
+    t.integer "state"
+    t.date "date_of_transaction"
+    t.string "group_transaction_uid"
+    t.float "due_money_per_debtor"
+  end
+
   create_table "groups", force: :cascade do |t|
     t.string "name"
     t.date "from"
@@ -171,6 +201,8 @@ ActiveRecord::Schema.define(version: 2021_04_19_112451) do
     t.string "reason_for_rejection"
     t.date "anticipated_date_of_settlement"
     t.date "max_date_of_settlement"
+    t.boolean "group_transaction"
+    t.string "group_uid"
   end
 
   create_table "transaction_warning_projections", force: :cascade do |t|

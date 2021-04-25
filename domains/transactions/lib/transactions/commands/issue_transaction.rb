@@ -8,7 +8,9 @@ module Transactions
         amount: Float,
         description: String,
         currency_id: Integer,
-        date_of_transaction: [ :optional, Date ]
+        date_of_transaction: [ :optional, Date ],
+        group_transaction: [ :optional, TrueClass],
+        group_uid: [ :optional, String]
       }
 
     end

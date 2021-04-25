@@ -23,32 +23,11 @@ RSpec.describe 'Transaction actions on happy path', type: :unit do
     }
   end
 
-  it 'issues transaction' do 
-    expect {
-      command_bus.call(Transactions::Commands::IssueTransaction.new(@issue_tran_params))
-    }.to change { ReadModels::Transactions::TransactionProjection.count }.by(1)
-      .and change { WriteModels::FinancialTransaction.count }.from(0).to(1)
-
-    expect(event_store).to have_published(
-      an_event(Transactions::Events::TransactionIssued)
-    ).in_stream("Transaction$#{transaction_uid}").strict 
-  end
-
-  it 'accepts transaction' do
-    command_bus.call(Transactions::Commands::IssueTransaction.new(@issue_tran_params))
-
-    command_bus.call(Transactions::Commands::AcceptTransaction.new({transaction_uid: transaction_uid}))
-
-    expect(event_store).to have_published(
-      an_event(Transactions::Events::TransactionAccepted)
-    ).in_stream("Transaction$#{transaction_uid}")
-  end
-
   it 'closes transaction' do
     command_bus.call(Transactions::Commands::IssueTransaction.new(@issue_tran_params))
     params = {
       transaction_uid: transaction_uid,
-      reason_for_closing: 'Błędna transakcja'
+      reason_for_closing: 'wrong debtor'
     }
 
     expect {
@@ -63,7 +42,7 @@ RSpec.describe 'Transaction actions on happy path', type: :unit do
   it 'rejects transaction' do
     params = {
       transaction_uid: transaction_uid,
-      reason_for_rejection: 'hwdp'
+      reason_for_rejection: 'I do not know u!'
     }
 
     expect {

@@ -11,8 +11,7 @@ module Api
 
         resource :all do 
           get do 
-            friendships = current_user.friends 
-            binding.pry 
+            friendships = current_user.friends  
             ::Users::FriendsSerializer.new(friendships).serializable_hash
           end
         end
