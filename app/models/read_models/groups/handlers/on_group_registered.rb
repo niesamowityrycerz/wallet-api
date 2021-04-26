@@ -10,6 +10,7 @@ module ReadModels
             name: event.data.fetch(:group_name),
             from: event.data.fetch(:from),
             to: event.data.fetch(:to),
+            members: Array.new([event.data.fetch(:leader_id)]), #workaround, due to sqlite3 constraints  
             invited_users: event.data.fetch(:invited_users),
             leader_id: event.data.fetch(:leader_id),
             state: event.data.fetch(:state)

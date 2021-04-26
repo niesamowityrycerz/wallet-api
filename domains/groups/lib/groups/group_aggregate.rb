@@ -4,21 +4,23 @@ module Groups
   class GroupAggregate
     include AggregateRoot
 
-    MemberNotAllowed = Class.new(StandardError)
+    MemberNotAllowed                      = Class.new(StandardError)
+    GroupDoesNotExist                     = Class.new(StandardError)
+    UnpermittedTransactionExpirationDate  = Class.new(StandardError)
+    OperationNotPermitted                 = Class.new(StandardError)
 
     def initialize(id)
       @id = id 
       @leader = nil 
       @members = []
       @invited_users = []
-      @from = nil
-      @to = nil 
+      @group_lasting_period = nil 
       @state = nil
       @transaction_expired_on = nil 
       @group_transactions = []
     end
 
-    attr_accessor :leader_id, :members, :from, :to, :transaction_expired_on, :group_transactions
+    attr_reader :leader_id, :members, :transaction_expired_on, :group_transactions, :group_lasting_period, :invited_users
 
     def register(data)
       # check if invited users are friends with leader
@@ -41,6 +43,10 @@ module Groups
     end
 
     def add_group_terms(data)
+      raise GroupDoesNotExist.new "Group with uid #{data.fetch(:group_uid)} does not exist!" unless ReadModels::Groups::GroupProjection.find_by(group_uid: data.fetch(:group_uid))
+
+      raise UnpermittedTransactionExpirationDate.new unless group_lasting_period.transaction_expired_on_valid?(data.fetch(:transaction_expired_on))
+
       apply Events::GroupSettlementTermsAdded.strict({
         currency_id: data.fetch(:currency_id),
         group_uid: @id,
@@ -50,6 +56,8 @@ module Groups
     end
 
     def accept_invitation(data)
+      raise OperationNotPermitted.new "You were not invited" unless  invited_users.include? data.fetch(:member_id)
+
       apply Events::InvitationAccepted.strict({
         group_uid: data.fetch(:group_uid),
         member_id: data.fetch(:member_id),
@@ -58,6 +66,8 @@ module Groups
     end
 
     def reject_invitation(data)
+      raise OperationNotPermitted.new "You were not invited" unless  invited_users.include? data.fetch(:user_id)
+
       apply Events::InvitationRejected.strict({
         group_uid: @id,
         user_id: data.fetch(:user_id),
@@ -75,7 +85,7 @@ module Groups
         total_amount: data.fetch(:total_amount),
         per_debtor: per_debtor_money,
         currency_id: @currency_id,
-        date_of_transaction: data.fetch(:date_of_transaction) if data.key?(:date_of_transaction),
+        date_of_transaction: ( data.fetch(:date_of_transaction) if data.key?(:date_of_transaction) ),
         group_transaction: true,
         group_uid: @id,
         group_transaction_uid: data.fetch(:group_transaction_uid),
@@ -89,8 +99,7 @@ module Groups
     end
 
     on Events::GroupRegistered do |event|
-      @to = event.data.fetch(:to)
-      @from = event.data.fetch(:from)
+      @group_lasting_period = Entities::GroupLastingPeriod.new(event.data.fetch(:from), event.data.fetch(:to))
       @state = event.data.fetch(:state)
       @invited_users = event.data.fetch(:invited_users)
     end
