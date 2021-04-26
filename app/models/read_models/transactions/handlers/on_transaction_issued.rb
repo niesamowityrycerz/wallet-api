@@ -4,6 +4,7 @@ module ReadModels
       class OnTransactionIssued 
         def call(event)
           transaction_uid = event.data.fetch(:transaction_uid)
+
           ReadModels::Transactions::TransactionProjection.create!(
             {
               creditor_id: event.data.fetch(:creditor_id),
@@ -33,30 +34,7 @@ module ReadModels
           )
 
 
-          # link published event to additional stream 
-          # nie działa 
-          binding.pry
-          if event.data.key?(:group_transaction)
-            event_store.link(
-              event.event_id,
-              stream_name: stream_name(event.data.fetch(:group_uid)),
-              expected_version: :auto
-            )
-          end 
         end
-
-        private 
-
-        def event_store 
-          binding.pry
-          Rails.configuration.event_store 
-        end
-
-        def stream_name(group_uid)
-          binding
-          "Group$#{group_uid}"
-        end
-
       end
     end
   end

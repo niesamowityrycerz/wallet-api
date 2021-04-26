@@ -18,6 +18,7 @@ module Groups
       @state = nil
       @transaction_expired_on = nil 
       @group_transactions = []
+      @currency_id = nil 
     end
 
     attr_reader :leader_id, :members, :transaction_expired_on, :group_transactions, :group_lasting_period, :invited_users
@@ -76,18 +77,18 @@ module Groups
     end
 
     def issue_group_transaction(data)
-      per_debtor_money = Calculators::CalculateDueMoneyPerMemeber.call(data.fetch(:debtors_ids), data.fetch(:total_amount))
+      due_money_per_reciever = Calculators::CalculateDueMoneyPerMember.call(data.fetch(:recievers_ids), data.fetch(:total_amount))
 
       apply Events::GroupTransactionIssued.strict({
-        creditor_id: data.fetch(:creditor_id),
-        debtors_ids: data.fetch(:debtors_ids),
+        issuer_id: data.fetch(:issuer_id),
+        recievers_ids: data.fetch(:recievers_ids),
         description: data.fetch(:description),
         total_amount: data.fetch(:total_amount),
-        per_debtor: per_debtor_money,
+        due_money_per_reciever: due_money_per_reciever,
         currency_id: @currency_id,
         date_of_transaction: ( data.fetch(:date_of_transaction) if data.key?(:date_of_transaction) ),
         group_transaction: true,
-        group_uid: @id,
+        group_uid: data.fetch(:group_uid),
         group_transaction_uid: data.fetch(:group_transaction_uid),
         state: :init
       })
@@ -107,6 +108,7 @@ module Groups
     on Events::GroupSettlementTermsAdded do |event|
       @state = event.data.fetch(:state)
       @transaction_expired_on = event.data.fetch(:transaction_expired_on)
+      @currency_id = event.data.fetch(:currency_id)
     end
 
     on Events::InvitationAccepted do |event|

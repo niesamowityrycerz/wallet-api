@@ -2,10 +2,11 @@ module Groups
   module Events 
     class GroupTransactionIssued < Event 
       SCHEMA = {
-        creditor_id: Integer,
-        debtors_ids: [[Integer]],
+        issuer_id: Integer,
+        recievers_ids: [[Integer]],
         description: String,
-        amount: Float,
+        total_amount: Float,
+        due_money_per_reciever: Float,
         currency_id: Integer,
         date_of_transaction: [ :optional, Date ],
         group_transaction: TrueClass,

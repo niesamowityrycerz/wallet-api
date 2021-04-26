@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_25_185529) do
+ActiveRecord::Schema.define(version: 2021_04_26_133644) do
 
   create_table "creditors_ranking", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -112,16 +112,16 @@ ActiveRecord::Schema.define(version: 2021_04_25_185529) do
   create_table "group_transaction_projections", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "debtors_ids"
-    t.integer "creditor_id"
+    t.string "recievers_ids"
+    t.integer "issuer_id"
     t.string "group_uid"
     t.string "description"
     t.float "total_amount"
-    t.integer "currency_id"
+    t.integer "currency"
     t.integer "state"
     t.date "date_of_transaction"
     t.string "group_transaction_uid"
-    t.float "due_money_per_debtor"
+    t.float "due_money_per_reciever"
   end
 
   create_table "groups", force: :cascade do |t|
@@ -180,7 +180,6 @@ ActiveRecord::Schema.define(version: 2021_04_25_185529) do
 
   create_table "transaction_projections", force: :cascade do |t|
     t.string "transaction_uid"
-    t.integer "amount"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "currency_id"
@@ -203,6 +202,7 @@ ActiveRecord::Schema.define(version: 2021_04_25_185529) do
     t.date "max_date_of_settlement"
     t.boolean "group_transaction"
     t.string "group_uid"
+    t.float "amount"
   end
 
   create_table "transaction_warning_projections", force: :cascade do |t|
