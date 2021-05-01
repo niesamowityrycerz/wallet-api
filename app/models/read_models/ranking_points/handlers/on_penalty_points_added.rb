@@ -3,17 +3,17 @@ module ReadModels
     module Handlers
       class OnPenaltyPointsAdded
         def call(event)
-          transaction_projection = ReadModels::Transactions::TransactionProjection.find_by!(transaction_uid: event.data.fetch(:transaction_uid))
-          transaction_projection.penalty_points += event.data.fetch(:penalty_points)
-          transaction_projection.update!(
+          debt_projection = ReadModels::Debts::DebtProjection.find_by!(debt_uid: event.data.fetch(:debt_uid))
+          debt_projection.penalty_points += event.data.fetch(:penalty_points)
+          debt_projection.update!(
             {
               status: event.data.fetch(:state)
             }
           )
 
 
-          transaction_warning_projection = ReadModels::Warnings::TransactionWarningProjection.find_by!(warning_uid: event.data.fetch(:warning_uid))
-          transaction_warning_projection.update(
+          debt_warning_projection = ReadModels::Warnings::DebtWarningProjection.find_by!(warning_uid: event.data.fetch(:warning_uid))
+          debt_warning_projection.update(
             {
               penalty_points: event.data.fetch(:penalty_points)
             }

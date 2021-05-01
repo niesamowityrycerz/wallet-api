@@ -1,4 +1,4 @@
 class WarningType < ApplicationRecord
   validates :name, presence: true
-  has_many :transaction_warnings
+  has_many :debt_warnings
 end

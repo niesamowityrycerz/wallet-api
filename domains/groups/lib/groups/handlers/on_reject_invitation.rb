@@ -6,7 +6,6 @@ module Groups
 
         repository = Repositories::Group.new
         repository.with_group(group_uid) do |user|
-          binding.pry
           user.reject_invitation(command.data)
         end
       end

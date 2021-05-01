@@ -23,7 +23,7 @@ module WalletApi
     config.load_defaults 5.2
 
     config.eager_load_paths << Rails.root.join('lib')
-    config.eager_load_paths << Rails.root.join('domains',   'transactions', 'lib')
+    config.eager_load_paths << Rails.root.join('domains',   'debts', 'lib')
     config.eager_load_paths << Rails.root.join('domains',   'ranking_points', 'lib')
     config.eager_load_paths << Rails.root.join('domains',   'warnings', 'lib')
     config.eager_load_paths << Rails.root.join('domains',   'groups', 'lib')

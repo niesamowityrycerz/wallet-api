@@ -3,8 +3,8 @@ module WriteModels
     belongs_to :user
     belongs_to :warning_type
 
-    has_many :transaction_warnings 
-    has_many :financial_transactions, class_name: 'WriteModels::FinancialTransaction', through: :transaction_warnings
+    has_many :debt_warnings 
+    has_many :debt_transactions, class_name: 'WriteModels::Debt', through: :debt_warnings
   end
 end
 

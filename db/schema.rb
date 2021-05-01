@@ -10,14 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_26_133644) do
+ActiveRecord::Schema.define(version: 2021_05_01_165302) do
 
   create_table "creditors_ranking", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "creditor_id"
     t.float "trust_points", default: 0.0
-    t.integer "credit_transactions", default: 0
+    t.integer "credits_quantity", default: 0
     t.index ["creditor_id"], name: "index_creditors_ranking_on_creditor_id"
   end
 
@@ -28,13 +28,64 @@ ActiveRecord::Schema.define(version: 2021_04_26_133644) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "debt_projections", force: :cascade do |t|
+    t.string "debt_uid"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "currency_id"
+    t.integer "creditor_id"
+    t.integer "debtor_id"
+    t.string "description"
+    t.integer "settlement_method_id"
+    t.integer "status", default: 0
+    t.date "date_of_transaction"
+    t.boolean "creditor_informed", default: false
+    t.string "reason_for_closing"
+    t.string "doubts"
+    t.datetime "date_of_settlement"
+    t.float "credibility_points"
+    t.float "trust_points"
+    t.float "penalty_points", default: 0.0
+    t.float "adjusted_credibility_points"
+    t.string "reason_for_rejection"
+    t.date "anticipated_date_of_settlement"
+    t.date "max_date_of_settlement"
+    t.boolean "group_debt"
+    t.string "group_uid"
+    t.float "amount"
+  end
+
+  create_table "debt_warning_projections", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "warning_type_name"
+    t.string "debt_uid"
+    t.string "warning_uid"
+    t.float "penalty_points"
+    t.integer "user_id"
+    t.index ["user_id"], name: "index_debt_warning_projections_on_user_id"
+  end
+
   create_table "debtors_ranking", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "debtor_id"
     t.float "adjusted_credibility_points", default: 0.0
-    t.integer "debt_transactions", default: 0
+    t.integer "debts_quantity", default: 0
     t.index ["debtor_id"], name: "index_debtors_ranking_on_debtor_id"
+  end
+
+  create_table "debts", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "debtor_id"
+    t.integer "creditor_id"
+    t.float "amount"
+    t.integer "debt_uid"
+    t.datetime "date_of_transaction"
+    t.index ["creditor_id"], name: "index_debts_on_creditor_id"
+    t.index ["debt_uid"], name: "index_debts_on_debt_uid"
+    t.index ["debtor_id"], name: "index_debts_on_debtor_id"
   end
 
   create_table "event_store_events", force: :cascade do |t|
@@ -60,19 +111,6 @@ ActiveRecord::Schema.define(version: 2021_04_26_133644) do
     t.index ["stream", "position"], name: "index_event_store_events_in_streams_on_stream_and_position", unique: true
   end
 
-  create_table "financial_transactions", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "debtor_id"
-    t.integer "creditor_id"
-    t.float "amount"
-    t.integer "transaction_projection_id"
-    t.datetime "date_of_transaction"
-    t.index ["creditor_id"], name: "index_financial_transactions_on_creditor_id"
-    t.index ["debtor_id"], name: "index_financial_transactions_on_debtor_id"
-    t.index ["transaction_projection_id"], name: "index_financial_transactions_on_transaction_projection_id"
-  end
-
   create_table "friendships", force: :cascade do |t|
     t.string "friendable_type"
     t.integer "friendable_id"
@@ -82,6 +120,21 @@ ActiveRecord::Schema.define(version: 2021_04_26_133644) do
     t.integer "blocker_id"
     t.integer "status"
     t.index ["friendable_id", "friend_id"], name: "index_friendships_on_friendable_id_and_friend_id", unique: true
+  end
+
+  create_table "group_debt_projections", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "recievers_ids"
+    t.integer "issuer_id"
+    t.string "group_uid"
+    t.string "description"
+    t.float "total_amount"
+    t.integer "currency"
+    t.integer "state"
+    t.date "date_of_transaction"
+    t.string "group_debt_uid"
+    t.float "due_money_per_reciever"
   end
 
   create_table "group_members", force: :cascade do |t|
@@ -103,25 +156,10 @@ ActiveRecord::Schema.define(version: 2021_04_26_133644) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "members"
-    t.date "transactions_expired_on"
+    t.date "debt_repayment_valid_till"
     t.string "currency"
     t.integer "state"
     t.string "invited_users"
-  end
-
-  create_table "group_transaction_projections", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "recievers_ids"
-    t.integer "issuer_id"
-    t.string "group_uid"
-    t.string "description"
-    t.float "total_amount"
-    t.integer "currency"
-    t.integer "state"
-    t.date "date_of_transaction"
-    t.string "group_transaction_uid"
-    t.float "due_money_per_reciever"
   end
 
   create_table "groups", force: :cascade do |t|
@@ -178,44 +216,6 @@ ActiveRecord::Schema.define(version: 2021_04_26_133644) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "transaction_projections", force: :cascade do |t|
-    t.string "transaction_uid"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "currency_id"
-    t.integer "creditor_id"
-    t.integer "debtor_id"
-    t.string "description"
-    t.integer "settlement_method_id"
-    t.integer "status", default: 0
-    t.date "date_of_transaction"
-    t.boolean "creditor_informed", default: false
-    t.string "reason_for_closing"
-    t.string "doubts"
-    t.datetime "date_of_settlement"
-    t.float "credibility_points"
-    t.float "trust_points"
-    t.float "penalty_points", default: 0.0
-    t.float "adjusted_credibility_points"
-    t.string "reason_for_rejection"
-    t.date "anticipated_date_of_settlement"
-    t.date "max_date_of_settlement"
-    t.boolean "group_transaction"
-    t.string "group_uid"
-    t.float "amount"
-  end
-
-  create_table "transaction_warning_projections", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "warning_type_name"
-    t.string "transaction_uid"
-    t.string "warning_uid"
-    t.float "penalty_points"
-    t.integer "user_id"
-    t.index ["user_id"], name: "index_transaction_warning_projections_on_user_id"
-  end
-
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -241,7 +241,7 @@ ActiveRecord::Schema.define(version: 2021_04_26_133644) do
     t.datetime "updated_at", null: false
     t.integer "user_id"
     t.integer "warning_type_id"
-    t.string "transaction_uid"
+    t.string "debt_uid"
     t.float "penalty_points"
     t.string "warning_uid"
     t.index ["user_id"], name: "index_warnings_on_user_id"

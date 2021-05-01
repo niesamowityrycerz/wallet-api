@@ -16,12 +16,12 @@ module Groups
       @invited_users = []
       @group_lasting_period = nil 
       @state = nil
-      @transaction_expired_on = nil 
-      @group_transactions = []
+      @debt_repayment_valid_till = nil 
+      @group_debts = []
       @currency_id = nil 
     end
 
-    attr_reader :leader_id, :members, :transaction_expired_on, :group_transactions, :group_lasting_period, :invited_users
+    attr_reader :leader_id, :members, :debt_repayment_valid_till, :group_debts, :group_lasting_period, :invited_users
 
     def register(data)
       # check if invited users are friends with leader
@@ -46,12 +46,12 @@ module Groups
     def add_group_terms(data)
       raise GroupDoesNotExist.new "Group with uid #{data.fetch(:group_uid)} does not exist!" unless ReadModels::Groups::GroupProjection.find_by(group_uid: data.fetch(:group_uid))
 
-      raise UnpermittedTransactionExpirationDate.new unless group_lasting_period.transaction_expired_on_valid?(data.fetch(:transaction_expired_on))
+      raise UnpermittedTransactionExpirationDate.new unless group_lasting_period.repayment_date_valid?(data.fetch(:debt_repayment_valid_till))
 
       apply Events::GroupSettlementTermsAdded.strict({
         currency_id: data.fetch(:currency_id),
         group_uid: @id,
-        transaction_expired_on: data.fetch(:transaction_expired_on),
+        debt_repayment_valid_till: data.fetch(:debt_repayment_valid_till),
         state: :terms_added
       })
     end
@@ -76,10 +76,10 @@ module Groups
       })
     end
 
-    def issue_group_transaction(data)
+    def issue_group_debt(data)
       due_money_per_reciever = Calculators::CalculateDueMoneyPerMember.call(data.fetch(:recievers_ids), data.fetch(:total_amount))
 
-      apply Events::GroupTransactionIssued.strict({
+      apply Events::GroupDebtIssued.strict({
         issuer_id: data.fetch(:issuer_id),
         recievers_ids: data.fetch(:recievers_ids),
         description: data.fetch(:description),
@@ -89,7 +89,7 @@ module Groups
         date_of_transaction: ( data.fetch(:date_of_transaction) if data.key?(:date_of_transaction) ),
         group_transaction: true,
         group_uid: data.fetch(:group_uid),
-        group_transaction_uid: data.fetch(:group_transaction_uid),
+        group_debt: data.fetch(:group_debt_uid),
         state: :init
       })
     end
@@ -107,7 +107,7 @@ module Groups
 
     on Events::GroupSettlementTermsAdded do |event|
       @state = event.data.fetch(:state)
-      @transaction_expired_on = event.data.fetch(:transaction_expired_on)
+      @debt_repayment_valid_till = event.data.fetch(:debt_repayment_valid_till)
       @currency_id = event.data.fetch(:currency_id)
     end
 
@@ -120,8 +120,8 @@ module Groups
       @state = event.data.fetch(:state)
     end
 
-    on Events::GroupTransactionIssued do |event|
-      @group_transactions << Entities::GroupTransaction.new(event.data.fetch(:group_transaction_uid))
+    on Events::GroupDebtIssued do |event|
+      @group_debts << Entities::GroupTransaction.new(event.data.fetch(:group_debt_uid))
     end
   end
 end

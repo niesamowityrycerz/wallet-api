@@ -4,7 +4,7 @@ module Groups
       SCHEMA = {
         group_uid: String,
         currency_id: Integer,
-        transaction_expired_on: Date
+        debt_repayment_valid_till: Date
       }
     end 
   end

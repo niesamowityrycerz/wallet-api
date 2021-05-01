@@ -10,9 +10,8 @@ module Warnings
       end 
 
       def call
-        binding.pry
-        if @class_name == 'OnSendTransactionExpiredWarning'
-          warning_type_id = WarningType.find_by!(name: 'transaction expired').id
+        if @class_name == 'OnSendMissedDebtRepaymentWarning'
+          warning_type_id = WarningType.find_by!(name: 'debt expired').id
         end
       end 
 

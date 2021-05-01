@@ -6,10 +6,10 @@ class User < ApplicationRecord
 
   has_many :repayment_conditions, class_name: 'WriteModels::RepaymentCondition', foreign_key: "creditor_id", dependent: :destroy
 
-  has_many :transaction_warnings
-  has_many :transaction_warning_projections, class_name: 'ReadModels::Warnings::TransactionWarningProjection'
-  has_many :financial_ransactions, class_name: 'WriteModels::FinancialTransaction', foreign_key: "creditor_id"
-  has_many :financial_transactions,  class_name: 'WriteModels::FinancialTransaction', foreign_key: "debtor_id"
+  has_many :debt_warnings
+  has_many :debt_warning_projections, class_name: 'ReadModels::Warnings::DebtWarningProjection'
+  has_many :debts, class_name: 'WriteModels::Debt', foreign_key: "creditor_id"
+  has_many :debts,  class_name: 'WriteModels::Debt', foreign_key: "debtor_id"
 
   has_one :debtors_ranking, class_name: 'WriteModels::DebtorsRanking', foreign_key: 'debtor_id', dependent: :destroy
   has_one :creditors_ranking, class_name: 'WriteModels::CreditorsRanking', foreign_key: 'creditor_id', dependent: :destroy 

@@ -26,7 +26,7 @@ RSpec.describe 'Group functionality', type: :unit do
 
     @group_settlement_param = {
       currency_id: zloty.id,
-      transaction_expired_on: Date.today + 30
+      debt_repayment_valid_till: Date.today + 30
     }
   end
 
@@ -37,7 +37,7 @@ RSpec.describe 'Group functionality', type: :unit do
       expect {
         command_bus.call(Groups::Commands::AddGroupSettlementTerms.send(@group_settlement_param))
       }.to change { ReadModels::Groups::GroupProjection.find_by!(group_uid: group_uid).currency }.from(nil).to(zloty.code)
-       .and change  {ReadModels::Groups::GroupProjection.find_by!(group_uid: group_uid).transactions_expired_on }.from(nil).to(@group_settlement_param[:transaction_expired_on])
+       .and change  {ReadModels::Groups::GroupProjection.find_by!(group_uid: group_uid).debt_repayment_valid_till }.from(nil).to(@group_settlement_param[:debt_repayment_valid_till])
     end
   end
 
@@ -53,7 +53,7 @@ RSpec.describe 'Group functionality', type: :unit do
   context 'when transaction_expire_on in contradiction with group lasting period' do 
     it 'raises error on adding settlement terms' do
       @group_settlement_param[:group_uid] = group_uid
-      @group_settlement_param[:transaction_expired_on] = @register_group_params[:from]
+      @group_settlement_param[:debt_repayment_valid_till] = @register_group_params[:from]
       expect {
         command_bus.call(Groups::Commands::AddGroupSettlementTerms.send(@group_settlement_param))
       }.to raise_error(Groups::GroupAggregate::UnpermittedTransactionExpirationDate)

@@ -11,8 +11,8 @@ FactoryBot.define do
 
     trait :with_ranking_position do 
       after(:create) do |user|
-         create(:debtors_ranking, debtor: user, debt_transactions: 1, adjusted_credibility_points: 10)
-         create(:creditors_ranking, creditor: user, credit_transactions: 1, trust_points: 10)
+         create(:debtors_ranking, debtor: user, debts_quantity: 1, adjusted_credibility_points: 10)
+         create(:creditors_ranking, creditor: user, credits_quantity: 1, trust_points: 10)
       end 
     end
     

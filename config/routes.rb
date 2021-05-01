@@ -1,6 +1,5 @@
 require 'sidekiq/web'
 
-
 Rails.application.routes.draw do
   use_doorkeeper do 
     skip_controllers :authorizations, :applications, :authorized_applications
@@ -9,7 +8,8 @@ Rails.application.routes.draw do
       path_prefix: 'api/v1',
       defaults: { format: :json }, # json format, not a form 
       controllers: { registrations: 'registrations' },
-      skip: %i[sessions password] #skips creation of these routes
+      skip: %i[sessions password] 
+       #skips creation of these routes
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
   mount Api::Root => '/'
@@ -17,7 +17,5 @@ Rails.application.routes.draw do
 
   mount Sidekiq::Web, at: '/sidekiq'
 
-  Rails.application.routes.draw do
-    mount RailsEventStore::Browser => '/res' if Rails.env.development?
-  end
+  mount RailsEventStore::Browser => '/res' if Rails.env.development?
 end

@@ -5,9 +5,9 @@ module Warnings
         @repository = AggregateRoot::Repository.new(event_store)
       end
 
-      def with_warning(transaction_uid, &block)
-        stream_name = "TransactionWarning$#{transaction_uid}"
-        repository.with_aggregate(WarningAggregate.new(transaction_uid), stream_name, &block)
+      def with_warning(debt_uid, &block)
+        stream_name = "DebtWarning$#{debt_uid}"
+        repository.with_aggregate(WarningAggregate.new(debt_uid), stream_name, &block)
       end
 
       private

@@ -8,7 +8,7 @@ module Groups
 
       attr_reader :to 
 
-      def transaction_expired_on_valid?(expiration_date)
+      def repayment_date_valid?(expiration_date)
         expiration_date >= to ? true : false 
       end
     end

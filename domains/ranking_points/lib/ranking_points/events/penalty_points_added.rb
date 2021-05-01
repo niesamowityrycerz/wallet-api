@@ -2,7 +2,7 @@ module RankingPoints
   module Events
     class PenaltyPointsAdded < Event 
       SCHEMA = {
-        transaction_uid: String,
+        debt_uid: String,
         penalty_points: Integer,
         debtor_id: Integer,
         warning_type_id: Integer,

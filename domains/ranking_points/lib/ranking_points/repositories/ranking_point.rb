@@ -5,9 +5,9 @@ module RankingPoints
         @repository = AggregateRoot::Repository.new(event_store)
       end
 
-      def with_ranking_point(transaction_uid, &block)
-        stream_name = "RankingPoint$#{transaction_uid}"
-        repository.with_aggregate(RankingPointAggregate.new(transaction_uid), stream_name, &block)
+      def with_ranking_point(debt_uid, &block)
+        stream_name = "RankingPoint$#{debt_uid}"
+        repository.with_aggregate(RankingPointAggregate.new(debt_uid), stream_name, &block)
       end
 
       private

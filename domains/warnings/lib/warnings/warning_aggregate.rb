@@ -9,10 +9,10 @@ module Warnings
       @state = nil
     end
 
-    def send_expiration_warning(params)
-      apply Events::TransactionExpiredWarningSent.strict(
+    def missed_repayment(params)
+      apply Events::MissedDebtRepaymentWarningSent.strict(
         {
-          transaction_uid: @id,
+          debt_uid: @id,
           state: :expired,
           user_id: params[:debtor_id],
           warning_type_id: params[:warning_type_id],
@@ -21,7 +21,7 @@ module Warnings
       )
     end
 
-    on Events::TransactionExpiredWarningSent do |event|
+    on Events::MissedDebtRepaymentWarningSent do |event|
       @state = event.data.fetch(:state)
     end
 

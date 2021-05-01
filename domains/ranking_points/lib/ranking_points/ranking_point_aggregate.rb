@@ -19,7 +19,7 @@ module RankingPoints
       calculation = Calculators::CalculateTrustPoints.new(params[:creditor_id], due_money).call
       apply Events::TrustPointsAlloted.strict(
         {
-          transaction_uid: @id,
+          debt_uid: @id,
           trust_points: calculation,
           creditor_id: params[:creditor_id],
           state: :points_alloted
@@ -37,7 +37,7 @@ module RankingPoints
         {
           credibility_points: credibility_points,
           adjusted_credibility_points: adjusted_points,
-          transaction_uid: @id,
+          debt_uid: @id,
           debtor_id: params[:debtor_id],
           due_money: params[:due_money]
         }
@@ -50,7 +50,7 @@ module RankingPoints
       apply Events::PenaltyPointsAdded.strict(
         {
           penalty_points: calculation,
-          transaction_uid: @id,
+          debt_uid: @id,
           debtor_id: params[:debtor_id],
           warning_type_id: params[:warning_type_id],
           warning_uid: params[:warning_uid],
