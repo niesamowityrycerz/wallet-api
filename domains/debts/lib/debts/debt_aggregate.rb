@@ -25,7 +25,6 @@ module Debts
       @creditor_id = nil
       @debtor_id = nil
       @group_uid = nil 
-      
     end
 
     def place(params)
@@ -42,8 +41,7 @@ module Debts
           settlement_method_id: ( params[:creditor_conditions][:settlement_method_id] if params.key?(:creditor_conditions) ),
           max_date_of_settlement: ( params.key?(:creditor_conditions) ? Date.today + params[:creditor_conditions][:maturity_in_days] : params[:max_date_of_settlement] ),
           state: :pending,
-          group_uid: ( params[:group_uid] if params.key?(:group_uid) ),
-          group_debt: ( params[:group_debt] if params.key?(:group_debt) )
+          group_uid: ( params[:group_uid] if params.key?(:group_uid) )
         }.compact
       )
     end
@@ -141,7 +139,7 @@ module Debts
       @date_of_placement = Date.today
       @creditor_id = event.data.fetch(:creditor_id)
       @debtor_id = event.data.fetch(:debtor_id)
-      @repayment_conditions = Repositories::RepaymentCondition.new.with_condition(event.data.fetch(:creditor_id)) unless event.data.key?(:group_debt)
+      @repayment_conditions = Repositories::RepaymentCondition.new.with_condition(event.data.fetch(:creditor_id)) unless event.data.key?(:group_uid)
       @max_date_of_settlement = event.data.fetch(:max_date_of_settlement) 
     end
 

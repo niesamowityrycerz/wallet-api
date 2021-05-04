@@ -10,6 +10,7 @@ module Api
       mount Api::V1::Warnings::Base
       mount Api::V1::Rankings::Base
       mount Api::V1::Friends::Base
+      mount Api::V1::Groups::Base
     end
   end
 end

@@ -52,6 +52,8 @@ module Users
     attributes :lend_by_date do |user|
       ReadModels::Transactions::TransactionProjection.where("debtor_id = ? OR creditor_id = ?", user.id, user.id).group("date_of_transaction").count
     end
+
+    
   end 
 end 
 

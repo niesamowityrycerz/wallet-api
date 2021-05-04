@@ -17,13 +17,7 @@ module Api
           end
 
           filtered_data = ::DebtQuery.new(params, params[:pagination], debts, current_user).call
-          x = ::Debts::AllDebtsSerializer.new(filtered_data).serializable_hash
-          # Is there a better solution?
-          x[:data] << { 
-            total_accepted: debts.accepted.count,
-            total_closed: debts.closed.count,
-            total_rejected: debts.rejected
-          }
+          ::Debts::AllDebtsSerializer.new(filtered_data).serializable_hash
         end
 
       end

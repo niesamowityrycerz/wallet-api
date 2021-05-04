@@ -10,6 +10,11 @@ module ReadModels
               reason_for_closing: ( event.data.fetch(:reason_for_closing) if event.data.key?(:reason_for_closing) )
             }.compact
           )
+
+          debt = WriteModels::Debt.find_by!(debt_uid: event.data.fetch(:debt_uid))
+          debt.update!({
+            state: event.data.fetch(:state)
+          })
         end
       end
     end

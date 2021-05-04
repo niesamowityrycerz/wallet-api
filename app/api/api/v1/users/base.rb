@@ -3,9 +3,15 @@ module Api
     module Users
       class Base < Api::V1::Base
 
-        resource :users do 
+        resource :me do 
           mount Api::V1::Users::Index
+        end
+
+        resource :users do 
+          mount Api::V1::Users::DebtorsRanking
+          mount Api::V1::Users::CreditorsRanking
           mount Api::V1::Users::All
+          mount Api::V1::Users::Balance
         end
 
       end 

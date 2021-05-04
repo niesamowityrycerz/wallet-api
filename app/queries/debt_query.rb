@@ -7,12 +7,13 @@ class DebtQuery
   end
 
   def call
-    if !@filters[:debt_filters].nil?
-      @tran_filters = @filters[:debt_filters]
-      type_of_debts(@tran_filters[:type]) if @tran_filters[:type] && @current_user.admin 
-      amount_range(@tran_filters[:amount]) if @tran_filters[:amount]
-      debt_date_range(@tran_filters[:date_of_debt]) if @tran_filters[:date_of_debt]
-      given_status(@tran_filters[:status]) if @tran_filters[:status] 
+    if !@filters[:debts_filters].nil?
+      @debt_filters = @filters[:debts_filters]
+      type_of_debts(@debt_filters[:type]) if @debt_filters[:type] && @current_user.admin
+      creditors(@debt_filters[:users]) if @debt_filters[:users]
+      amount_range(@debt_filters[:amount]) if @debt_filters[:amount]
+      debt_date_range(@debt_filters[:date_of_debt]) if @debt_filters[:date_of_debt]
+      given_status(@debt_filters[:status]) if @debt_filters[:status] 
     end
     paginate(@pagination)
   end
@@ -27,6 +28,10 @@ class DebtQuery
     else 
       @all_debts.page(info[:page])
     end
+  end
+
+  def creditors(users)
+    @all_debts = @all_debts.where(creditor_id: users)
   end
 
   def amount_range(amount_range)

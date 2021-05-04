@@ -10,6 +10,11 @@ module ReadModels
               status: event.data.fetch(:state)
             }
           )
+
+          debt = WriteModels::Debt.find_by!(debt_uid: event.data.fetch(:debt_uid))
+          debt.update!({
+            state: event.data.fetch(:state)
+          })
         end
       end
     end

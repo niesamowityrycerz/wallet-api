@@ -1,15 +1,19 @@
 module Ranking
-  class DebtorsRankingSerializer 
+  class DebtorsRankingSerializer
     include JSONAPI::Serializer 
 
-    attributes :id, :adjusted_credibility_points, :debt_transactions
+    attributes :adjusted_credibility_points, :debts_quantity
+
+    attribute :debtor do |position|
+      debtor = User.find_by!(id: position.debtor_id)
+      debtor.username
+    end
     
     attribute :ratio, if: Proc.new { |entity|
-      entity.debt_transactions > 0
+      entity.debts_quantity > 0
     } do |position|
-      (position.adjusted_credibility_points / position.debt_transactions).round(2)
+      (position.adjusted_credibility_points / position.debts_quantity).round(2)
     end
-
-
+    
   end
 end

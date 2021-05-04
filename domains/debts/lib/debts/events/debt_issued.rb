@@ -12,7 +12,6 @@ module Debts
         max_date_of_settlement: Date,
         settlement_method_id: [ :optional, Integer ],
         state: Symbol,
-        group_debt: [ :optional, TrueClass],
         group_uid: [ :optional, String ]
       }
     end

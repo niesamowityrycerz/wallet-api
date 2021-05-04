@@ -33,8 +33,7 @@ Rails.configuration.to_prepare do
     store.subscribe(ReadModels::Groups::Handlers::OnGroupRegistered,                     to: [Groups::Events::GroupRegistered])
     store.subscribe(ReadModels::Groups::Handlers::OnGroupSettlementTermsAdded,           to: [Groups::Events::GroupSettlementTermsAdded])
     store.subscribe(ReadModels::Groups::Handlers::OnInvitationAcceptedOrRejected,        to: [Groups::Events::InvitationAccepted,
-                                                                                              Groups::Events::InvitationRejected])
-    store.subscribe(ReadModels::Groups::Handlers::OnGroupDebtIssued,                      to: [Groups::Events::GroupDebtIssued])                                                                                        
+                                                                                              Groups::Events::InvitationRejected])                                                                                     
 
     # Processes(System)
     store.subscribe(Processes::DebtPoint, to: [
@@ -42,11 +41,6 @@ Rails.configuration.to_prepare do
       Warnings::Events::MissedDebtRepaymentWarningSent,  
       RankingPoints::Events::TrustPointsAlloted,
     ])
-
-    store.subscribe(Processes::GroupDebt, to: [
-      Groups::Events::GroupDebtIssued
-    ])
-
     
   end
 
@@ -70,7 +64,6 @@ Rails.configuration.to_prepare do
     bus.register(Groups::Commands::AddGroupSettlementTerms,               Groups::Handlers::OnAddGroupSettlementTerms.new)
     bus.register(Groups::Commands::AcceptInvitation,                      Groups::Handlers::OnAcceptInvitation.new)
     bus.register(Groups::Commands::RejectInvitation,                      Groups::Handlers::OnRejectInvitation.new)
-    bus.register(Groups::Commands::IssueGroupDebt,                        Groups::Handlers::OnIssueGroupDebt.new)
   end
 
 end

@@ -15,8 +15,6 @@ module Api
             else 
               status 403
             end 
-
-          
           end
         end
 

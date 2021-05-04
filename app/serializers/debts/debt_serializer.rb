@@ -2,7 +2,7 @@ module Debts
   class DebtSerializer < BaseDebtSerializer
     include JSONAPI::Serializer
 
-    attributes :description, :date_of_debt
+    attributes :description, :date_of_transaction
 
     attribute :debt_doubts, if: Proc.new { |debt|
       debt.doubts != nil 
@@ -81,7 +81,7 @@ module Debts
     end
 
     link :settle, if: Proc.new { |debt, params|
-      (params[:current_user].id == debt.debtor_id) && debt.? 
+      (params[:current_user].id == debt.debtor_id) && debt.accepted?
     } do |debt|
       "localhost:3000/api/v1/debt/#{debt.debt_uid}/settle"
     end
@@ -89,7 +89,7 @@ module Debts
     link :fill_settlement_terms, if: Proc.new { |debt, params|
       debt.debtor_id == params[:current_user].id && debt.accepted?
     } do |debt|
-      "localhost:3000/api/v1/debt/#{debt.debt.uid}/fill_settlement_terms"
+      "localhost:3000/api/v1/debt/#{debt.debt_uid}/fill_settlement_terms"
     end
   end 
 end

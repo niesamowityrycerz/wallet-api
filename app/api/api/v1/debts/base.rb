@@ -14,7 +14,7 @@ module Api
               all_or_none_of :max, :min 
             end
             optional :status, type: Array, values: %i[pending rejected closed]
-            optional :users, type: Array, values: (1..1000)
+            optional :users, type: Array, values: -> { User.ids }
             optional :type, type: String, values: %w[borrow lend]
             
           end

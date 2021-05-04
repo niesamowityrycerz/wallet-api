@@ -45,6 +45,7 @@ User.create({
   password_confirmation: 'password1',
   admin: true
 })
+
 stop = Time.now 
 puts stop - start 
 

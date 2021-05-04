@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_05_01_165302) do
+ActiveRecord::Schema.define(version: 2021_05_02_173332) do
 
   create_table "creditors_ranking", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -83,6 +83,7 @@ ActiveRecord::Schema.define(version: 2021_05_01_165302) do
     t.float "amount"
     t.integer "debt_uid"
     t.datetime "date_of_transaction"
+    t.integer "state", default: 0
     t.index ["creditor_id"], name: "index_debts_on_creditor_id"
     t.index ["debt_uid"], name: "index_debts_on_debt_uid"
     t.index ["debtor_id"], name: "index_debts_on_debtor_id"

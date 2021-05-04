@@ -3,13 +3,13 @@ module ReadModels
     module Handlers
       class OnDebtIssued 
         def call(event)
-          debt_uid = event.data.fetch(:debt_uid)
+          binding.pry 
 
           ReadModels::Debts::DebtProjection.create!(
             {
               creditor_id: event.data.fetch(:creditor_id),
               debtor_id: event.data.fetch(:debtor_id),
-              debt_uid: debt_uid,
+              debt_uid: event.data.fetch(:debt_uid),
               amount: event.data.fetch(:amount),
               currency_id: event.data.fetch(:currency_id),
               description: event.data.fetch(:description),
@@ -17,7 +17,6 @@ module ReadModels
               date_of_transaction: ( event.data.fetch(:date_of_transaction) if event.data.key?(:date_of_transaction) ),
               status: event.data.fetch(:state),
               settlement_method_id: ( event.data.fetch(:settlement_method_id) if event.data.key?(:settlement_method_id) ),
-              group_debt: ( event.data.fetch(:group_debt) if event.data.key?(:group_debt) ),
               group_uid: ( event.data.fetch(:group_uid) if event.data.key?(:group_uid) )
             }.compact
           )
@@ -32,7 +31,24 @@ module ReadModels
             }
           )
 
+          if event.data.key?(:group_uid)
+            event_store.link(
+              event.event_id,
+              stream_name: stream_name(event.data.fetch(:group_uid)),
+              expected_version: :auto
+            )
+          end
 
+        end
+
+        private 
+
+        def stream_name(group_uid)
+          "Group$#{group_uid}"
+        end
+
+        def event_store 
+          Rails.configuration.event_store 
         end
       end
     end
