@@ -7,10 +7,9 @@ RSpec.describe 'Debt actions', type: :unit do
   let(:debtor)                { create(:user) }
   let(:zloty)                 { create(:currency) }
   let!(:euro)                 { create(:currency, :euro) }
-  let(:one_instalment)        { create(:settlement_method) }
-  let(:many_installments)     { create(:settlement_method, :multiple_instalments) }
+
   
-  let!(:repayment_condition)  { create(:repayment_condition, :maturity_in_10_days, creditor: creditor, currency: zloty, settlement_method: one_instalment) }
+  let!(:repayment_condition)  { create(:repayment_condition, :maturity_in_10_days, creditor: creditor, currency: zloty) }
 
   before(:each) do
     @issue_tran_params = {
@@ -25,8 +24,7 @@ RSpec.describe 'Debt actions', type: :unit do
 
     @debtor_terms_params = {  
       debt_uid: debt_uid,
-      anticipated_date_of_settlement: Date.today + rand(1..9).day,
-      debtor_settlement_method_id: one_instalment.id,
+      anticipated_date_of_settlement: Date.today + rand(1..9).day
     }
 
     command_bus.call(Debts::Commands::IssueDebt.new(@issue_tran_params))
@@ -46,17 +44,6 @@ RSpec.describe 'Debt actions', type: :unit do
 
       before(:each) do 
         command_bus.call(Debts::Commands::AcceptDebt.new({debt_uid: debt_uid}))
-      end
-
-      context 'when settlement method is invalid' do 
-        it 'raises error' do
-          @debtor_terms_params[:debtor_settlement_method_id] = many_installments.id
-          settlement_terms = Debts::Commands::AddDebtorTerms.new(@debtor_terms_params)
-          
-          expect {
-            command_bus.call(settlement_terms)
-          }.to raise_error(Debts::DebtAggregate::RepaymentTypeUnavaiable)
-        end
       end
 
       context 'when exceded maturity' do 

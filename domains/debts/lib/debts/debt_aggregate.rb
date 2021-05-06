@@ -5,11 +5,11 @@ module Debts
     include AggregateRoot
 
     AnticipatedDateOfSettlementUnavailable = Class.new(StandardError)
-    RepaymentTypeUnavaiable                = Class.new(StandardError)
     CurrencyUnavaiable                     = Class.new(StandardError)
     InvalidAmount                          = Class.new(StandardError)
     DebtNotAccepted                        = Class.new(StandardError)
     DebtorTermsNotAdded                    = Class.new(StandardError)
+    UnableToProceedDebtSettleement         = Class.new(StandardError)
 
     attr_accessor :repayment_conditions, :due_money
 
@@ -27,8 +27,7 @@ module Debts
       @group_uid = nil 
     end
 
-    def place(params)
-
+    def issue(params)
       apply Events::DebtIssued.strict( 
         { 
           creditor_id: params[:creditor_id],
@@ -38,7 +37,6 @@ module Debts
           description: params[:description],
           currency_id: params[:currency_id],
           date_of_transaction: ( params[:date_of_transaction] if params.key?(:date_of_transaction) ),
-          settlement_method_id: ( params[:creditor_conditions][:settlement_method_id] if params.key?(:creditor_conditions) ),
           max_date_of_settlement: ( params.key?(:creditor_conditions) ? Date.today + params[:creditor_conditions][:maturity_in_days] : params[:max_date_of_settlement] ),
           state: :pending,
           group_uid: ( params[:group_uid] if params.key?(:group_uid) )
@@ -70,14 +68,12 @@ module Debts
     def add_debtor_terms(params)
       raise DebtNotAccepted.new 'Accept debt first!' unless @state == :accepted
       raise AnticipatedDateOfSettlementUnavailable.new 'Date unavailable' unless params[:anticipated_date_of_settlement] <= @max_date_of_settlement
-      raise RepaymentTypeUnavaiable.new 'Repayment method is unavailable' unless @repayment_conditions.settlement_method_allowed?(params[:debtor_settlement_method_id])
 
       apply Events::DebtorTermsAdded.strict(
         {
           debt_uid: @id,
           anticipated_date_of_settlement: params[:anticipated_date_of_settlement],
-          state: :debtors_terms_added,
-          debtor_settlement_method_id: params[:debtor_settlement_method_id]
+          state: :debtor_terms_added,
         }
       )
     end
@@ -117,7 +113,7 @@ module Debts
     end
 
     def settle(params)
-      raise DebtorTermsNotAdded.new 'Fill settlement terms first!' unless @state == :debtors_terms_added
+      raise UnableToProceedDebtSettleement.new unless @state == ( :accepted || :debtor_terms_added )
       apply Events::DebtSettled.strict(
         {
           debt_uid: @id,
@@ -131,8 +127,6 @@ module Debts
       )
     end
 
-    # "To restore the state of your aggregate you need to use AggregateRoot::Repository."
-    # AggregateRoot::Repository.new.load(debts::debtAggregate.new(need to fulfill id), stream_name of events I want to restore)
     on Events::DebtIssued do |event|
       @state = event.data.fetch(:state)
       @due_money = event.data.fetch(:amount)

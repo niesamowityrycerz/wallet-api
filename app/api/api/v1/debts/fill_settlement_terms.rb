@@ -9,7 +9,6 @@ module Api
 
         params do 
           requires :anticipated_date_of_settlement, type: Date
-          requires :debtor_settlement_method_id, type: Integer#, values: SettlementMethod.all.ids
           requires :currency_id, type: Integer#, values: Currency.all.ids
         end
 

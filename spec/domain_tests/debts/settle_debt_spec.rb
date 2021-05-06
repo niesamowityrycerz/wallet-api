@@ -5,8 +5,7 @@ RSpec.describe 'Debt actions', type: :unit do
   let(:creditor)               { create(:creditor, :with_ranking_position) }
   let(:debtor)                 { create(:debtor, :with_ranking_position) }
   let(:zloty)                  { create(:currency) }
-  let(:one_instalment)         { create(:settlement_method) }
-  let!(:repayment_condition)   { create(:repayment_condition, :maturity_in_10_days, creditor: creditor, currency: zloty, settlement_method: one_instalment) }
+  let!(:repayment_condition)   { create(:repayment_condition, :maturity_in_10_days, creditor: creditor, currency: zloty) }
 
   before(:each) do
     @issue_tran_params = {
@@ -21,8 +20,7 @@ RSpec.describe 'Debt actions', type: :unit do
 
     @debtor_terms = {
       debt_uid: debt_uid,
-      anticipated_date_of_settlement: Date.today + rand(1..3),
-      debtor_settlement_method_id: one_instalment.id 
+      anticipated_date_of_settlement: Date.today + rand(1..3)
     }
 
     @settlement_params = {

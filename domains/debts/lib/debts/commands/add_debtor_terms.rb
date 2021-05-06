@@ -3,8 +3,7 @@ module Debts
     class AddDebtorTerms < Command 
       SCHEMA = {
         debt_uid: String,
-        anticipated_date_of_settlement: Date,
-        debtor_settlement_method_id: Integer
+        anticipated_date_of_settlement: Date
       }
     end
   end

@@ -9,8 +9,7 @@ RSpec.describe 'Debt actions', type: :unit do
   let(:debtor)                  { create(:user) }
   let(:zloty)                   { create(:currency) }
   let(:euro)                    { create(:currency, :euro) }
-  let(:one_instalment)          { create(:settlement_method) }
-  let!(:repayment_condition)    { create(:repayment_condition, :maturity_in_10_days, creditor: creditor, currency: zloty, settlement_method: one_instalment) }
+  let!(:repayment_condition)    { create(:repayment_condition, :maturity_in_10_days, creditor: creditor, currency: zloty) }
   let!(:debt_projection)        { create(:debt_projection, :pending, debt_uid: debt_uid) }
 
   before(:each) do

@@ -46,6 +46,8 @@ User.create({
   admin: true
 })
 
+::Debts::Debts::BetweenTwoUsers.new(user_1_id=1,user_2_id=2).call
+
 stop = Time.now 
 puts stop - start 
 

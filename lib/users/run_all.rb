@@ -32,8 +32,7 @@ module Users
           {
             maturity_in_days: rand(5..10),
             creditor_id: creditor.id,
-            currency_id: Currency.ids.sample,
-            settlement_method_id: SettlementMethod.find_by!(name: 'one instalment').id,
+            currency_id: Currency.ids.sample
           }
         )
       end

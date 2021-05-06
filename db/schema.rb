@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_05_02_173332) do
+ActiveRecord::Schema.define(version: 2021_05_06_154912) do
 
   create_table "creditors_ranking", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -36,10 +36,8 @@ ActiveRecord::Schema.define(version: 2021_05_02_173332) do
     t.integer "creditor_id"
     t.integer "debtor_id"
     t.string "description"
-    t.integer "settlement_method_id"
     t.integer "status", default: 0
     t.date "date_of_transaction"
-    t.boolean "creditor_informed", default: false
     t.string "reason_for_closing"
     t.string "doubts"
     t.datetime "date_of_settlement"
@@ -50,7 +48,6 @@ ActiveRecord::Schema.define(version: 2021_05_02_173332) do
     t.string "reason_for_rejection"
     t.date "anticipated_date_of_settlement"
     t.date "max_date_of_settlement"
-    t.boolean "group_debt"
     t.string "group_uid"
     t.float "amount"
   end
@@ -81,7 +78,7 @@ ActiveRecord::Schema.define(version: 2021_05_02_173332) do
     t.integer "debtor_id"
     t.integer "creditor_id"
     t.float "amount"
-    t.integer "debt_uid"
+    t.string "debt_uid"
     t.datetime "date_of_transaction"
     t.integer "state", default: 0
     t.index ["creditor_id"], name: "index_debts_on_creditor_id"
@@ -204,17 +201,9 @@ ActiveRecord::Schema.define(version: 2021_05_02_173332) do
     t.datetime "updated_at", null: false
     t.integer "currency_id"
     t.integer "maturity_in_days"
-    t.integer "settlement_method_id"
     t.integer "creditor_id"
     t.index ["creditor_id"], name: "index_repayment_conditions_on_creditor_id"
     t.index ["currency_id"], name: "index_repayment_conditions_on_currency_id"
-    t.index ["settlement_method_id"], name: "index_repayment_conditions_on_settlement_method_id"
-  end
-
-  create_table "settlement_methods", force: :cascade do |t|
-    t.string "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "users", force: :cascade do |t|

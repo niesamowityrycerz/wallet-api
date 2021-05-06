@@ -101,5 +101,9 @@ module Groups
       @state = event.data.fetch(:state)
     end
 
+    #on Debts::Events::DebtIssued do |event|
+    #  @state = :debt_issued 
+    #end
+
   end
 end

@@ -7,8 +7,7 @@ module ReadModels
           debt_projection.update!( 
             {
               status: event.data.fetch(:state),
-              anticipated_date_of_settlement: event.data.fetch(:anticipated_date_of_settlement),
-              settlement_method_id: event.data.fetch(:debtor_settlement_method_id)
+              anticipated_date_of_settlement: event.data.fetch(:anticipated_date_of_settlement)
             }
           )
         end

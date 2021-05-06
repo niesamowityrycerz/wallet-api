@@ -26,7 +26,8 @@ module Debts
                         currency_id: Currency.find_by!(code: 'PLN').id,
                         date_of_transaction: Date.today - rand(1..10) 
                       })
-      end 
+          
+      end
       commands
     end
 

@@ -7,9 +7,7 @@ RSpec.describe 'Debt actions', type: :unit do
   let(:creditor_with_repay_cond)  { create(:user) }
   let(:debtor)                    { create(:user) }
   let(:zloty)                     { create(:currency) }
-  let(:one_instalment)            { create(:settlement_method) }
-  let(:many_installments)         { create(:settlement_method, :multiple_instalments) }
-  let!(:repayment_condition)      { create(:repayment_condition, :maturity_in_10_days, creditor: creditor_with_repay_cond, currency: zloty, settlement_method: one_instalment) }
+  let!(:repayment_condition)      { create(:repayment_condition, :maturity_in_10_days, creditor: creditor_with_repay_cond, currency: zloty) }
 
   before(:each) do
     @issue_tran_params = {

@@ -2,10 +2,6 @@ module Api
   module V1 
     module Groups 
       class Base < Api::V1::Base 
-        helpers(
-          ::Helpers::DebtParamsSanitizer
-        )
-
         resource :groups do 
           mount Api::V1::Groups::Register 
           route_param :group_uid do 

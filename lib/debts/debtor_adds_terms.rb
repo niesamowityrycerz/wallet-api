@@ -1,26 +1,22 @@
 module Debts
   class DebtorAddsTerms 
-    def initialize(settlement_method_name='one instalment')
-      @settlement_method_id = SettlementMethod.find_by!(name: settlement_method_name).id
+    def initialize
       @debtors_terms_q = ReadModels::Debts::DebtProjection.accepted
-
     end
 
     def call 
-      commands = prepare_commands(@settlement_method_id)
-      command_pipeline(commands)
+      command_pipeline(prepare_commands)
     end
 
     private 
 
-    def prepare_commands(method_id)
+    def prepare_commands()
       accepted_debts = ReadModels::Debts::DebtProjection.accepted
       created_commands = []
       accepted_debts.each do |tran|
         created_commands << Debts::Commands::AddDebtorTerms.new({
           debt_uid: tran.debt_uid,
-          anticipated_date_of_settlement: Date.today + rand(1..3),
-          debtor_settlement_method_id: method_id
+          anticipated_date_of_settlement: Date.today + rand(1..3)
         })
       end
       created_commands

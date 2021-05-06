@@ -11,8 +11,7 @@ module Debts
           {
             creditor_id: repayment_conditions.creditor_id,
             currency_id: repayment_conditions.currency_id,
-            maturity_in_days: repayment_conditions.maturity_in_days,
-            settlement_method_id: repayment_conditions.settlement_method_id
+            maturity_in_days: repayment_conditions.maturity_in_days
           }
         )
       end

@@ -3,7 +3,6 @@ module ReadModels
     module Handlers
       class OnDebtIssued 
         def call(event)
-          binding.pry 
 
           ReadModels::Debts::DebtProjection.create!(
             {
@@ -16,7 +15,6 @@ module ReadModels
               max_date_of_settlement: event.data.fetch(:max_date_of_settlement),
               date_of_transaction: ( event.data.fetch(:date_of_transaction) if event.data.key?(:date_of_transaction) ),
               status: event.data.fetch(:state),
-              settlement_method_id: ( event.data.fetch(:settlement_method_id) if event.data.key?(:settlement_method_id) ),
               group_uid: ( event.data.fetch(:group_uid) if event.data.key?(:group_uid) )
             }.compact
           )

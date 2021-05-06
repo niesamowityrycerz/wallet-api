@@ -7,8 +7,7 @@ RSpec.describe 'Ranking points flow', type: :unit do
   let!(:tran_projection)     { create(:debt_projection, debt_uid: debt_uid, debtor_id: debtor.id) }
   let!(:warning_type)        { create(:warning_type) }
   let(:zloty)                { create(:currency) }
-  let(:one_instalment)       { create(:settlement_method) }
-  let!(:repayment_condition) { create(:repayment_condition, :maturity_in_10_days, creditor: creditor, currency: zloty, settlement_method: one_instalment) }
+  let!(:repayment_condition) { create(:repayment_condition, :maturity_in_10_days, creditor: creditor, currency: zloty) }
 
 
   
@@ -38,7 +37,6 @@ RSpec.describe 'Ranking points flow', type: :unit do
     @debtor_terms = {
       debt_uid: debt_uid,
       anticipated_date_of_settlement: Date.today + rand(1..3),
-      debtor_settlement_method_id: one_instalment.id 
     }
 
     command_bus.call(Debts::Commands::IssueDebt.new(@issue_tran_params))

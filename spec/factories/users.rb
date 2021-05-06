@@ -15,6 +15,12 @@ FactoryBot.define do
          create(:creditors_ranking, creditor: user, credits_quantity: 1, trust_points: 10)
       end 
     end
+
+    trait :with_repayment_conditions do 
+      after(:create) do |user|
+        create(:repayment_condition, :maturity_in_one_year, creditor: user, currency: Currency.find_or_create_by!(name: 'Polski złoty', code: 'PLN'))
+      end
+    end
     
   end 
 end

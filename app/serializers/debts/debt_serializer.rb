@@ -42,10 +42,6 @@ module Debts
       "#{(expire_on - today).to_i} days"
     end 
 
-    attribute :settlement_method do |debt|
-      SettlementMethod.find_by!(id: debt.settlement_method_id).name
-    end
-
     attribute :max_date_of_settlement, if: Proc.new { |debt, params|
       params[:current_user].admin || params[:current_user].id == debt.debtor_id
     } 

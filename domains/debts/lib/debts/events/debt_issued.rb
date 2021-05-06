@@ -10,7 +10,6 @@ module Debts
         currency_id: Integer,
         date_of_transaction: [ :optional, Date ],
         max_date_of_settlement: Date,
-        settlement_method_id: [ :optional, Integer ],
         state: Symbol,
         group_uid: [ :optional, String ]
       }
