@@ -37,6 +37,7 @@ Rails.configuration.to_prepare do
 
     # Processes(System)
     store.subscribe(Processes::DebtPoint, to: [
+      Debts::Events::DebtAccepted,
       Debts::Events::DebtSettled,
       Warnings::Events::MissedDebtRepaymentWarningSent,  
       RankingPoints::Events::TrustPointsAlloted,

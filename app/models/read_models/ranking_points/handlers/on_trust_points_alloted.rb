@@ -12,9 +12,11 @@ module ReadModels
           )
 
           ranking_position = WriteModels::CreditorsRanking.find_by!(creditor_id: event.data.fetch(:creditor_id))
-          ranking_position.credits_quantity += 1
-          ranking_position.trust_points += event.data.fetch(:trust_points)
-          ranking_position.save!
+          ranking_position.update!({
+            credits_quantity: ranking_position.credits_quantity + 1,
+            trust_points: ranking_position.trust_points + event.data.fetch(:trust_points)
+          })
+     
         end
       end
     end

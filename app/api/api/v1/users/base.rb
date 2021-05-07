@@ -9,8 +9,6 @@ module Api
         end
 
         resource :users do 
-          mount Api::V1::Users::DebtorsRanking
-          mount Api::V1::Users::CreditorsRanking
           mount Api::V1::Users::All
         end
 

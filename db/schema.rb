@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_05_06_154912) do
+ActiveRecord::Schema.define(version: 2021_05_07_190715) do
 
   create_table "creditors_ranking", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -18,6 +18,7 @@ ActiveRecord::Schema.define(version: 2021_05_06_154912) do
     t.integer "creditor_id"
     t.float "trust_points", default: 0.0
     t.integer "credits_quantity", default: 0
+    t.float "ratio"
     t.index ["creditor_id"], name: "index_creditors_ranking_on_creditor_id"
   end
 
@@ -69,6 +70,7 @@ ActiveRecord::Schema.define(version: 2021_05_06_154912) do
     t.integer "debtor_id"
     t.float "adjusted_credibility_points", default: 0.0
     t.integer "debts_quantity", default: 0
+    t.float "ratio"
     t.index ["debtor_id"], name: "index_debtors_ranking_on_debtor_id"
   end
 

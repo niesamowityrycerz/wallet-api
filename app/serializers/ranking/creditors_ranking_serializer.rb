@@ -2,7 +2,8 @@ module Ranking
   class CreditorsRankingSerializer
     include JSONAPI::Serializer 
 
-    attribute :trust_points, :credits_quantity
+    binding.pry 
+    attributes :trust_points, :credits_quantity
 
     attribute :creditor do |position|
       user = User.find_by!(id: position.creditor_id)

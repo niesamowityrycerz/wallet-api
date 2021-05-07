@@ -16,7 +16,6 @@ module Api
             optional :status, type: Array, values: %i[pending rejected closed]
             optional :users, type: Array, values: -> { User.ids }
             optional :type, type: String, values: %w[borrow lend]
-            
           end
         end
       end

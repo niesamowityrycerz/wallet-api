@@ -9,10 +9,19 @@ FactoryBot.define do
       admin    { true }
     end
 
-    trait :with_ranking_position do 
+    trait :with_some_ranking_data do 
       after(:create) do |user|
-         create(:debtors_ranking, debtor: user, debts_quantity: 1, adjusted_credibility_points: 10)
-         create(:creditors_ranking, creditor: user, credits_quantity: 1, trust_points: 10)
+        creditor_ranking_position = WriteModels::CreditorsRanking.find_by!(creditor_id: user.id)
+        creditor_ranking_position.update!({
+          trust_points: rand(10.0..100.0),
+          credits_quantity: rand(1..10)
+        })
+
+        debtor_ranking_position = WriteModels::DebtorsRanking.find_by!(debtor_id: user.id)
+        debtor_ranking_position.update!({
+          adjusted_credibility_points: rand(10.0..100.0),
+          debts_quantity: rand(1..10)
+        })
       end 
     end
 
@@ -21,6 +30,5 @@ FactoryBot.define do
         create(:repayment_condition, :maturity_in_one_year, creditor: user, currency: Currency.find_or_create_by!(name: 'Polski złoty', code: 'PLN'))
       end
     end
-    
   end 
 end
