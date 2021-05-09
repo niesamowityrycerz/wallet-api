@@ -113,7 +113,7 @@ module Debts
     end
 
     def settle(params)
-      raise UnableToProceedDebtSettleement.new unless @state == ( :accepted || :debtor_terms_added )
+      raise UnableToProceedDebtSettleement.new unless [ :accepted, :debtor_terms_added ].include? @state 
       apply Events::DebtSettled.strict(
         {
           debt_uid: @id,

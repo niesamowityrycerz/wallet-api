@@ -25,10 +25,6 @@ Currency.create!(name: 'Zloty', code: 'PLN')
 Currency.create!(name: 'Euro',  code: 'EUR')
 Currency.create!(name: 'US Dollar', code: 'USD')
 
-# Settlement methods
-SettlementMethod.create!(name: 'one instalment')
-SettlementMethod.create!(name: 'multiple instalments')
-
 # Waring types
 WarningType.create(name: 'missed debt repayment')
 
@@ -46,7 +42,7 @@ User.create({
   admin: true
 })
 
-::Debts::Debts::BetweenTwoUsers.new(user_1_id=1,user_2_id=2).call
+::Debts::ManyDebtsAndCreditsBetweenTwoUsers.new(user_1_id=1,user_2_id=2).call
 
 stop = Time.now 
 puts stop - start 

@@ -10,15 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_05_07_190715) do
+ActiveRecord::Schema.define(version: 2021_05_09_101917) do
 
   create_table "creditors_ranking", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "creditor_id"
     t.float "trust_points", default: 0.0
     t.integer "credits_quantity", default: 0
-    t.float "ratio"
+    t.decimal "ratio", precision: 2, scale: 2
+    t.string "creditor_name"
+    t.integer "creditor_id"
     t.index ["creditor_id"], name: "index_creditors_ranking_on_creditor_id"
   end
 
@@ -67,10 +68,11 @@ ActiveRecord::Schema.define(version: 2021_05_07_190715) do
   create_table "debtors_ranking", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "debtor_id"
     t.float "adjusted_credibility_points", default: 0.0
     t.integer "debts_quantity", default: 0
-    t.float "ratio"
+    t.decimal "ratio", precision: 2, scale: 2
+    t.string "debtor_name"
+    t.integer "debtor_id"
     t.index ["debtor_id"], name: "index_debtors_ranking_on_debtor_id"
   end
 
@@ -120,21 +122,6 @@ ActiveRecord::Schema.define(version: 2021_05_07_190715) do
     t.integer "blocker_id"
     t.integer "status"
     t.index ["friendable_id", "friend_id"], name: "index_friendships_on_friendable_id_and_friend_id", unique: true
-  end
-
-  create_table "group_debt_projections", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "recievers_ids"
-    t.integer "issuer_id"
-    t.string "group_uid"
-    t.string "description"
-    t.float "total_amount"
-    t.integer "currency"
-    t.integer "state"
-    t.date "date_of_transaction"
-    t.string "group_debt_uid"
-    t.float "due_money_per_reciever"
   end
 
   create_table "group_members", force: :cascade do |t|

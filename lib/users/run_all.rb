@@ -7,8 +7,6 @@ module Users
     def call 
       users = create_users(@users_q)
       add_repayment_conditions(users)
-      create_ranking(users)
-      create_admin() if @admin 
     end
 
     private 
@@ -37,13 +35,5 @@ module Users
         )
       end
     end
-
-    def create_ranking(users)
-      User.all.each do |user|
-        WriteModels::DebtorsRanking.create!(debtor_id: user.id)
-        WriteModels::CreditorsRanking.create!(creditor_id: user.id)
-      end
-    end
-
   end
 end

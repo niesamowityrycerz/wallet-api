@@ -1,5 +1,5 @@
 module Debts 
-  class DebtsBetweenTwoUsers 
+  class ManyDebtsAndCreditsBetweenTwoUsers
     def initialize(user_1_id, user_2_id)
       @user_1 = User.find_by!(id: user_1_id)
       @user_2 = User.find_by!(id: user_2_id)

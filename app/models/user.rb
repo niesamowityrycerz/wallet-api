@@ -11,9 +11,6 @@ class User < ApplicationRecord
   has_many :debts, class_name: 'WriteModels::Debt', foreign_key: "creditor_id"
   has_many :debts,  class_name: 'WriteModels::Debt', foreign_key: "debtor_id"
 
-  has_one :debtors_ranking, class_name: 'WriteModels::DebtorsRanking', foreign_key: 'debtor_id', dependent: :destroy
-  has_one :creditors_ranking, class_name: 'WriteModels::CreditorsRanking', foreign_key: 'creditor_id', dependent: :destroy 
-
   has_many :group_members, foreign_key: 'member_id', class_name: 'WriteModels::GroupMembers'
   has_many :groups, through: :group_members
 
@@ -43,7 +40,7 @@ class User < ApplicationRecord
   end
 
   def add_to_ranking 
-    WriteModels::DebtorsRanking.create!(debtor_id: self.id)
-    WriteModels::CreditorsRanking.create!(creditor_id: self.id)
+    ReadModels::Rankings::DebtorsRanking.create!(debtor_id: self.id, debtor_name: self.username)
+    ReadModels::Rankings::CreditorsRanking.create!(creditor_id: self.id, creditor_name: self.username)
   end
 end

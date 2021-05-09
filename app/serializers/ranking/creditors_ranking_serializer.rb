@@ -2,18 +2,11 @@ module Ranking
   class CreditorsRankingSerializer
     include JSONAPI::Serializer 
 
-    binding.pry 
-    attributes :trust_points, :credits_quantity
+    attributes :trust_points, :credits_quantity, :ratio
 
     attribute :creditor do |position|
       user = User.find_by!(id: position.creditor_id)
       user.username
-    end
-
-    attribute :ratio, if: Proc.new { |entity|
-      entity.credits_quantity > 0
-    } do |position|
-      (position.trust_points / position.credits_quantity).round(2)
     end
   end
 end
