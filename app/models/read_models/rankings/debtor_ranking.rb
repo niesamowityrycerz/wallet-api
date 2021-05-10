@@ -1,7 +1,6 @@
 module ReadModels 
   module Rankings 
-    class DebtorsRanking < ApplicationRecord
-      self.table_name = 'debtors_ranking'
+    class DebtorRanking < ApplicationRecord
 
       private 
 

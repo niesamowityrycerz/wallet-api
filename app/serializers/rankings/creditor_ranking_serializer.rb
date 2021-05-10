@@ -1,5 +1,5 @@
-module Ranking 
-  class CreditorsRankingSerializer
+module Rankings
+  class CreditorRankingSerializer
     include JSONAPI::Serializer 
 
     attributes :trust_points, :credits_quantity, :ratio

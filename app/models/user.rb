@@ -40,7 +40,7 @@ class User < ApplicationRecord
   end
 
   def add_to_ranking 
-    ReadModels::Rankings::DebtorsRanking.create!(debtor_id: self.id, debtor_name: self.username)
-    ReadModels::Rankings::CreditorsRanking.create!(creditor_id: self.id, creditor_name: self.username)
+    ReadModels::Rankings::DebtorRanking.create!(debtor_id: self.id, debtor_name: self.username)
+    ReadModels::Rankings::CreditorRanking.create!(creditor_id: self.id, creditor_name: self.username)
   end
 end

@@ -7,15 +7,14 @@ module Api
           authenticate_user!
         end
 
-        desc 'Get group by group uid'
+        desc 'Get group panel by group uid'
         
         get do 
-          # Can I make some validations based on read model?Here: restrict access to group information 
-          group = ReadModels::Groups::GroupProjection.find_by!(group_uid: params[:group_uid])
-          if group.members.include? current_user.id || current_user.admin?
-            ::Groups::GroupSerializer.new(group).serializable_hash
+          group = ::Services::BaseGroupService.new(params[:group_uid])
+          if group.has_member?(current_user)
+            ::Groups::GroupSerializer.new(group.projection).serializable_hash
           else 
-            error!('You cannot access this group!', 403)
+            status 403
           end
         end
       end

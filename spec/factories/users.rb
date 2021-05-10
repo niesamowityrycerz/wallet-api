@@ -11,13 +11,13 @@ FactoryBot.define do
 
     trait :with_some_ranking_data do 
       after(:create) do |user|
-        creditor_ranking_position = WriteModels::CreditorsRanking.find_by!(creditor_id: user.id)
+        creditor_ranking_position = ReadModels::Rankings::CreditorRanking.find_by!(creditor_id: user.id)
         creditor_ranking_position.update!({
           trust_points: rand(10.0..100.0),
           credits_quantity: rand(1..10)
         })
 
-        debtor_ranking_position = WriteModels::DebtorsRanking.find_by!(debtor_id: user.id)
+        debtor_ranking_position = ReadModels::Rankings::DebtorRanking.find_by!(debtor_id: user.id)
         debtor_ranking_position.update!({
           adjusted_credibility_points: rand(10.0..100.0),
           debts_quantity: rand(1..10)

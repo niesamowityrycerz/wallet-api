@@ -10,25 +10,23 @@ module Api
         desc 'Add group settlement terms'
 
         params do 
-          requires :currency_id, type: Integer, values: -> { Currency.ids }
-          requires :debt_repayment_valid_till, type: Date 
+          requires :terms, type: Hash do 
+            requires :currency_id, type: Integer, values: -> { Currency.ids }
+            requires :debt_repayment_valid_till, type: Date 
+          end 
         end
 
         resource :add_terms do 
-          post do 
-            group_p = ReadModels::Groups::GroupProjection.find_by!(group_uid: params[:group_uid]) 
-            if group_p.members.include? current_user.id
-              Rails.configuration.command_bus.call(
-                ::Groups::Commands::AddGroupSettlementTerms.send(params)
-              )
+          patch do 
+            group = ::Services::GroupSettlementTermsService.new(params[:group_uid]).call(params[:terms])
+            if group.has_member?(current_user)
+              Rails.configuration.command_bus.call(group.command) # maybe, just call something like group.add_group_settlement_terms 
               status 201
             else
-              error!('You cannot access this group!', 403)
+              status 403
             end
           end
         end
-
-
       end
     end
   end

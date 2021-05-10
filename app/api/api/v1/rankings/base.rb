@@ -3,8 +3,8 @@ module Api
     module Rankings 
       class Base < Api::V1::Base
         resource :ranking do 
-          mount Api::V1::Rankings::CreditorsRanking
-          mount Api::V1::Rankings::DebtorsRanking
+          mount Api::V1::Rankings::CreditorRanking
+          mount Api::V1::Rankings::DebtorRanking
         end
       end
     end

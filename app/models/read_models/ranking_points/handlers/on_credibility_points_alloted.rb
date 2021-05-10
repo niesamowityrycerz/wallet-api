@@ -11,7 +11,7 @@ module ReadModels
             }
           )
 
-          ranking_position =  ReadModels::Rankings::DebtorsRanking.find_by!(debtor_id: event.data.fetch(:debtor_id))
+          ranking_position =  ReadModels::Rankings::DebtorRanking.find_by!(debtor_id: event.data.fetch(:debtor_id))
           ranking_position.update!({
             adjusted_credibility_points: ranking_position.adjusted_credibility_points + event.data.fetch(:adjusted_credibility_points),
             debts_quantity: ranking_position.debts_quantity + 1

@@ -10,13 +10,11 @@ module Api
 
         desc 'Add friend'
 
-        # rspec has some problems wih values option  
         params do
-          requires :friend_id, type: Integer#, values: ::User.ids
+          requires :friend_id, type: Integer, values: -> { User.ids }
         end
 
         resource :add do 
-
           post do 
             requested_user = User.find_by!(id: params[:friend_id])
             if !friendship_errors 

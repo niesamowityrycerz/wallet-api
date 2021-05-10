@@ -18,13 +18,12 @@ module Groups
       @state = nil
       @debt_repayment_valid_till = nil 
       @currency_id = nil 
+      @debts_within_group = []
     end
 
     attr_reader :leader_id, :members, :debt_repayment_valid_till, :group_lasting_period, :invited_users
 
     def register(data)
-      # check if invited users are friends with leader
-      # raise MemberNotAllowed.new unless
       @leader = User.find_by!(id: data[:leader_id])
       data[:invited_users].each do |id|
         invited_user = User.find_by!(id: id)
@@ -44,7 +43,6 @@ module Groups
 
     def add_group_terms(data)
       raise GroupDoesNotExist.new "Group with uid #{data.fetch(:group_uid)} does not exist!" unless ReadModels::Groups::GroupProjection.find_by(group_uid: data.fetch(:group_uid))
-
       raise UnpermittedRepaymentDate.new unless group_lasting_period.repayment_date_valid?(data.fetch(:debt_repayment_valid_till))
 
       apply Events::GroupSettlementTermsAdded.strict({
@@ -101,9 +99,8 @@ module Groups
       @state = event.data.fetch(:state)
     end
 
-    #on Debts::Events::DebtIssued do |event|
-    #  @state = :debt_issued 
-    #end
-
+    on Debts::Events::DebtIssued do |event|
+      @debts_within_group << Entities::Debt.new(event.data.fetch(:debt_uid))
+    end
   end
 end

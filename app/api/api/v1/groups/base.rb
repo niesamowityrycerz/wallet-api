@@ -2,8 +2,8 @@ module Api
   module V1 
     module Groups 
       class Base < Api::V1::Base 
-        resource :groups do 
-          mount Api::V1::Groups::Register 
+        resource :group do 
+          mount Api::V1::Groups::Register
           route_param :group_uid do 
             mount Api::V1::Groups::AcceptInvitation
             mount Api::V1::Groups::RejectInvitation
@@ -11,7 +11,10 @@ module Api
             mount Api::V1::Groups::AddGroupTerms
             mount Api::V1::Groups::Index
           end 
-          mount Api::V1::Groups::GroupPanel
+        end
+
+        resource :groups do 
+          mount Api::V1::Groups::Overview
         end
       end
     end

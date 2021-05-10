@@ -39,7 +39,7 @@ RSpec.describe 'Ranking position changes', type: :integration do
       command_bus.call(Debts::Commands::SettleDebt.new(@settle_params))
 
       adj_cred_points_change = event_store.read.stream("RankingPoint$#{debt_uid}").to_a.first.data[:adjusted_credibility_points]
-      adj_cred_points_after = WriteModels::DebtorsRanking.find_by!(debtor_id: debtor.id).adjusted_credibility_points
+      adj_cred_points_after = ReadModels::Rankings::DebtorRanking.find_by!(debtor_id: debtor.id).adjusted_credibility_points
 
       expect(adj_cred_points_after).to eq(adj_cred_points_before + adj_cred_points_change)
     end
@@ -50,8 +50,8 @@ RSpec.describe 'Ranking position changes', type: :integration do
 
       command_bus.call(Debts::Commands::SettleDebt.new(@settle_params))
 
-      adj_cred_points_after = WriteModels::DebtorsRanking.find_by!(debtor_id: debtor.id).adjusted_credibility_points
-      debtor_ratio_after = WriteModels::DebtorsRanking.find_by!(debtor_id: debtor.id).ratio
+      adj_cred_points_after = ReadModels::Rankings::DebtorRanking.find_by!(debtor_id: debtor.id).adjusted_credibility_points
+      debtor_ratio_after = ReadModels::Rankings::DebtorRanking.find_by!(debtor_id: debtor.id).ratio
       anticipated_debtors_ratio = (adj_cred_points_after/(debts_q + 1)).round(2)
 
       expect(debtor_ratio_after).to eq(anticipated_debtors_ratio)
@@ -60,7 +60,7 @@ RSpec.describe 'Ranking position changes', type: :integration do
     it 'checks updated debts quantity' do 
       expect {
         command_bus.call(Debts::Commands::SettleDebt.new(@settle_params))
-      }.to change { WriteModels::DebtorsRanking.find_by!(debtor_id: debtor.id).debts_quantity }.by(1)
+      }.to change { ReadModels::Rankings::DebtorRanking.find_by!(debtor_id: debtor.id).debts_quantity }.by(1)
     end
   end 
 end 

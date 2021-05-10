@@ -18,20 +18,12 @@ module Api
 
         resource :register do 
           post do
-            params.merge!({
-              leader_id: current_user.id,
-              group_uid: SecureRandom.uuid
-            })
-
-            Rails.configuration.command_bus.call(
-              ::Groups::Commands::RegisterGroup.send(params)
-            )
+            command = ::Services::RegisterGroupService.new(params.call)
+            Rails.configuration.command_bus.call(command)
             status 201
-            #redirect "/groups/#{params[:group_uid]}"
+            redirect "/group/#{params[:group_uid]}"
           end
         end
-
-
       end
     end
   end

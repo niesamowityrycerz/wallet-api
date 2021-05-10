@@ -10,9 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_05_09_101917) do
+ActiveRecord::Schema.define(version: 2021_05_10_075638) do
 
-  create_table "creditors_ranking", force: :cascade do |t|
+  create_table "creditor_rankings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.float "trust_points", default: 0.0
@@ -20,7 +20,7 @@ ActiveRecord::Schema.define(version: 2021_05_09_101917) do
     t.decimal "ratio", precision: 2, scale: 2
     t.string "creditor_name"
     t.integer "creditor_id"
-    t.index ["creditor_id"], name: "index_creditors_ranking_on_creditor_id"
+    t.index ["creditor_id"], name: "index_creditor_rankings_on_creditor_id"
   end
 
   create_table "currencies", force: :cascade do |t|
@@ -65,7 +65,7 @@ ActiveRecord::Schema.define(version: 2021_05_09_101917) do
     t.index ["user_id"], name: "index_debt_warning_projections_on_user_id"
   end
 
-  create_table "debtors_ranking", force: :cascade do |t|
+  create_table "debtor_rankings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.float "adjusted_credibility_points", default: 0.0
@@ -73,7 +73,7 @@ ActiveRecord::Schema.define(version: 2021_05_09_101917) do
     t.decimal "ratio", precision: 2, scale: 2
     t.string "debtor_name"
     t.integer "debtor_id"
-    t.index ["debtor_id"], name: "index_debtors_ranking_on_debtor_id"
+    t.index ["debtor_id"], name: "index_debtor_rankings_on_debtor_id"
   end
 
   create_table "debts", force: :cascade do |t|

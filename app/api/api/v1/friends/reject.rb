@@ -10,17 +10,17 @@ module Api
         desc 'Reject friendship'
 
         params do 
-          requires :wanabe_friend_id, type: Integer #, values: ::User.ids
+          requires :wanabe_friend_id, type: Integer, values: -> { User.ids }
         end
 
         resource :reject do 
-          post do 
-            wanabe_friend = User.find_by!(id: params[:wanabe_friend_id])
-            if current_user.requested_friends.include? wanabe_friend
-              current_user.decline_request(wanabe_friend)
+          patch do
+            current_user_friendships = ::Service::Friends::RejectFriendshipService.new(current_user, params)
+            if current_user_friendships.has_friend_request?
+              current_user_friendships.decline_friend
               status 200
             else  
-              error!('Operation not permitted')
+              status 403
             end
           end
         end

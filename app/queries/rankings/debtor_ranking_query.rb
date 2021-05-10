@@ -1,5 +1,5 @@
 module Rankings
-  class DebtorsRankingQuery < BaseRankingQuery
+  class DebtorRankingQuery < BaseRankingQuery
     def initialize(positions, filters, pagination)
       super(positions, filters)
       @positions = positions

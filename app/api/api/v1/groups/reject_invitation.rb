@@ -9,15 +9,13 @@ module Api
 
         desc 'Reject invitation to group'
 
-        put do 
-          group_p = ReadModels::Groups::GroupProjection.find_by!(group_uid: params[:group_uid])
-          if group_p.invited_users.include? current_user.id 
-            Rails.configuration.command_bus.call(
-              ::Groups::Commands::RejectInvitation.send(params.merge({user_id: current_user.id}))
-            )
+        patch do 
+          group = ::Services::Groups::RejectInvitationService.call(params, current_user)
+          if group.has_member? current_user
+            Rails.configuration.command_bus.call(group.reject_invitation_command)
             status 201
           else 
-            error!('Operation not permitted', 403)
+            status 403
           end
         end
       end

@@ -1,29 +1,23 @@
 module Groups 
-  class PrepareParamsService
+  class IssueDebtsParamsService
     def initialize(params, current_user_id)
       @params = params 
       @current_user_id = current_user_id
     end
 
     def call
-      retrive_repayment_condition(@params)
-      prepare_params(@params, @current_user_id)
+      data = prepare_params(@params, @current_user_id)
+      issue_debts(data)
     end
 
     private 
-
-    def retrive_repayment_condition(params)
-      group_aggregate = ::Debts::Repositories::Group.new.with_group(params[:group_uid])
-      @repayment_condition = group_aggregate.debt_repayment_valid_till
-    end
 
     def prepare_params(params, issuer_id)
       base = {
         creditor_id: issuer_id,
         description: params[:description],
         currency_id: params[:currency_id],
-        group_uid: params[:group_uid],
-        max_date_of_settlement: @repayment_condition
+        group_uid: params[:group_uid]
       }
       if params[:credit_equally]
         split_debt_params(base, params[:debtors_ids], params[:amount])
@@ -54,6 +48,14 @@ module Groups
         })
       end
       prepared_params
+    end
+
+    def issue_debts(debts_data)
+      debts_data.each do |debt_data|
+        Rails.configuration.command_bus.call(
+          Debts::Commands::IssueDebt.send(debt_data)
+        )
+      end 
     end
 
   end

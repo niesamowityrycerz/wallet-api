@@ -42,8 +42,8 @@ RSpec.describe 'Debt actions', type: :unit do
           expect {
             command_bus.call(Debts::Commands::SettleDebt.new(@settlement_params))
           }.to change { ReadModels::Debts::DebtProjection.find_by!(debt_uid: debt_uid).status }.from('debtors_terms_added').to('closed')
-          .and change { WriteModels::DebtorsRanking.find_by!(debtor_id: debtor.id).debts_quantity }.by(1)
-          .and change { WriteModels::CreditorsRanking.find_by!(creditor_id: creditor.id).credits_quantity }.by(1)
+          .and change { ReadModels::Rankings::DebtorRanking.find_by!(debtor_id: debtor.id).debts_quantity }.by(1)
+          .and change { ReadModels::Rankings::CreditorRanking.find_by!(creditor_id: creditor.id).credits_quantity }.by(1)
 
           expect(ReadModels::Debts::DebtProjection.find_by!(debt_uid: debt_uid).date_of_settlement).to eq(Date.today)
         

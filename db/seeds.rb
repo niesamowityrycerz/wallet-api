@@ -32,7 +32,7 @@ WarningType.create(name: 'missed debt repayment')
 Users::RunAll.new(users_quantity=10).call
 Debts::RunAll.new(per_user_debt=5).call(accept_q=10, reject_q=10, settle=10, checkout=10)
 Warnings::RunAll.new(warnings_q=15)
-
+Groups::RunAll.call(groups_q=5)
 
 User.create({
   username: "ADMIN",

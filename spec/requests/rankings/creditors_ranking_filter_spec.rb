@@ -22,7 +22,7 @@ RSpec.describe 'Creditors ranking filter spec', type: :request do
       displayed_usernames = parsed_body["data"].collect { |record| record["attributes"]["creditor"] }
       displayed_ratio = parsed_body["data"].collect { |record| record["attributes"]["ratio"] }
 
-      base_data = WriteModels::CreditorsRanking.order("ratio DESC").page(0)
+      base_data = ReaModels::Rankings::CreditorRanking.order("ratio DESC").page(0)
       to_be_displayed = { trust_points: [], usernames: [], ratio: [] }
       base_data.each do |position|
         to_be_displayed[:trust_points] << position.trust_points
@@ -52,7 +52,7 @@ RSpec.describe 'Creditors ranking filter spec', type: :request do
       parsed_body = JSON.parse(response.body)
 
       displayed_trust_points = parsed_body["data"].collect { |record| record["attributes"]["trust_points"] }
-      base_data = WriteModels::CreditorsRanking.where("trust_points <= ? AND trust_points >= ?", query_params[:filters][:trust_points][:max], query_params[:filters][:trust_points][:min] )
+      base_data = ReaModels::Rankings::CreditorRanking.where("trust_points <= ? AND trust_points >= ?", query_params[:filters][:trust_points][:max], query_params[:filters][:trust_points][:min] )
       trust_points_to_be_displayed = base_data.collect { |record| record.trust_points }
 
       expect(displayed_trust_points - trust_points_to_be_displayed).to eq([])

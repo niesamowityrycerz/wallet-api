@@ -55,6 +55,11 @@ module Users
       accepted_credits = ReadModels::Debts::DebtProjection.where("creditor_id = ?", user.id)
       accepted_credits.sum("amount").round(2)
     end
+
+    link :accept_invitation_to_group do |user|
+
+    end
+    
   end 
 end 
 

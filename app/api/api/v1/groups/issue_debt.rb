@@ -29,10 +29,9 @@ module Api
 
         resource :issue_debt do 
           post do
-            group_p = ReadModels::Groups::GroupProjection.find_by!(group_uid: params[:group_uid])
-            if group_p.members.include? current_user.id
-              parameters = ::Groups::PrepareParamsService.new(params, current_user.id).call  
-              ::Groups::IssueDebtsWithinGroupScopeService.call(parameters)
+            group = ::Sevices::BaseGroupService.new(params[:group_uid])
+            if group.has_member?(current_user.id)
+              ::Services::IssueDebtsService.new(params, current_user).call
               status 201 
             else 
               status 403 

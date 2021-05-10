@@ -20,11 +20,11 @@ RSpec.describe User, type: :model do
   it 'registers user' do
     expect {
       User.create!(user_attr)
-    }.to change { WriteModels::DebtorsRanking.count }.by(1)
-    .and change { WriteModels::CreditorsRanking.count }.by(1)
+    }.to change { ReadModels::Rankings::DebtorRanking.count }.by(1)
+    .and change { ReadModels::Rankings::CreditorRanking.count }.by(1)
     
     added_user_id = User.find_by!(email: user_attr[:email]).id
-    expect(WriteModels::DebtorsRanking.find_by!(debtor_id: added_user_id).present? ).to eq(true)
-    expect(WriteModels::CreditorsRanking.find_by!(creditor_id: added_user_id).present? ).to eq(true)
+    expect(ReadModels::Rankings::DebtorRanking.find_by!(debtor_id: added_user_id).present? ).to eq(true)
+    expect(ReadModels::Rankings::CreditorRanking.find_by!(creditor_id: added_user_id).present? ).to eq(true)
   end
 end

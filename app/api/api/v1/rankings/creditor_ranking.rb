@@ -1,9 +1,9 @@
 module Api 
   module V1 
     module Rankings
-      class CreditorsRanking < Base 
+      class CreditorRanking < Base 
 
-        desc 'Creditors ranking'
+        desc 'Creditor ranking'
   
         params do 
           optional :filters, type: Hash do 
@@ -20,9 +20,9 @@ module Api
 
         resource :creditors do 
           get do
-            ranking_positions = ::Rankings::CreditorsRankingService.call
-            queried_object = ::Rankings::CreditorsRankingQuery.new(ranking_positions, params[:filters], params[:pagination]).filter
-            ::Ranking::CreditorsRankingSerializer.new(queried_object).serializable_hash
+            ranking_positions = ::Rankings::CreditorRankingService.call
+            queried_object = ::Rankings::CreditorRankingQuery.new(ranking_positions, params[:filters], params[:pagination]).filter
+            ::Rankings::CreditorRankingSerializer.new(queried_object).serializable_hash
           end
         end 
       end

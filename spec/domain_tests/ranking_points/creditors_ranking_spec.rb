@@ -38,7 +38,7 @@ RSpec.describe 'Creditors Ranking changes', type: :integration do
       command_bus.call(Debts::Commands::SettleDebt.new(@settle_params))
 
       trust_p_change = event_store.read.stream("RankingPoint$#{debt_uid}").to_a.second.data[:trust_points]
-      trust_points_after = WriteModels::CreditorsRanking.find_by!(creditor_id: creditor.id).trust_points
+      trust_points_after = WriteModels::CreditorRanking.find_by!(creditor_id: creditor.id).trust_points
 
       expect(trust_points_after).to eq(trust_points_before + trust_p_change)
     end 
@@ -49,9 +49,9 @@ RSpec.describe 'Creditors Ranking changes', type: :integration do
 
       command_bus.call(Debts::Commands::SettleDebt.new(@settle_params))
 
-      trust_points_after = WriteModels::CreditorsRanking.find_by!(creditor_id: creditor.id).trust_points
+      trust_points_after = ReadModels::Rankings::CreditorRanking.find_by!(creditor_id: creditor.id).trust_points
       anticipated_creditor_ratio = (trust_points_after/(credits_q + 1)).round(2)
-      creditor_ratio_after = WriteModels::CreditorsRanking.find_by!(creditor_id: creditor.id).ratio
+      creditor_ratio_after = ReadModels::Rankings::CreditorRanking.find_by!(creditor_id: creditor.id).ratio
 
       expect(creditor_ratio_after).to eq(anticipated_creditor_ratio)
 
@@ -60,7 +60,7 @@ RSpec.describe 'Creditors Ranking changes', type: :integration do
     it 'checks updated credits quantity' do 
       expect {
         command_bus.call(Debts::Commands::SettleDebt.new(@settle_params))
-      }.to change { WriteModels::CreditorsRanking.find_by!(creditor_id: creditor.id).credits_quantity }.by(1)
+      }.to change { ReaModels::Rankings::CreditorRanking.find_by!(creditor_id: creditor.id).credits_quantity }.by(1)
     end 
   end
 end

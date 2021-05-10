@@ -18,9 +18,9 @@ module Groups
     end
 
     meta do |group|
-      group_debts = ReadModels::Debts::DebtProjection.where(group_uid: group.group_uid)
+      group_scope_debts = ReadModels::Debts::DebtProjection.where(group_uid: group.group_uid)
       display = {}
-      group_debts.each do |debt_p|
+      group_scope_debts.each do |debt_p|
         display[debt_p.debt_uid] = {
           creditor: User.find_by!(id: debt_p.creditor_id).username,
           debtor: User.find_by!(id: debt_p.debtor_id).username,
@@ -30,14 +30,6 @@ module Groups
         }
       end
       display 
-
     end
-
-
-
-    
-
-    
-
   end
 end

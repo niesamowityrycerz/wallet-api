@@ -32,8 +32,9 @@ Rails.configuration.to_prepare do
     
     store.subscribe(ReadModels::Groups::Handlers::OnGroupRegistered,                     to: [Groups::Events::GroupRegistered])
     store.subscribe(ReadModels::Groups::Handlers::OnGroupSettlementTermsAdded,           to: [Groups::Events::GroupSettlementTermsAdded])
-    store.subscribe(ReadModels::Groups::Handlers::OnInvitationAcceptedOrRejected,        to: [Groups::Events::InvitationAccepted,
-                                                                                              Groups::Events::InvitationRejected])                                                                                     
+    store.subscribe(ReadModels::Groups::Handlers::OnInvitationAccepted,                  to: [Groups::Events::InvitationAccepted])
+    store.subscribe(ReadModels::Groups::Handlers::OnInvitationRejected,                  to: [Groups::Events::InvitationRejected])
+                                                                                  
 
     # Processes(System)
     store.subscribe(Processes::DebtPoint, to: [

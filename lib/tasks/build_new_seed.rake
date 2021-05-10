@@ -8,15 +8,16 @@ namespace :db do
     User.destroy_all
     WarningType.destroy_all
     Currency.destroy_all
-    Group.destroy_all
+    HasFriendship::Friendship.destroy_all
   
     WriteModels::Debt.destroy_all
     WriteModels::GroupMember.destroy_all
     WriteModels::RepaymentCondition.destroy_all 
     WriteModels::Warning.destroy_all
+    WriteModels::Group.destroy_all
   
-    ReadModels::Rankings::CreditorsRanking.destroy_all
-    ReadModels::Rankings::DebtorsRanking.destroy_all 
+    ReadModels::Rankings::CreditorRanking.destroy_all
+    ReadModels::Rankings::DebtorRanking.destroy_all 
     ReadModels::Warnings::DebtWarningProjection.destroy_all
     ReadModels::Groups::GroupProjection.destroy_all
     ReadModels::Debts::DebtProjection.destroy_all 

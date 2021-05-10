@@ -1,7 +1,7 @@
 module Api 
   module V1 
     module Rankings
-      class DebtorsRanking < Base 
+      class DebtorRanking < Base 
 
         desc "Show debtors ranking"
 
@@ -20,9 +20,9 @@ module Api
 
         resource :debtors do 
           get do 
-            ranking_positions = ::Rankings::DebtorsRankingService.call
-            queried_object = ::Rankings::DebtorsRankingQuery.new(ranking_positions, params[:filters], params[:pagination]).filter
-            ::Ranking::DebtorsRankingSerializer.new(queried_object).serializable_hash
+            ranking_positions = ::Rankings::DebtorRankingService.call
+            queried_object = ::Rankings::DebtorRankingQuery.new(ranking_positions, params[:filters], params[:pagination]).filter
+            ::Rankings::DebtorRankingSerializer.new(queried_object).serializable_hash
           end
         end
       end

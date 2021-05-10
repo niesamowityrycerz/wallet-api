@@ -15,6 +15,23 @@ module ReadModels
             leader_id: event.data.fetch(:leader_id),
             state: event.data.fetch(:state)
           })
+
+          # Can I use callbacks(hooks) here?
+
+          WriteModels::Group.create!({
+            name: event.data.fetch(:group_name),
+            from: event.data.fetch(:from),
+            to: event.data.fetch(:to)
+          })
+
+
+          #invited_users = event.data.fetch(:invited_users)
+          #invited_users.each do |user_id|
+          #  WriteModels::GroupInvitation.create!({
+          #    user_id: user_id,
+          #    group_uids: group_uid
+          #  })
+          #end 
         end
       end
     end
