@@ -12,12 +12,16 @@
 
 ActiveRecord::Schema.define(version: 2021_05_13_174023) do
 
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "pgcrypto"
+  enable_extension "plpgsql"
+
   create_table "creditor_rankings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.float "trust_points", default: 0.0
     t.integer "credits_quantity", default: 0
-    t.decimal "ratio", precision: 2, scale: 2
+    t.decimal "ratio", precision: 10, scale: 2
     t.string "creditor_name"
     t.integer "creditor_id"
     t.index ["creditor_id"], name: "index_creditor_rankings_on_creditor_id"
@@ -61,7 +65,7 @@ ActiveRecord::Schema.define(version: 2021_05_13_174023) do
     t.string "debt_uid"
     t.string "warning_uid"
     t.float "penalty_points"
-    t.integer "user_id"
+    t.bigint "user_id"
     t.index ["user_id"], name: "index_debt_warning_projections_on_user_id"
   end
 
@@ -70,7 +74,7 @@ ActiveRecord::Schema.define(version: 2021_05_13_174023) do
     t.datetime "updated_at", null: false
     t.float "adjusted_credibility_points", default: 0.0
     t.integer "debts_quantity", default: 0
-    t.decimal "ratio", precision: 2, scale: 2
+    t.decimal "ratio", precision: 10, scale: 2
     t.string "debtor_name"
     t.integer "debtor_id"
     t.index ["debtor_id"], name: "index_debtor_rankings_on_debtor_id"
@@ -79,41 +83,40 @@ ActiveRecord::Schema.define(version: 2021_05_13_174023) do
   create_table "debts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "debtor_id"
-    t.integer "creditor_id"
+    t.bigint "debtor_id"
+    t.bigint "creditor_id"
     t.float "amount"
-    t.string "debt_uid"
     t.datetime "date_of_transaction"
+    t.string "debt_uid"
     t.integer "state", default: 0
     t.index ["creditor_id"], name: "index_debts_on_creditor_id"
-    t.index ["debt_uid"], name: "index_debts_on_debt_uid"
     t.index ["debtor_id"], name: "index_debts_on_debtor_id"
   end
 
-  create_table "event_store_events", force: :cascade do |t|
-    t.string "event_id", limit: 36, null: false
+  create_table "event_store_events", id: :serial, force: :cascade do |t|
+    t.uuid "event_id", null: false
     t.string "event_type", null: false
     t.binary "metadata"
     t.binary "data", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "valid_at", precision: 6
+    t.datetime "created_at", null: false
+    t.datetime "valid_at"
     t.index ["created_at"], name: "index_event_store_events_on_created_at"
     t.index ["event_id"], name: "index_event_store_events_on_event_id", unique: true
     t.index ["event_type"], name: "index_event_store_events_on_event_type"
     t.index ["valid_at"], name: "index_event_store_events_on_valid_at"
   end
 
-  create_table "event_store_events_in_streams", force: :cascade do |t|
+  create_table "event_store_events_in_streams", id: :serial, force: :cascade do |t|
     t.string "stream", null: false
     t.integer "position"
-    t.string "event_id", limit: 36, null: false
-    t.datetime "created_at", precision: 6, null: false
+    t.uuid "event_id", null: false
+    t.datetime "created_at", null: false
     t.index ["created_at"], name: "index_event_store_events_in_streams_on_created_at"
     t.index ["stream", "event_id"], name: "index_event_store_events_in_streams_on_stream_and_event_id", unique: true
     t.index ["stream", "position"], name: "index_event_store_events_in_streams_on_stream_and_position", unique: true
   end
 
-  create_table "friendships", force: :cascade do |t|
+  create_table "friendships", id: :serial, force: :cascade do |t|
     t.string "friendable_type"
     t.integer "friendable_id"
     t.integer "friend_id"
@@ -128,8 +131,8 @@ ActiveRecord::Schema.define(version: 2021_05_13_174023) do
     t.boolean "founder"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "group_id"
-    t.integer "member_id"
+    t.bigint "group_id"
+    t.bigint "member_id"
     t.string "group_uid"
     t.integer "invitation_status", default: 0
     t.index ["group_id"], name: "index_group_members_on_group_id"
@@ -144,11 +147,11 @@ ActiveRecord::Schema.define(version: 2021_05_13_174023) do
     t.date "to"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "members"
+    t.integer "members", array: true
     t.date "debt_repayment_valid_till"
     t.string "currency"
     t.integer "state"
-    t.string "invited_users"
+    t.integer "invited_users", array: true
   end
 
   create_table "groups", force: :cascade do |t|
@@ -157,14 +160,14 @@ ActiveRecord::Schema.define(version: 2021_05_13_174023) do
     t.date "to"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "group_projection_id"
+    t.bigint "group_projection_id"
     t.boolean "activated", default: true
     t.index ["group_projection_id"], name: "index_groups_on_group_projection_id"
   end
 
   create_table "oauth_access_tokens", force: :cascade do |t|
-    t.integer "resource_owner_id"
-    t.integer "application_id", null: false
+    t.bigint "resource_owner_id"
+    t.bigint "application_id", null: false
     t.string "token", null: false
     t.string "refresh_token"
     t.integer "expires_in"
@@ -191,7 +194,7 @@ ActiveRecord::Schema.define(version: 2021_05_13_174023) do
   end
 
   create_table "posts", force: :cascade do |t|
-    t.integer "user_id"
+    t.bigint "user_id"
     t.string "body"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -201,9 +204,9 @@ ActiveRecord::Schema.define(version: 2021_05_13_174023) do
   create_table "repayment_conditions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "currency_id"
+    t.bigint "currency_id"
     t.integer "maturity_in_days"
-    t.integer "creditor_id"
+    t.bigint "creditor_id"
     t.index ["creditor_id"], name: "index_repayment_conditions_on_creditor_id"
     t.index ["currency_id"], name: "index_repayment_conditions_on_currency_id"
   end
@@ -231,8 +234,8 @@ ActiveRecord::Schema.define(version: 2021_05_13_174023) do
   create_table "warnings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "user_id"
-    t.integer "warning_type_id"
+    t.bigint "user_id"
+    t.bigint "warning_type_id"
     t.string "debt_uid"
     t.float "penalty_points"
     t.string "warning_uid"
@@ -240,4 +243,13 @@ ActiveRecord::Schema.define(version: 2021_05_13_174023) do
     t.index ["warning_type_id"], name: "index_warnings_on_warning_type_id"
   end
 
+  add_foreign_key "debt_warning_projections", "users"
+  add_foreign_key "debts", "users", column: "creditor_id"
+  add_foreign_key "debts", "users", column: "debtor_id"
+  add_foreign_key "group_members", "groups"
+  add_foreign_key "group_members", "users", column: "member_id"
+  add_foreign_key "groups", "group_projections"
+  add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
+  add_foreign_key "posts", "users"
+  add_foreign_key "warnings", "users"
 end

@@ -10,7 +10,7 @@ module ReadModels
             state: event.data.fetch(:state)
           })
 
-          group = WriteModels::Groups.find_by!(group_projection_id: group_p.id)
+          group = WriteModels::Group.find_by!(group_projection_id: group_p.id)
           group.update!({
             activated: false
           })
