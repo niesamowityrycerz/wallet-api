@@ -4,7 +4,7 @@ module Api
       class Base < Api::V1::Base 
         resource :group do 
           mount Api::V1::Groups::Register
-          route_param :group_uid do 
+          route_param :group_uid, type: String do 
             mount Api::V1::Groups::AcceptInvitation
             mount Api::V1::Groups::RejectInvitation
             mount Api::V1::Groups::IssueDebt

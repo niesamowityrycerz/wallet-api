@@ -1,6 +1,6 @@
 module Groups 
   class RegisterGroup 
-    def initialize(group_q=1)
+    def initialize(group_q)
       @group_q = group_q
     end
 
@@ -28,11 +28,13 @@ module Groups
     def make_friendships(group_users)
       group_users.each do |group|
         leader = User.find_by!(id: group[:leader_id])
-        invited_users = group[:invited_users_ids]
-        invited_users.each do |user_id|
-          invited_user = User.find_by!(id: user_id)
-          leader.friend_request(invited_user)
-          invited_user.accept_request(leader)
+        invited_users = group[:invited_users_ids].collect { |id| User.find_by!(id: id)}
+        invited_users.each do |user|
+          user.friend_request(leader)
+        end
+
+        leader.pending_friends.each do |friend|
+          leader.accept_request(friend)
         end
       end
     end

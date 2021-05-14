@@ -1,11 +1,13 @@
 module Groups 
   class BaseGroupService 
-    def initialize(group_uid)
-      @group_uid = group_uid 
+    def initialize(params)
+      @group_uid = params[:group_uid]
     end
 
+    attr_reader :group_uid
+
     def projection
-      ReadModels::Groups::GroupProjection.find_by!(group_uid: @group_uid)
+      ReadModels::Groups::GroupProjection.find_by!(group_uid: group_uid)
     end
 
     def has_member?(user)

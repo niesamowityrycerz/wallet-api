@@ -1,5 +1,5 @@
 FactoryBot.define do 
-  factory :debtors_ranking, class: "ReadModels::Rankings::DebtorRanking" do 
+  factory :debtor_ranking, class: "ReadModels::Rankings::DebtorRanking" do 
     debtor
     adjusted_credibility_points { 0 }
     debts_quantity         { 0 }

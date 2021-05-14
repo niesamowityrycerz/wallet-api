@@ -1,28 +1,31 @@
 module Groups 
-  class IssueDebtsParamsService
-    def initialize(params, current_user_id)
-      @params = params 
-      @current_user_id = current_user_id
+  class IssueDebtsService < BaseGroupService
+    def initialize(params, current_user)
+      @group_uid = params[:group_uid]
+      @debt_params = params.except(:group_uid)
+      @current_user_id = current_user.id
     end
 
-    def call
-      data = prepare_params(@params, @current_user_id)
-      issue_debts(data)
+    attr_reader :group_uid, :current_user_id
+
+    def issue_debts
+      data = prepare_params(@debt_params)
+      execute_commands(data)
     end
 
     private 
 
-    def prepare_params(params, issuer_id)
+    def prepare_params(debt_params)
       base = {
-        creditor_id: issuer_id,
-        description: params[:description],
-        currency_id: params[:currency_id],
-        group_uid: params[:group_uid]
+        creditor_id: current_user_id,
+        description: debt_params[:description],
+        currency_id: debt_params[:currency_id],
+        group_uid: group_uid
       }
-      if params[:credit_equally]
-        split_debt_params(base, params[:debtors_ids], params[:amount])
+      if debt_params[:credit_equally]
+        split_debt_params(base, debt_params[:debtors_ids], debt_params[:amount])
       else
-        no_debt_split_params(base, params[:debts_info])
+        no_debt_split_params(base, debt_params[:debts_info])
       end
     end
 
@@ -50,7 +53,7 @@ module Groups
       prepared_params
     end
 
-    def issue_debts(debts_data)
+    def execute_commands(debts_data)
       debts_data.each do |debt_data|
         Rails.configuration.command_bus.call(
           Debts::Commands::IssueDebt.send(debt_data)

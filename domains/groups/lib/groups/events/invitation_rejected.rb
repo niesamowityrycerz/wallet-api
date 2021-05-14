@@ -3,8 +3,7 @@ module Groups
     class InvitationRejected < Event 
       SCHEMA = {
         user_id: Integer,
-        group_uid: String,
-        state: Symbol
+        group_uid: String
       }
     end
   end

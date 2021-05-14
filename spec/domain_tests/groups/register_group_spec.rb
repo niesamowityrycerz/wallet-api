@@ -24,21 +24,30 @@ RSpec.describe 'Group functionality', type: :unit do
   context 'when invited users are friends with leader' do
     it 'regiters group' do
       create_friendships(leader, friends_of_leader)
-      @register_group_params[:invited_users] = friends_of_leader.collect {|member| member.id }
+      @register_group_params[:invited_users] = friends_of_leader.map(&:id)
 
       expect {
         command_bus.call(Groups::Commands::RegisterGroup.send(@register_group_params))
       }.to change { ReadModels::Groups::GroupProjection.count }.by(1)
+      .and change { WriteModels::Group.count }.by(1)
+
+      expect(event_store).to have_published(
+        an_event(Groups::Events::GroupRegistered)
+      ).in_stream("Group$#{group_uid}")
     end
   end
 
   context 'when invited users are not friends with leader' do 
     it 'raises error on regitering group' do 
-      @register_group_params[:invited_users] = not_friends_with_leader.collect {|member| member.id }
+      @register_group_params[:invited_users] = not_friends_with_leader.map(&:id)
 
       expect {
         command_bus.call(Groups::Commands::RegisterGroup.send(@register_group_params))
       }.to raise_error(Groups::GroupAggregate::MemberNotAllowed)
+
+      expect(event_store).not_to have_published(
+        an_event(Groups::Events::GroupRegistered)
+      ).in_stream("Group$#{group_uid}")
     end
   end 
 end

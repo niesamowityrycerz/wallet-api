@@ -34,6 +34,11 @@ Rails.configuration.to_prepare do
     store.subscribe(ReadModels::Groups::Handlers::OnGroupSettlementTermsAdded,           to: [Groups::Events::GroupSettlementTermsAdded])
     store.subscribe(ReadModels::Groups::Handlers::OnInvitationAccepted,                  to: [Groups::Events::InvitationAccepted])
     store.subscribe(ReadModels::Groups::Handlers::OnInvitationRejected,                  to: [Groups::Events::InvitationRejected])
+    store.subscribe(ReadModels::Groups::Handlers::OnGroupClosed,                         to: [Groups::Events::GroupClosed])
+    store.subscribe(ReadModels::Groups::Handlers::OnUserInvited,                         to: [Groups::Events::UserInvited])
+    store.subscribe(ReadModels::Groups::Handlers::OnGroupLeft,                           to: [Groups::Events::GroupLeft])
+    store.subscribe(ReadModels::Groups::Handlers::OnGroupLeaderChanged,                  to: [Groups::Events::GroupLeaderChanged])
+    
                                                                                   
 
     # Processes(System)
@@ -66,6 +71,9 @@ Rails.configuration.to_prepare do
     bus.register(Groups::Commands::AddGroupSettlementTerms,               Groups::Handlers::OnAddGroupSettlementTerms.new)
     bus.register(Groups::Commands::AcceptInvitation,                      Groups::Handlers::OnAcceptInvitation.new)
     bus.register(Groups::Commands::RejectInvitation,                      Groups::Handlers::OnRejectInvitation.new)
+    bus.register(Groups::Commands::CloseGroup,                            Groups::Handlers::OnCloseGroup.new)
+    bus.register(Groups::Commands::InviteUser,                            Groups::Handlers::OnInviteUser.new)
+    bus.register(Groups::Commands::LeaveGroup,                            Groups::Handlers::OnLeaveGroup.new)
   end
 
 end

@@ -17,10 +17,10 @@ module Api
         end
 
         resource :add_terms do 
-          patch do 
-            group = ::Services::GroupSettlementTermsService.new(params[:group_uid]).call(params[:terms])
-            if group.has_member?(current_user)
-              Rails.configuration.command_bus.call(group.command) # maybe, just call something like group.add_group_settlement_terms 
+          patch do
+            group = ::Groups::GroupSettlementTermsService.new(params[:group_uid])
+            if group.has_member? current_user
+              Rails.configuration.command_bus.call(group.add_group_terms_command(params)) # maybe, just call something like group.add_group_settlement_terms 
               status 201
             else
               status 403

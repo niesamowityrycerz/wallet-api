@@ -44,6 +44,12 @@ User.create({
 
 ::Debts::ManyDebtsAndCreditsBetweenTwoUsers.new(user_1_id=1,user_2_id=2).call
 
+User.all.each do |user|
+  100.times do |i|
+    user.posts.create(body: "test_#{user.id}_#{i}")
+  end 
+end
+
 stop = Time.now 
 puts stop - start 
 

@@ -56,7 +56,7 @@ RSpec.describe 'Group functionality', type: :unit do
       @group_settlement_param[:debt_repayment_valid_till] = @register_group_params[:from]
       expect {
         command_bus.call(Groups::Commands::AddGroupSettlementTerms.send(@group_settlement_param))
-      }.to raise_error(Groups::GroupAggregate::UnpermittedTransactionExpirationDate)
+      }.to raise_error(Groups::GroupAggregate::UnpermittedRepaymentDate)
     end
   end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_05_10_075638) do
+ActiveRecord::Schema.define(version: 2021_05_13_174023) do
 
   create_table "creditor_rankings", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -130,6 +130,8 @@ ActiveRecord::Schema.define(version: 2021_05_10_075638) do
     t.datetime "updated_at", null: false
     t.integer "group_id"
     t.integer "member_id"
+    t.string "group_uid"
+    t.integer "invitation_status", default: 0
     t.index ["group_id"], name: "index_group_members_on_group_id"
     t.index ["member_id"], name: "index_group_members_on_member_id"
   end
@@ -155,6 +157,9 @@ ActiveRecord::Schema.define(version: 2021_05_10_075638) do
     t.date "to"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "group_projection_id"
+    t.boolean "activated", default: true
+    t.index ["group_projection_id"], name: "index_groups_on_group_projection_id"
   end
 
   create_table "oauth_access_tokens", force: :cascade do |t|
@@ -183,6 +188,14 @@ ActiveRecord::Schema.define(version: 2021_05_10_075638) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["uid"], name: "index_oauth_applications_on_uid", unique: true
+  end
+
+  create_table "posts", force: :cascade do |t|
+    t.integer "user_id"
+    t.string "body"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_posts_on_user_id"
   end
 
   create_table "repayment_conditions", force: :cascade do |t|

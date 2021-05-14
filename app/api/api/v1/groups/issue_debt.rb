@@ -29,9 +29,9 @@ module Api
 
         resource :issue_debt do 
           post do
-            group = ::Sevices::BaseGroupService.new(params[:group_uid])
-            if group.has_member?(current_user.id)
-              ::Services::IssueDebtsService.new(params, current_user).call
+            group = ::Groups::IssueDebtsService.new(params, current_user)
+            if group.has_member? current_user
+              group.issue_debts
               status 201 
             else 
               status 403 

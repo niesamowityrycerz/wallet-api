@@ -1,7 +1,8 @@
 module Groups 
   class RegisterGroupService 
-    def initialize(base_params)
+    def initialize(base_params, current_user)
       @base_params = base_params
+      @current_user = current_user
     end
 
     def call
@@ -13,7 +14,7 @@ module Groups
 
     def prepare_params(params)
       params.merge!({
-        leader_id: current_user.id,
+        leader_id: @current_user.id,
         group_uid: SecureRandom.uuid
       })
 

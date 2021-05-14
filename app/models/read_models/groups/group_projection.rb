@@ -4,9 +4,9 @@ module ReadModels
       serialize :members
       serialize :invited_users
 
+      has_one :group, class_name: "WriteModels::Group"
 
-      enum state: { init: 0, terms_added: 1, invitation_accepted: 3,
-                    invitation_rejected: 4 }
+      enum state: { init: 0, terms_added: 1, closed: 2 }
 
     end
   end 

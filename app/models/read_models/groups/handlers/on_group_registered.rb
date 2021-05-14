@@ -18,20 +18,31 @@ module ReadModels
 
           # Can I use callbacks(hooks) here?
 
-          WriteModels::Group.create!({
+          group = WriteModels::Group.create!({
             name: event.data.fetch(:group_name),
             from: event.data.fetch(:from),
-            to: event.data.fetch(:to)
+            to: event.data.fetch(:to),
+            group_projection_id: group_p.id
           })
 
+          invited_users = event.data.fetch(:invited_users)
+          invited_users << event.data.fetch(:leader_id)
+          invited_users.each do |user_id|
+            base_data = {
+              member_id: user_id,
+              group_id: group.id,
+              group_uid: group_uid
+            }
 
-          #invited_users = event.data.fetch(:invited_users)
-          #invited_users.each do |user_id|
-          #  WriteModels::GroupInvitation.create!({
-          #    user_id: user_id,
-          #    group_uids: group_uid
-          #  })
-          #end 
+            if user_id == event.data.fetch(:invited_users)
+              WriteModels::GroupMember.create!(base_data.merge({
+                founder: true,
+                invitation_status: accepted
+              }))
+            else 
+              WriteModels::GroupMember.create!(base_data)
+            end 
+          end 
         end
       end
     end

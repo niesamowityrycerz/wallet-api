@@ -4,16 +4,18 @@ module Groups
   class GroupAggregate
     include AggregateRoot
 
-    MemberNotAllowed                      = Class.new(StandardError)
-    GroupDoesNotExist                     = Class.new(StandardError)
-    UnpermittedRepaymentDate              = Class.new(StandardError)
-    OperationNotPermitted                 = Class.new(StandardError)
+    MemberNotAllowed         = Class.new(StandardError)
+    GroupDoesNotExist        = Class.new(StandardError)
+    UnpermittedRepaymentDate = Class.new(StandardError)
+    OperationNotPermitted    = Class.new(StandardError)
+    NotEntitledToCloseGroup  = Class.new(StandardError)
 
     def initialize(id)
       @id = id 
       @leader = nil 
       @members = []
       @invited_users = []
+      @rejected_by = []
       @group_lasting_period = nil 
       @state = nil
       @debt_repayment_valid_till = nil 
@@ -21,14 +23,14 @@ module Groups
       @debts_within_group = []
     end
 
-    attr_reader :leader_id, :members, :debt_repayment_valid_till, :group_lasting_period, :invited_users
+    attr_reader :leader, :members, :debt_repayment_valid_till, :group_lasting_period, :invited_users
 
     def register(data)
-      @leader = User.find_by!(id: data[:leader_id])
-      data[:invited_users].each do |id|
-        invited_user = User.find_by!(id: id)
-        raise MemberNotAllowed.new "User #{invited_user.username} is not allowed" unless @leader.friends.include? invited_user
-      end
+      #leader = User.find_by!(id: data[:leader_id])
+      #data[:invited_users].each do |id|
+      #  binding.pry
+      #  raise MemberNotAllowed.new unless leader.friends.include? User.find_by!(id: id)
+      #end
 
       apply Events::GroupRegistered.strict({
         group_uid: @id,
@@ -58,8 +60,7 @@ module Groups
 
       apply Events::InvitationAccepted.strict({
         group_uid: data.fetch(:group_uid),
-        member_id: data.fetch(:member_id),
-        state: :invitation_accepted
+        member_id: data.fetch(:member_id)
       })
     end
 
@@ -68,20 +69,53 @@ module Groups
 
       apply Events::InvitationRejected.strict({
         group_uid: @id,
-        user_id: data.fetch(:user_id),
-        state: :invitation_rejected
+        user_id: data.fetch(:user_id)
       })
     end
 
-    def close_group_transaction
-      # validation here 
-      #TODO
+    def close_group(data)
+      raise NotEntitledToCloseGroup.new "You are not entitled to close group" unless leader.id == data.fetch(:user_id)
+      apply Events::GroupClosed.strict({
+        group_uid: @id,
+        state: :closed
+      })
+    end
+
+    def invite_user(data)
+      raise MemberNotAllowed.new  unless leader.friends.include? User.find_by!(id: data.fetch(:user_id))
+
+      apply Events::UserInvited.strict({
+        group_uid: @id,
+        invited_user_id: data.fetch(:user_id)
+      })
+    end
+
+    def leave_group(data)
+      raise OperationNotPermitted.new unless members.map(&:id).include? data.fetch(:member_id) 
+      apply Events::GroupLeft.strict({
+        user_id: data.fetch(:member_id),
+        group_uid: @id
+      })
+       
+
+      if data.fetch(:member_id) == leader.id
+        new_leader_id = Calculators::GetNewLeader.set(members)
+        if !new_leader_id.nil?
+          apply Events::GroupLeaderChanged.strict({
+            group_uid: @id,
+            new_leader_id: new_leader_id
+          })
+        end 
+      end
+
     end
 
     on Events::GroupRegistered do |event|
       @group_lasting_period = Entities::GroupLastingPeriod.new(event.data.fetch(:from), event.data.fetch(:to))
       @state = event.data.fetch(:state)
       @invited_users = event.data.fetch(:invited_users)
+      @leader = User.find_by!(id: event.data.fetch(:leader_id))
+      @members << Entities::Member.new(event.data.fetch(:leader_id))
     end
 
     on Events::GroupSettlementTermsAdded do |event|
@@ -92,15 +126,30 @@ module Groups
 
     on Events::InvitationAccepted do |event|
       @members << Entities::Member.new(event.data.fetch(:member_id))
-      @state = event.data.fetch(:state)
     end
 
     on Events::InvitationRejected do |event|
-      @state = event.data.fetch(:state)
+      @rejected_by << event.data.fetch(:user_id)
     end
 
     on Debts::Events::DebtIssued do |event|
       @debts_within_group << Entities::Debt.new(event.data.fetch(:debt_uid))
+    end
+
+    on Events::GroupClosed do |event|
+      @state = event.data.fetch(:state)
+    end
+
+    on Events::UserInvited do |event|
+      @invited_users << event.data.fetch(:invited_user_id)
+    end
+
+    on Events::GroupLeft do |event|
+      @members = @members.select {|member| member.id != event.data.fetch(:user_id) }
+    end
+
+    on Events::GroupLeaderChanged do |event|
+      @leader = User.find_by!(id: event.data.fetch(:new_leader_id))
     end
   end
 end

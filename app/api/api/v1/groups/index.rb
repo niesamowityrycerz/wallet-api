@@ -10,9 +10,9 @@ module Api
         desc 'Get group panel by group uid'
         
         get do 
-          group = ::Services::BaseGroupService.new(params[:group_uid])
+          group = ::Groups::BaseGroupService.new(params)
           if group.has_member?(current_user)
-            ::Groups::GroupSerializer.new(group.projection).serializable_hash
+            ::Groups::GroupSerializer.new(group.projection, { params: { current_user_id: current_user.id } }).serializable_hash
           else 
             status 403
           end

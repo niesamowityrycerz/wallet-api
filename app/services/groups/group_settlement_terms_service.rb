@@ -1,15 +1,12 @@
 module Groups 
-  class GroupSettlementTermsService << BaseGroupService
-    def call(terms)
-      prepare_command(terms)
+  class GroupSettlementTermsService < BaseGroupService
+
+    def add_group_terms_command(data)
+      adjusted_params = data[:terms].merge({
+        group_uid: group_uid
+      })
+      ::Groups::Commands::AddGroupSettlementTerms.send(adjusted_params)
     end
 
-    private 
-
-    def prepare_command(data)
-      @command = ::Groups::Commands::AddGroupSettlementTerms.send(data)
-    end
-
-    attr_reader :command
   end
 end

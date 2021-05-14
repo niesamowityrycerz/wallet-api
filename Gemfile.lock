@@ -162,9 +162,13 @@ GEM
       mini_portile2 (~> 2.5.0)
       racc (~> 1.4)
     orm_adapter (0.5.0)
+    pg (1.2.3)
     pry (0.13.1)
       coderay (~> 1.1)
       method_source (~> 1.0)
+    pry-byebug (3.9.0)
+      byebug (~> 11.0)
+      pry (~> 0.13.0)
     puma (3.12.6)
     racc (1.5.2)
     rack (2.2.3)
@@ -288,7 +292,6 @@ GEM
       actionpack (>= 4.0)
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
-    sqlite3 (1.4.2)
     stateful_enum (0.6.0)
     thor (1.1.0)
     thread_safe (0.3.6)
@@ -320,7 +323,8 @@ DEPENDENCIES
   jsonapi-serializer
   kaminari
   listen (>= 3.0.5, < 3.2)
-  pry
+  pg
+  pry-byebug
   puma (~> 3.11)
   rails (~> 5.2.3)
   rails_event_store
@@ -333,7 +337,6 @@ DEPENDENCIES
   sinatra
   spring
   spring-watcher-listen (~> 2.0.0)
-  sqlite3
   tzinfo-data
 
 RUBY VERSION

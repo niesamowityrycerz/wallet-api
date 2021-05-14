@@ -25,32 +25,18 @@ RSpec.describe "Group functionality", type: :unit do
   end
 
   context 'when invited user' do 
-    it 'accepts invitation to group' do
-      sampled_user_id = friends_of_leader.sample.id
-      expect {
-        command_bus.call(Groups::Commands::AcceptInvitation.send({
-          group_uid: group_uid,
-          member_id: sampled_user_id
-        }))
-      }.to change { ReadModels::Groups::GroupProjection.find_by!(group_uid: group_uid).members }.from(Array.new([leader.id])).to(Array.new([leader.id, sampled_user_id]))
-
-      expect(event_store).to have_published(
-        an_event(Groups::Events::InvitationAccepted).with_data({
-          member_id: sampled_user_id
-        })
-      ).in_stream("Group$#{group_uid}")
-    end
-
     it 'rejects invitation to group' do 
-      sampled_user_id = friends_of_leader.sample.id
-      command_bus.call(Groups::Commands::RejectInvitation.send({
+      sampled_user = friends_of_leader.sample
+      data = {
         group_uid: group_uid,
-        user_id: sampled_user_id
-      }))
-    
+        user_id: sampled_user.id
+      }
+      command_bus.call(Groups::Commands::RejectInvitation.send(data))
+
+      expect(sampled_user.group_members.where(group_uid: group_uid).invitation_status).to eq("rejected")
       expect(event_store).to have_published(
         an_event(Groups::Events::InvitationRejected).with_data({
-          user_id: sampled_user_id
+          user_id: sampled_user.id
         })
       ).in_stream("Group$#{group_uid}")
     end
@@ -58,25 +44,14 @@ RSpec.describe "Group functionality", type: :unit do
 
   # shared context 
   context 'when user was not invited' do 
-    it 'raises error on accepting invitation' do
-      expect {
-        command_bus.call(Groups::Commands::AcceptInvitation.send({
-          group_uid: group_uid,
-          member_id: random_user.id
-        }))
-      }.to raise_error(Groups::GroupAggregate::OperationNotPermitted)
-
-      expect(event_store).not_to have_published(
-        an_event(Groups::Events::InvitationAccepted)
-      ).in_stream("Group$#{group_uid}")
-    end
-
     it 'raises error on rejecting invitation' do 
+      data = {
+        group_uid: group_uid,
+        user_id: random_user.id
+      }
+      
       expect {
-        command_bus.call(Groups::Commands::RejectInvitation.send({
-          group_uid: group_uid,
-          user_id: random_user.id
-        }))
+        command_bus.call(Groups::Commands::RejectInvitation.send(data))
       }.to raise_error(Groups::GroupAggregate::OperationNotPermitted)
 
       expect(event_store).not_to have_published(

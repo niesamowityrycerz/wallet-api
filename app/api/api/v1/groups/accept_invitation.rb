@@ -10,7 +10,7 @@ module Api
         desc 'Accept invitation to group'
 
         patch do 
-          group = ::Services::AcceptInvitationService.call(params, current_user)
+          group = ::Groups::AcceptInvitationService.call(params, current_user)
           if group.has_member? current_user
             Rails.configuration.command_bus.call(group.accept_invitation_command)
             status 201

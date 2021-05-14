@@ -17,11 +17,29 @@ module Groups
       members_h
     end
 
+    link :add_group_terms do |group|
+      "/api/v1/group/#{group.group_uid}/add_terms"
+    end
+
+    link :add_member do |group|
+      "/api/v1/group/#{group.group_uid}/add_member"
+    end
+
+    link :close_group, if: Proc.new { |group, params|
+      group.leader_id == params[:current_user_id]
+    } do |group_object|
+      "/api/v1/#{group_object.group_uid}/close_group"
+    end
+
+    link :leave_group do |group|
+      "/api/v1/group/#{group.group_uid}/leave"
+    end
+
     meta do |group|
       group_scope_debts = ReadModels::Debts::DebtProjection.where(group_uid: group.group_uid)
-      display = {}
+      display = { debts: [] }
       group_scope_debts.each do |debt_p|
-        display[debt_p.debt_uid] = {
+        display[:debts] << {
           creditor: User.find_by!(id: debt_p.creditor_id).username,
           debtor: User.find_by!(id: debt_p.debtor_id).username,
           status: debt_p.status,
