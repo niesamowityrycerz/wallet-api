@@ -3,6 +3,6 @@ module WriteModels
     belongs_to :group
     belongs_to :member, class_name: "User"
 
-    enum invitation_status: { waiting: 0, accepted: 1, rejected: 2 }
+    enum invitation_status: { waiting: 'waiting', accepted: 'accepted', rejected: 'rejected' }
   end
 end 

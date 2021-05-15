@@ -4,7 +4,7 @@ module Debts
       SCHEMA = {
         debt_uid: String,
         date_of_settlement: Date,
-        state: Symbol,
+        status: Symbol,
         debtor_id: Integer,
         creditor_id: Integer,
         amount: Float,

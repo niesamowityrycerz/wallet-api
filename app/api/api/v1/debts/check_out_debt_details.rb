@@ -13,22 +13,16 @@ module Api
           requires :doubts, type: String 
         end
 
-        route_param :debt_uid do 
-          resource :checkout do 
-
-            post do 
-              debt = ReadModels::Debts::DebtProjection.find_by!(debt_uid: params[:debt_uid])
-              if debt.debtor_id == current_user.id 
-                Rails.configuration.command_bus.call(
-                  ::Debts::Commands::CheckOutDebtDetails.new(params)
-                )
-                redirect "/api/v1/debt/#{params[:debt_uid]}", permanent: true
-              else
-                403
-              end
+        resource :checkout do 
+          post do 
+            debt = ::Debts::CheckOutDebtService.new(params)
+            if debt.is_debtor? current_user
+              debt.check_out
+              status 201
+            else
+              403
             end
-            
-          end 
+          end   
         end 
       end
     end

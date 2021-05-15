@@ -7,7 +7,7 @@ module ReadModels
           debt_projection.update!(
             {
               doubts: event.data.fetch(:doubts),
-              status: event.data.fetch(:state)
+              status: event.data.fetch(:status)
             }
           )
         end

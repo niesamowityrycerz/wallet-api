@@ -9,15 +9,17 @@ module Api
 
         desc 'Accept invitation to group'
 
-        patch do 
-          group = ::Groups::AcceptInvitationService.call(params, current_user)
-          if group.has_member? current_user
-            Rails.configuration.command_bus.call(group.accept_invitation_command)
-            status 201
-          else 
-            status 403
+        resource :accept do 
+          patch do 
+            group = ::Groups::AcceptInvitationService.new(params, current_user)
+            if group.has_invited? current_user
+              group.accept_invitation
+              status 201
+            else 
+              status 403
+            end
           end
-        end
+        end 
       end
     end
   end

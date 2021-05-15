@@ -3,7 +3,7 @@ FactoryBot.define do
     from        { Date.today } 
     to          { Date.today + rand(5..10) }
     name        { Faker::Address.country + "_#{rand(1..100)}" }
-    state       { :init }
+    status       { :init }
 
     trait :lasting_10_days do 
       to { Date.today + 10 }

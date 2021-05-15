@@ -29,10 +29,11 @@ Currency.create!(name: 'US Dollar', code: 'USD')
 WarningType.create(name: 'missed debt repayment')
 
 
-Users::RunAll.new(users_quantity=10).call
+Users::RunAll.new(users_quantity=40).call
 Debts::RunAll.new(per_user_debt=5).call(accept_q=10, reject_q=10, settle=10, checkout=10)
 Warnings::RunAll.new(warnings_q=15)
-Groups::RunAll.call(groups_q=5)
+Groups::RunAll.call(groups_q=20, accept_q=10, reject_q=10) # accept_q + reject_q >! groups_q
+
 
 User.create({
   username: "ADMIN",
@@ -44,11 +45,6 @@ User.create({
 
 ::Debts::ManyDebtsAndCreditsBetweenTwoUsers.new(user_1_id=1,user_2_id=2).call
 
-User.all.each do |user|
-  100.times do |i|
-    user.posts.create(body: "test_#{user.id}_#{i}")
-  end 
-end
 
 stop = Time.now 
 puts stop - start 

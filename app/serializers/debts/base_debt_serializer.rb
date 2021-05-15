@@ -17,7 +17,7 @@ module Debts
     end
 
     attribute :issued_at do |debt|
-      debt.created_at
+      debt.created_at.to_date
     end
 
     attribute :maturity_on do |debt|

@@ -1,6 +1,6 @@
 module Debts
   module Handlers 
-    class OnAddDebtorTerms
+    class OnAddAnticipatedSettlementDate
       include CommandHandler
       
       def call(command)
@@ -8,7 +8,7 @@ module Debts
 
         repository = Repositories::Debt.new
         repository.with_debt(debt_uid) do |debt|
-          debt.add_debtor_terms(command.data)
+          debt.add_anticipated_settlement_date(command.data)
         end
       end
     end

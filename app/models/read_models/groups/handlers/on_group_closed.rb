@@ -7,11 +7,10 @@ module ReadModels
 
           group_p = ReadModels::Groups::GroupProjection.find_by!(group_uid: group_uid)
           group_p.update!({
-            state: event.data.fetch(:state)
+            status: event.data.fetch(:status)
           })
 
-          group = WriteModels::Group.find_by!(group_projection_id: group_p.id)
-          group.update!({
+          group_p.group.update!({
             activated: false
           })
         end

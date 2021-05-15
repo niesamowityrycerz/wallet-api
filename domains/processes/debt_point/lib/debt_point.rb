@@ -58,23 +58,23 @@ module Processes
     private 
 
     def debt_settled?(event)
-      event.data.fetch(:state) == :settled
+      event.data.fetch(:status) == :settled
     end
 
     def debt_expired?(event)
-      event.data.fetch(:state) == :expired
+      event.data.fetch(:status) == :expired
     end
 
     def ranking_points_alloted?(event)
-      event.data.fetch(:state) == :points_alloted
+      event.data.fetch(:status) == :points_alloted
     end
 
     def debt_corrected?(event)
-      event.data.fetch(:state) == :corrected 
+      event.data.fetch(:status) == :corrected 
     end
 
     def debt_accepted?(event)
-      event.data.fetch(:state) == :accepted
+      event.data.fetch(:status) == :accepted
     end
 
     def time_to_expire(event)

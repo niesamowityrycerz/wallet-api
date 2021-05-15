@@ -7,13 +7,13 @@ module ReadModels
           debt_projection.update!(
             {
               date_of_settlement: event.data.fetch(:date_of_settlement),
-              status: event.data.fetch(:state)
+              status: event.data.fetch(:status)
             }
           )
 
           debt = WriteModels::Debt.find_by!(debt_uid: event.data.fetch(:debt_uid))
           debt.update!({
-            state: event.data.fetch(:state)
+            status: event.data.fetch(:status)
           })
         end
       end

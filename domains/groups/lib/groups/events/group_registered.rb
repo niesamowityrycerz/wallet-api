@@ -7,8 +7,7 @@ module Groups
         invited_users: [[Integer]],
         from: Date,
         to: Date,
-        group_name: String,
-        state: Symbol
+        group_name: String
       }
     end
   end

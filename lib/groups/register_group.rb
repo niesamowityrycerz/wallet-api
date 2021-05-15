@@ -6,7 +6,7 @@ module Groups
 
     def call
       grab_users(@group_q)
-      make_friendships(@friends)
+      #make_friendships(@friends)
       params = prepare_data(@group_q, @friends)
       register_group(params)
     end
@@ -14,7 +14,8 @@ module Groups
     private 
 
     def grab_users(leader_q)
-      leaders = User.ids.sample(5)
+
+      leaders = User.ids.sample(20)
       available_users = User.ids - leaders 
       @friends = []
       leaders.each do |leader_id|

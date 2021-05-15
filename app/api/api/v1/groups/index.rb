@@ -11,7 +11,7 @@ module Api
         
         get do 
           group = ::Groups::BaseGroupService.new(params)
-          if group.has_member?(current_user)
+          if group.has_member? current_user
             ::Groups::GroupSerializer.new(group.projection, { params: { current_user_id: current_user.id } }).serializable_hash
           else 
             status 403

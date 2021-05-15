@@ -3,9 +3,9 @@ module ReadModels
     class DebtProjection < ApplicationRecord
       #has_one :debt, class_name: 'WriteModels::Debt'
       
-      enum status: { pending: 0, accepted: 1, rejected: 2, under_scrutiny: 3, 
-                     closed: 4, corrected: 5, settled: 6, expired: 7, debtor_terms_added: 8,
-                     points_alloted: 9, penalty_points_alloted: 10 }
+      enum status: { pending: 'pending', accepted: 'accepted', rejected: 'rejected', under_scrutiny: 'under_scrutiny', 
+                     closed: 'closed', corrected: 'corrected', settled: 'settled', expired: 'expired', debtor_terms_added: 'debtor_terms_added',
+                     points_alloted: 'points_alloted', penalty_points_alloted: 'penalty_points_alloted' }
 
       validates :doubts, length: { maximum: 50, too_long: "%{count} characters is maximum!" }
 

@@ -1,27 +1,18 @@
 module Groups 
-  class RegisterGroupService 
-    def initialize(base_params, current_user)
-      @base_params = base_params
-      @current_user = current_user
+  class RegisterGroupService < BaseGroupService
+    def register
+      Rails.configuration.command_bus.call(
+        ::Groups::Commands::RegisterGroup.send(adjust_params)
+      )
     end
 
-    def call
-      params = prepare_params(@base_params)
-      create_command(params)
-    end
+    private
 
-    private 
-
-    def prepare_params(params)
+    def adjust_params
       params.merge!({
-        leader_id: @current_user.id,
+        leader_id: current_user.id,
         group_uid: SecureRandom.uuid
       })
-
-    end
-
-    def create_command(data)
-      ::Groups::Commands::RegisterGroup.send(data)
     end
   end
 end

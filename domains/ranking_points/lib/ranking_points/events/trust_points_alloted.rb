@@ -5,7 +5,7 @@ module RankingPoints
         debt_uid: String,
         trust_points: Float,
         creditor_id: Integer,
-        state: Symbol
+        status: Symbol
       }
     end
   end

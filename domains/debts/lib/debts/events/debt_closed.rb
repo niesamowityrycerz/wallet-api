@@ -3,7 +3,7 @@ module Debts
     class DebtClosed < Event 
       SCHEMA = {
         debt_uid: String,
-        state: Symbol,
+        status: Symbol,
         reason_for_closing: [ :optional, String ],
         creditor_id: Integer
       }

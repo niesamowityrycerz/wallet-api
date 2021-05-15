@@ -4,7 +4,7 @@ module Groups
       SCHEMA = {
         currency_id: Integer,
         debt_repayment_valid_till: Date,
-        state: Symbol
+        status: Symbol
       }
     end
   end

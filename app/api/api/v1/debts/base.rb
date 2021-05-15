@@ -9,8 +9,8 @@ module Api
             optional :date_of_debt, type: Date 
             optional :amount, type: Hash
             given :amount do 
-              requires :max, type: Integer
-              requires :min, type: Integer
+              requires :max, type: Integer, values: ->(val) { val < 10000.0 }
+              requires :min, type: Integer, values: ->(val) { val > 0.0 }
               all_or_none_of :max, :min 
             end
             optional :status, type: Array, values: %i[pending rejected closed]
@@ -31,15 +31,17 @@ module Api
         end 
 
         resource :debt do
-          mount Api::V1::Debts::Index
-          mount Api::V1::Debts::IssueDebt
-          mount Api::V1::Debts::AcceptDebt
-          mount Api::V1::Debts::RejectDebt
-          mount Api::V1::Debts::CheckOutDebtDetails
-          mount Api::V1::Debts::CorrectDebtDetails
-          mount Api::V1::Debts::SettleDebt
-          mount Api::V1::Debts::CloseDebt
-          mount Api::V1::Debts::FillSettlementTerms    
+          route_param :debt_uid do 
+            mount Api::V1::Debts::Index
+            mount Api::V1::Debts::IssueDebt
+            mount Api::V1::Debts::AcceptDebt
+            mount Api::V1::Debts::RejectDebt
+            mount Api::V1::Debts::CheckOutDebtDetails
+            mount Api::V1::Debts::CorrectDebtDetails
+            mount Api::V1::Debts::SettleDebt
+            mount Api::V1::Debts::CloseDebt
+            mount Api::V1::Debts::AddAnticipatedSettlementDate  
+          end 
         end
       end
     end

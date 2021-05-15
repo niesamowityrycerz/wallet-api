@@ -3,7 +3,7 @@ module ReadModels
     class GroupProjection < ApplicationRecord
       has_one :group, class_name: "WriteModels::Group"
 
-      enum state: { init: 0, terms_added: 1, closed: 2 }
+      enum status: { init: 'init', terms_added: 'terms_added', closed: 'closed' }
 
     end
   end 

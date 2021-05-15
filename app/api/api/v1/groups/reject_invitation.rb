@@ -9,15 +9,17 @@ module Api
 
         desc 'Reject invitation to group'
 
-        patch do 
-          group = ::Groups::RejectInvitationService.call(params, current_user)
-          if group.has_member? current_user
-            Rails.configuration.command_bus.call(group.reject_invitation_command)
-            status 201
-          else 
-            status 403
+        resource :reject do 
+          patch do 
+            group = ::Groups::RejectInvitationService.new(params, current_user)
+            if group.has_invited? current_user
+              group.reject_invitation
+              status 201
+            else 
+              status 403
+            end
           end
-        end
+        end 
       end
     end
   end

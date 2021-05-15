@@ -7,7 +7,7 @@ module ReadModels
           group_p.update({
             debt_repayment_valid_till: event.data.fetch(:debt_repayment_valid_till),
             currency: Currency.find_by!(id: event.data.fetch(:currency_id)).code,
-            state: event.data.fetch(:state)
+            status: event.data.fetch(:status)
           })
 
         end

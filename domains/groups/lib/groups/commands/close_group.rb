@@ -3,7 +3,7 @@ module Groups
     class CloseGroup < Command
       SCHEMA = {
         group_uid: String,
-        user_id: Integer
+        leader_id: Integer
       }
     end
   end

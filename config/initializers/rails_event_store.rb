@@ -17,7 +17,7 @@ Rails.configuration.to_prepare do
     store.subscribe(ReadModels::Debts::Handlers::OnDebtAcceptedOrClosed,                 to: [Debts::Events::DebtAccepted,
                                                                                               Debts::Events::DebtClosed])
     store.subscribe(ReadModels::Debts::Handlers::OnDebtRejected,                         to: [Debts::Events::DebtRejected])                                                                               
-    store.subscribe(ReadModels::Debts::Handlers::OnDebtorTermsAdded,                     to: [Debts::Events::DebtorTermsAdded])
+    store.subscribe(ReadModels::Debts::Handlers::OnAnticipatedSettlementDateAdded,       to: [Debts::Events::AnticipatedSettlementDateAdded])
     store.subscribe(ReadModels::Debts::Handlers::OnDebtDetailsCheckedOut,                to: [Debts::Events::DebtDetailsCheckedOut])
     store.subscribe(ReadModels::Debts::Handlers::OnDebtDetailsCorrected,                 to: [Debts::Events::DebtDetailsCorrected])
     store.subscribe(ReadModels::Debts::Handlers::OnDebtSettled,                          to: [Debts::Events::DebtSettled])
@@ -40,8 +40,6 @@ Rails.configuration.to_prepare do
     store.subscribe(ReadModels::Groups::Handlers::OnGroupLeaderChanged,                  to: [Groups::Events::GroupLeaderChanged])
     
                                                                                   
-
-    # Processes(System)
     store.subscribe(Processes::DebtPoint, to: [
       Debts::Events::DebtAccepted,
       Debts::Events::DebtSettled,
@@ -52,14 +50,14 @@ Rails.configuration.to_prepare do
   end
 
   Rails.configuration.command_bus.tap do |bus|
-    bus.register(Debts::Commands::IssueDebt,              Debts::Handlers::OnIssueDebt.new)
-    bus.register(Debts::Commands::AcceptDebt,             Debts::Handlers::OnAcceptDebt.new)
-    bus.register(Debts::Commands::RejectDebt,             Debts::Handlers::OnRejectDebt.new)
-    bus.register(Debts::Commands::AddDebtorTerms,         Debts::Handlers::OnAddDebtorTerms.new)
-    bus.register(Debts::Commands::CloseDebt,              Debts::Handlers::OnCloseDebt.new)
-    bus.register(Debts::Commands::CheckOutDebtDetails,    Debts::Handlers::OnCheckOutDebtDetails.new)
-    bus.register(Debts::Commands::CorrectDebtDetails,     Debts::Handlers::OnCorrectDebtDetails.new)
-    bus.register(Debts::Commands::SettleDebt,             Debts::Handlers::OnSettleDebt.new)
+    bus.register(Debts::Commands::IssueDebt,                            Debts::Handlers::OnIssueDebt.new)
+    bus.register(Debts::Commands::AcceptDebt,                           Debts::Handlers::OnAcceptDebt.new)
+    bus.register(Debts::Commands::RejectDebt,                           Debts::Handlers::OnRejectDebt.new)
+    bus.register(Debts::Commands::AddAnticipatedSettlementDate,         Debts::Handlers::OnAddAnticipatedSettlementDate.new)
+    bus.register(Debts::Commands::CloseDebt,                            Debts::Handlers::OnCloseDebt.new)
+    bus.register(Debts::Commands::CheckOutDebtDetails,                  Debts::Handlers::OnCheckOutDebtDetails.new)
+    bus.register(Debts::Commands::CorrectDebtDetails,                   Debts::Handlers::OnCorrectDebtDetails.new)
+    bus.register(Debts::Commands::SettleDebt,                           Debts::Handlers::OnSettleDebt.new)
 
     bus.register(RankingPoints::Commands::AllotCredibilityPoints,           RankingPoints::Handlers::OnAllotCredibilityPoints.new)
     bus.register(RankingPoints::Commands::AddPenaltyPoints,                 RankingPoints::Handlers::OnAddPenaltyPoints.new)

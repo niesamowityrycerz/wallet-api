@@ -14,17 +14,17 @@ module Groups
     end
 
     link :group_panel do |group|
-      "/api/v1/group/#{group.group_uid}"
+      "localhost:3000/api/v1/group/#{group.group_uid}"
     end
 
     link :leave_group do |group|
-      "/api/v1/group/#{group.group_uid}/leave"
+      "localhost:3000/api/v1/group/#{group.group_uid}/leave"
     end
 
     link :close_group, if: Proc.new { |group, current_user_id| 
       current_user_id == group.leader_id
     } do |object|
-      "/api/v1/group/#{group.group_uid}/close"
+      "localhost:3000/api/v1/group/#{group.group_uid}/close"
     end
 
 

@@ -18,21 +18,21 @@ module Groups
     end
 
     link :add_group_terms do |group|
-      "/api/v1/group/#{group.group_uid}/add_terms"
+      "localhost:3000/api/v1/group/#{group.group_uid}/add_terms"
     end
 
     link :add_member do |group|
-      "/api/v1/group/#{group.group_uid}/add_member"
+      "localhost:3000/api/v1/group/#{group.group_uid}/add_member"
     end
 
     link :close_group, if: Proc.new { |group, params|
       group.leader_id == params[:current_user_id]
     } do |group_object|
-      "/api/v1/#{group_object.group_uid}/close_group"
+      "localhost:3000/api/v1/#{group_object.group_uid}/close_group"
     end
 
     link :leave_group do |group|
-      "/api/v1/group/#{group.group_uid}/leave"
+      "localhost:3000/api/v1/group/#{group.group_uid}/leave"
     end
 
     meta do |group|

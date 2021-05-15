@@ -15,7 +15,7 @@ module Api
             post do 
               debts_uids = ::Debts::BalanceDebtsService.new(current_user, params[:user_id])
               if debts_uids.any?
-                ::Debts::SettleDebtsService.call(debts_uids)
+                ::Debts::SettleDebtsService.settle_debts(debts_uids)
               else 
                status 403 
               end

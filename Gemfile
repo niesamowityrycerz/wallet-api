@@ -37,6 +37,9 @@ gem 'kaminari'
 # handle friendships
 gem 'has_friendship'
 
+# pg enumerators 
+gem 'activerecord-postgres_enum'
+
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development

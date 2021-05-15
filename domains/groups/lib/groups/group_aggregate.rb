@@ -17,7 +17,7 @@ module Groups
       @invited_users = []
       @rejected_by = []
       @group_lasting_period = nil 
-      @state = nil
+      @status = nil
       @debt_repayment_valid_till = nil 
       @currency_id = nil 
       @debts_within_group = []
@@ -38,8 +38,7 @@ module Groups
         invited_users: data.fetch(:invited_users),
         from: data.fetch(:from),
         to: data.fetch(:to),
-        group_name: data.fetch(:group_name),
-        state: :init
+        group_name: data.fetch(:group_name)
       })
     end
 
@@ -51,7 +50,7 @@ module Groups
         currency_id: data.fetch(:currency_id),
         group_uid: @id,
         debt_repayment_valid_till: data.fetch(:debt_repayment_valid_till),
-        state: :terms_added
+        status: :terms_added
       })
     end
 
@@ -74,10 +73,10 @@ module Groups
     end
 
     def close_group(data)
-      raise NotEntitledToCloseGroup.new "You are not entitled to close group" unless leader.id == data.fetch(:user_id)
+      raise NotEntitledToCloseGroup.new "You are not entitled to close group" unless leader.id == data.fetch(:leader_id)
       apply Events::GroupClosed.strict({
         group_uid: @id,
-        state: :closed
+        status: :closed
       })
     end
 
@@ -112,14 +111,14 @@ module Groups
 
     on Events::GroupRegistered do |event|
       @group_lasting_period = Entities::GroupLastingPeriod.new(event.data.fetch(:from), event.data.fetch(:to))
-      @state = event.data.fetch(:state)
+      @stause = :init
       @invited_users = event.data.fetch(:invited_users)
       @leader = User.find_by!(id: event.data.fetch(:leader_id))
       @members << Entities::Member.new(event.data.fetch(:leader_id))
     end
 
     on Events::GroupSettlementTermsAdded do |event|
-      @state = event.data.fetch(:state)
+      @status = event.data.fetch(:status)
       @debt_repayment_valid_till = event.data.fetch(:debt_repayment_valid_till)
       @currency_id = event.data.fetch(:currency_id)
     end
@@ -137,7 +136,7 @@ module Groups
     end
 
     on Events::GroupClosed do |event|
-      @state = event.data.fetch(:state)
+      @status = event.data.fetch(:status)
     end
 
     on Events::UserInvited do |event|

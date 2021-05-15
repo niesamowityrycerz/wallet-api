@@ -11,7 +11,7 @@ AddUniqueIndexToFriendships.class_eval do
   def self.up
     return if index_exists?(:friendships, [:friendable_id, :friend_id])
 
-    add_index :friendships, [:friendable_id, :friend_id], unique: true
+    add_index :friendships, [:friendable_id, :friend_id], unique: true, algorithm: :concurrently
   end
 
   def self.down

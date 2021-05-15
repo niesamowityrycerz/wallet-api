@@ -3,7 +3,7 @@ module Groups
     class GroupClosed < Event
       SCHEMA = {
         group_uid: String,
-        state: Symbol
+        status: Symbol
       }
     end
   end

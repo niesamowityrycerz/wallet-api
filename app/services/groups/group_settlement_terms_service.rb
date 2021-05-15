@@ -1,12 +1,9 @@
 module Groups 
   class GroupSettlementTermsService < BaseGroupService
-
-    def add_group_terms_command(data)
-      adjusted_params = data[:terms].merge({
-        group_uid: group_uid
-      })
-      ::Groups::Commands::AddGroupSettlementTerms.send(adjusted_params)
+    def add_group_settlement_terms
+      Rails.configuration.command_bus.call(
+        ::Groups::Commands::AddGroupSettlementTerms.send(params)
+      )
     end
-
   end
 end

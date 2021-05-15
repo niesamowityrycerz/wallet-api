@@ -7,7 +7,7 @@ module RankingPoints
         debtor_id: Integer,
         warning_type_id: Integer,
         warning_uid: String,
-        state: Symbol,
+        status: Symbol,
         due_money: Float
       }
     end

@@ -10,10 +10,9 @@ module ReadModels
             name: event.data.fetch(:group_name),
             from: event.data.fetch(:from),
             to: event.data.fetch(:to),
-            members: Array.new([event.data.fetch(:leader_id)]), #workaround, due to sqlite3 constraints  
+            members: [event.data.fetch(:leader_id)], 
             invited_users: event.data.fetch(:invited_users),
-            leader_id: event.data.fetch(:leader_id),
-            state: event.data.fetch(:state)
+            leader_id: event.data.fetch(:leader_id)
           })
 
           # Can I use callbacks(hooks) here?
@@ -34,10 +33,10 @@ module ReadModels
               group_uid: group_uid
             }
 
-            if user_id == event.data.fetch(:invited_users)
+            if user_id == event.data.fetch(:leader_id)
               WriteModels::GroupMember.create!(base_data.merge({
-                founder: true,
-                invitation_status: accepted
+                leader: true,
+                invitation_status: :accepted
               }))
             else 
               WriteModels::GroupMember.create!(base_data)

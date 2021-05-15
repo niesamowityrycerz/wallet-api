@@ -15,7 +15,7 @@ module Debts
 
     def initialize(id)
       @id = id
-      @state = nil
+      @status = nil
       @repayment_conditions = nil
       @due_money = nil
       @due_money_per_memeber = nil
@@ -38,7 +38,6 @@ module Debts
           currency_id: params[:currency_id],
           date_of_transaction: ( params[:date_of_transaction] if params.key?(:date_of_transaction) ),
           max_date_of_settlement: ( params.key?(:creditor_conditions) ? Date.today + params[:creditor_conditions][:maturity_in_days] : params[:max_date_of_settlement] ),
-          state: :pending,
           group_uid: ( params[:group_uid] if params.key?(:group_uid) )
         }.compact
       )
@@ -48,7 +47,7 @@ module Debts
       apply Events::DebtAccepted.strict(
         {
           debt_uid: @id,
-          state: :accepted,
+          status: :accepted,
           expire_on: @max_date_of_settlement,
           debtor_id: @debtor_id
         }
@@ -59,21 +58,21 @@ module Debts
       apply Events::DebtRejected.strict(
         {
           debt_uid: @id,
-          state: :rejected,
+          status: :rejected,
           reason_for_rejection: params[:reason_for_rejection]
         }
       )
     end
 
-    def add_debtor_terms(params)
-      raise DebtNotAccepted.new 'Accept debt first!' unless @state == :accepted
+    def add_anticipated_settlement_date(params)
+      raise DebtNotAccepted.new 'Accept debt first!' unless @status == :accepted
       raise AnticipatedDateOfSettlementUnavailable.new 'Date unavailable' unless params[:anticipated_date_of_settlement] <= @max_date_of_settlement
 
-      apply Events::DebtorTermsAdded.strict(
+      apply Events::AnticipatedSettlementDateAdded.strict(
         {
           debt_uid: @id,
           anticipated_date_of_settlement: params[:anticipated_date_of_settlement],
-          state: :debtor_terms_added,
+          status: :debtor_terms_added,
         }
       )
     end
@@ -82,7 +81,7 @@ module Debts
       apply Events::DebtClosed.strict(
         {
           debt_uid: @id,
-          state: :closed,
+          status: :closed,
           reason_for_closing: ( params[:reason_for_closing] if params.key?(:reason_for_closing) ),
           creditor_id: @creditor_id
         }.compact
@@ -94,7 +93,7 @@ module Debts
         {
           debt_uid: @id,
           doubts: params[:doubts],
-          state: :under_scrutiny 
+          status: :under_scrutiny 
         }
       )
     end
@@ -107,18 +106,18 @@ module Debts
           description: ( params[:description] if params.key?(:description) ),
           currency_id: ( params[:currency_id] if params.key?(:currency_id) ),
           date_of_transaction: ( params[:date_of_transaction] if params.key?(:date_of_transaction) ),
-          state: :corrected
+          status: :corrected
         }.compact
       )
     end
 
     def settle(params)
-      raise UnableToProceedDebtSettleement.new unless [ :accepted, :debtor_terms_added ].include? @state 
+      raise UnableToProceedDebtSettleement.new unless [ :accepted, :debtor_terms_added ].include? @status 
       apply Events::DebtSettled.strict(
         {
           debt_uid: @id,
           date_of_settlement: Date.today,
-          state: :settled,
+          status: :settled,
           debtor_id: @debtor_id, 
           creditor_id: @creditor_id,
           amount: @due_money,
@@ -128,7 +127,7 @@ module Debts
     end
 
     on Events::DebtIssued do |event|
-      @state = event.data.fetch(:state)
+      @status = :pending
       @due_money = event.data.fetch(:amount)
       @date_of_placement = Date.today
       @creditor_id = event.data.fetch(:creditor_id)
@@ -138,31 +137,31 @@ module Debts
     end
 
     on Events::DebtAccepted do |event| 
-      @state = event.data.fetch(:state)
+      @status = event.data.fetch(:status)
     end
 
-    on Events::DebtorTermsAdded do |event|
-      @state = event.data.fetch(:state)
+    on Events::AnticipatedSettlementDateAdded do |event|
+      @status = event.data.fetch(:status)
     end
 
     on Events::DebtRejected do |event| 
-      @state = event.data.fetch(:state)
+      @status = event.data.fetch(:status)
     end
 
     on Events::DebtClosed do |event|
-      @state = event.data.fetch(:state)
+      @status = event.data.fetch(:status)
     end
 
     on Events::DebtDetailsCheckedOut do |event|
-      @state = event.data.fetch(:state)
+      @status = event.data.fetch(:status)
     end
 
     on Events::DebtDetailsCorrected do |event|
-      @state = event.data.fetch(:state)
+      @status = event.data.fetch(:status)
     end
 
     on Events::DebtSettled do |event|
-      @state = event.data.fetch(:state)
+      @status = event.data.fetch(:status)
       @date_of_settlement = event.data.fetch(:date_of_settlement)
     end
   end

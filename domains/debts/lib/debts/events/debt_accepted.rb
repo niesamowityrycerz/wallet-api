@@ -3,7 +3,7 @@ module Debts
     class DebtAccepted < Event 
       SCHEMA = {
         debt_uid: String,
-        state: Symbol,
+        status: Symbol,
         expire_on: Date,
         debtor_id: Integer
       }

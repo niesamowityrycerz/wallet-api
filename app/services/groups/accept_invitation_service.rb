@@ -1,22 +1,17 @@
 module Groups 
   class AcceptInvitationService < BaseGroupService
-    def call(params, current_user)
-      adjusted_parameters = adjust_parameters(params, current_user)
-      prepare_command(adjusted_parameters)
+    def accept_invitation
+      Rails.configuration.command_bus.call(
+        ::Groups::Commands::AcceptInvitation.send(adjust_params)
+      )
     end
 
-    private 
+    private
 
-    def adjust_parameters(data)
-      data.merge!({
+    def adjust_params 
+      params.merge!({
         member_id: current_user.id
       })
     end
-
-    def prepare_command(data)
-      @accept_invitation_command = ::Groups::Commands::AcceptInvitation.send(data)
-    end
-
-    attr_reader :accept_invitation_command
   end
 end

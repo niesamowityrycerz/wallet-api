@@ -3,8 +3,6 @@ module Warnings
     # build sidekiq worker
     include Sidekiq::Worker
 
-    #sidekiq_options queue: 'warnings'
-
     # every Sidekiq worker has this method
     def perform(debt_uid, debtor_id)
       puts "Warnings happend - #{debt_uid}"
@@ -16,8 +14,6 @@ module Warnings
       ))
     end
 
-    # cancel job method
-    # it is a class method -> no instance needed to access this method
     def self.cancel_warning(debt_uid)
       Sidekiq::ScheduledSet.new.select do |job|
         job.klass == "Warnings::PrepareToSendMissedDebtRepaymentWarning" && job.args[0] == debt_uid

@@ -7,7 +7,7 @@ module ReadModels
           debt_projection.penalty_points += event.data.fetch(:penalty_points)
           debt_projection.update!(
             {
-              status: event.data.fetch(:state)
+              status: event.data.fetch(:status)
             }
           )
 

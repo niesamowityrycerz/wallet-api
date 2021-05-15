@@ -7,30 +7,23 @@ module Api
           authenticate_user!
         end
 
-        desc 'Creditor corrects debt'
+        desc 'Creditor corrects debt details'
 
-        route_param :debt_uid do 
-          resource :correct do 
+        params do 
+          optional :amount, type: Float, values: ->(val) { val > 0.0 }
+          optional :description, type: String
+          optional :currency_id, type: Integer, values: -> { Currency.ids }
+          optional :date_of_debt, type: Date 
+        end
 
-            params do 
-              optional :amount, type: Float 
-              optional :description, type: String
-              optional :currency_id, type: Integer 
-              optional :date_of_debt, type: Date 
+        resource :correct do 
+          put do 
+            debt = ::Debts::CorrectDebtDetails.new(params)
+            if debt.is_creditor? current_user 
+              deb.correct_details
+            else
+              403
             end
-
-            put do 
-              debt = ReadModels::Debts::DebtProjection.find_by!(debt_uid: params[:debt_uid])
-              if debt.creditor_id == current_user.id 
-                Rails.configuration.command_bus.call(
-                  ::Debts::Commands::CorrectDebtDetails.new(params)
-                )
-                redirect "/api/v1/debt/#{params[:debt_uid]}", permanent: true
-              else
-                403
-              end
-            end
-
           end
         end 
       end

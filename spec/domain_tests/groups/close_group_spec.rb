@@ -32,7 +32,7 @@ RSpec.describe 'Close group', type: :integration do
       @close_group_params[:user_id] = leader.id     
       expect {
         command_bus.call(Groups::Commands::CloseGroup.send(@close_group_params))
-      }.to change { ReadModels::Groups::GroupProjection.find_by!(group_uid: group_uid).state }.from("init").to("closed")
+      }.to change { ReadModels::Groups::GroupProjection.find_by!(group_uid: group_uid).status }.from("init").to("closed")
     end
   end
 

@@ -10,11 +10,46 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_05_13_174023) do
+ActiveRecord::Schema.define(version: 2021_05_15_135358) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
+
+  create_enum :debt_statuses, [
+    "pending",
+    "accepted",
+    "rejected",
+    "under_scrutiny",
+    "closed",
+    "corected",
+    "settled",
+    "expired",
+    "debtor_terms_added",
+    "points_alloted",
+    "penalty_points_alloted",
+  ], force: :cascade
+
+  create_enum :general_debt_statuses, [
+    "pending",
+    "accepted",
+    "rejected",
+    "closed",
+    "settled",
+    "expired",
+  ], force: :cascade
+
+  create_enum :group_statuses, [
+    "init",
+    "terms_added",
+    "closed",
+  ], force: :cascade
+
+  create_enum :invitation_statuses, [
+    "waiting",
+    "accepted",
+    "rejected",
+  ], force: :cascade
 
   create_table "creditor_rankings", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -42,7 +77,6 @@ ActiveRecord::Schema.define(version: 2021_05_13_174023) do
     t.integer "creditor_id"
     t.integer "debtor_id"
     t.string "description"
-    t.integer "status", default: 0
     t.date "date_of_transaction"
     t.string "reason_for_closing"
     t.string "doubts"
@@ -56,6 +90,7 @@ ActiveRecord::Schema.define(version: 2021_05_13_174023) do
     t.date "max_date_of_settlement"
     t.string "group_uid"
     t.float "amount"
+    t.enum "status", default: "pending", enum_name: "debt_statuses"
   end
 
   create_table "debt_warning_projections", force: :cascade do |t|
@@ -88,7 +123,7 @@ ActiveRecord::Schema.define(version: 2021_05_13_174023) do
     t.float "amount"
     t.datetime "date_of_transaction"
     t.string "debt_uid"
-    t.integer "state", default: 0
+    t.enum "status", default: "pending", enum_name: "general_debt_statuses"
     t.index ["creditor_id"], name: "index_debts_on_creditor_id"
     t.index ["debtor_id"], name: "index_debts_on_debtor_id"
   end
@@ -128,13 +163,13 @@ ActiveRecord::Schema.define(version: 2021_05_13_174023) do
   end
 
   create_table "group_members", force: :cascade do |t|
-    t.boolean "founder"
+    t.boolean "leader"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "group_id"
     t.bigint "member_id"
     t.string "group_uid"
-    t.integer "invitation_status", default: 0
+    t.enum "invitation_status", default: "waiting", enum_name: "invitation_statuses"
     t.index ["group_id"], name: "index_group_members_on_group_id"
     t.index ["member_id"], name: "index_group_members_on_member_id"
   end
@@ -150,8 +185,8 @@ ActiveRecord::Schema.define(version: 2021_05_13_174023) do
     t.integer "members", array: true
     t.date "debt_repayment_valid_till"
     t.string "currency"
-    t.integer "state"
     t.integer "invited_users", array: true
+    t.enum "status", default: "init", enum_name: "group_statuses"
   end
 
   create_table "groups", force: :cascade do |t|

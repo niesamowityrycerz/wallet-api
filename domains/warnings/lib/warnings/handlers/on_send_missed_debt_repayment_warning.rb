@@ -9,7 +9,7 @@ module Warnings
         repository = Repositories::Warning.new
         repository.with_warning(debt_uid) do |warning|
           params = command.data.merge({
-            warning_type_id: WarningType.find_by!(name: 'missed repayment date').id,
+            warning_type_id: WarningType.find_by!(name: 'missed debt repayment').id,
             warning_uid: SecureRandom.uuid 
           })
           warning.missed_repayment(params)

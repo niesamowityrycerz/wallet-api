@@ -7,7 +7,7 @@ module Debts
         description: [ :optional, String ],
         currency_id: [ :optional, Integer ],
         date_of_transaction: [ :optional, Date ],
-        state: Symbol
+        status: Symbol
       }
     end
   end

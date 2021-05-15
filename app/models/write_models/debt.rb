@@ -2,8 +2,8 @@ module WriteModels
   class Debt < ApplicationRecord
     #belongs_to :debt_projection, class_name: 'ReadModels::Debts::DebtProjection'
 
-    enum state: { pending: 0, accepted: 1, rejected: 2,
-                  closed: 4, settled: 6, expired: 7 }
+    enum status: { pending: 'pending', accepted: 'accepted', rejected: 'rejected',
+                  closed: 'closed', settled: 'settled', expired: 'expired' }
 
     belongs_to :debtor,   class_name: 'User'
     belongs_to :creditor, class_name: 'User'

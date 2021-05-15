@@ -11,9 +11,8 @@ module Api
 
         resource :overview do 
           get do 
-            my_groups = ReadModels::Groups::GroupProjection.joins(group: :group_members).where(group_members: { member_id: current_user.id, invitation_status: :accepted}, groups: { activated: true })
+            my_groups = ::Groups::OverviewService.groups(current_user)
             ::Groups::GroupOverviewSerializer.new(my_groups).serializable_hash 
-
           end
         end 
       end

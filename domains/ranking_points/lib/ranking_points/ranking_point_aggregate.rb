@@ -10,7 +10,7 @@ module RankingPoints
       @creditor_id = nil
       @debtor_id = nil
       @penalty_points = []
-      @state = :init
+      @status = :init
     end
 
     attr_accessor :credibility_points, :penalty_points, :adjusted_points, :due_money
@@ -22,7 +22,7 @@ module RankingPoints
           debt_uid: @id,
           trust_points: calculation,
           creditor_id: params[:creditor_id],
-          state: :points_alloted
+          status: :points_alloted
         }
       )
     end
@@ -54,7 +54,7 @@ module RankingPoints
           debtor_id: params[:debtor_id],
           warning_type_id: params[:warning_type_id],
           warning_uid: params[:warning_uid],
-          state: :penalty_points_alloted,
+          status: :penalty_points_alloted,
           due_money: params[:due_money]
         }
       )
@@ -67,13 +67,13 @@ module RankingPoints
     end
 
     on Events::PenaltyPointsAdded do |event|
-      @state = :penalty_points_added
+      @status = :penalty_points_added
       @penalty_points << Entities::PenaltyPoint.new(event.data.fetch(:penalty_points))
     end
 
 
     on Events::TrustPointsAlloted do |event|
-      @state = event.data.fetch(:state)
+      @status = event.data.fetch(:status)
     end
   end
 end

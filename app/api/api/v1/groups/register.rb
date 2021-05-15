@@ -18,8 +18,8 @@ module Api
 
         resource :register do 
           post do
-            command = ::Groups::RegisterGroupService.new(params, current_user).call
-            Rails.configuration.command_bus.call(command)
+            group = ::Groups::RegisterGroupService.new(params, current_user)
+            group.register
             status 201
             redirect "/api/v1/group/#{params[:group_uid]}"
           end

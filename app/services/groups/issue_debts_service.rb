@@ -1,12 +1,5 @@
 module Groups 
   class IssueDebtsService < BaseGroupService
-    def initialize(params, current_user)
-      @group_uid = params[:group_uid]
-      @debt_params = params.except(:group_uid)
-      @current_user_id = current_user.id
-    end
-
-    attr_reader :group_uid, :current_user_id
 
     def issue_debts
       data = prepare_params(@debt_params)
@@ -17,7 +10,7 @@ module Groups
 
     def prepare_params(debt_params)
       base = {
-        creditor_id: current_user_id,
+        creditor_id: current_user.id,
         description: debt_params[:description],
         currency_id: debt_params[:currency_id],
         group_uid: group_uid
@@ -60,6 +53,5 @@ module Groups
         )
       end 
     end
-
   end
 end
