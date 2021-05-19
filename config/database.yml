@@ -31,7 +31,6 @@ development:
   pool: 5
   username: <%= ENV['USER'] %>
   password: 
-  timeout: 5000
 
 test:
   adapter: postgresql
@@ -40,7 +39,6 @@ test:
   pool: 5
   username: <%= ENV['USER'] %>
   password:
-  timeout: 5000
 
 production:
   adapter: postgresql
@@ -48,4 +46,4 @@ production:
   username: <%= ENV['USER'] %>
   password:
   pool: 5
-  timeout: 5000
+  url: <%= ENV['DATABASE_URL'] %>
