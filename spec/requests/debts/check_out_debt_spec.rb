@@ -60,7 +60,6 @@ RSpec.describe 'Check out endpoint', type: :request do
     it 'raises error' do 
       patch "/api/v1/debt/#{debt_uid}/checkout", params: @params, headers: { 'Authorization': 'Bearer ' + debtor_access_token.token }
 
-      binding.pry
       expect(response.status).to eq(403)
       expect(response.parsed_body['error']).to eq('This option is unavailable after debt acceptance')
     end

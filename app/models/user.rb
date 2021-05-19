@@ -15,7 +15,6 @@ class User < ApplicationRecord
   has_many :groups, through: :group_members, class_name: "WriteModels::Group"
   has_many :posts, dependent: :destroy
 
-  # enable friendship(gem)
   has_friendship
 
   before_create :alter_admin_username
@@ -28,9 +27,6 @@ class User < ApplicationRecord
     user&.valid_password?(password) ? user : nil
   end
 
-  #def self.friendship_errors(requested_user)
-  #  binding.pry
-  #end
 
   private 
 

@@ -70,8 +70,6 @@ RSpec.describe 'Creditors ranking filter spec', type: :request do
       get "/api/v1/ranking/creditors", params: query_params
       expect(response.status).to eq(200)
       parsed_body = JSON.parse(response.body)
-
-      binding.pry
     end
   end
 end
