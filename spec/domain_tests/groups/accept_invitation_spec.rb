@@ -3,7 +3,7 @@ require 'helpers/friendships'
 
 include Friendship
 
-RSpec.describe "Accept invitation to group", type: :unit do 
+RSpec.describe "Accept invitation flow", type: :integration do 
 
   let(:group_uid)                { SecureRandom.uuid }
   let(:leader)                   { create(:user) }
@@ -35,7 +35,7 @@ RSpec.describe "Accept invitation to group", type: :unit do
       expect {
         command_bus.call(Groups::Commands::AcceptInvitation.send(data))
       }.to change { ReadModels::Groups::GroupProjection.find_by!(group_uid: group_uid).members }.from(Array.new([leader.id])).to(Array.new([leader.id, sampled_user_id]))
-      #.and change { WriteModels::GroupMember.where(group_uid: group_uid, member_id: sampled_user_id).invitation_status }.from("waiting").to("accepted")
+        .and change { WriteModels::GroupMember.find_by(group_uid: group_uid, member_id: sampled_user_id).invitation_status }.from("waiting").to("accepted")
 
       expect(event_store).to have_published(
         an_event(Groups::Events::InvitationAccepted).with_data({

@@ -38,7 +38,7 @@ RSpec.describe 'Group functionality', type: :unit do
   end
 
   context 'when invited users are not friends with leader' do 
-    it 'raises error on regitering group' do 
+    it 'raises error on registering group' do 
       @register_group_params[:invited_users] = not_friends_with_leader.map(&:id)
 
       expect {

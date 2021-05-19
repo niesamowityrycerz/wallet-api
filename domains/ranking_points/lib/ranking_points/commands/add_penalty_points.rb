@@ -5,8 +5,7 @@ module RankingPoints
         debt_uid: String,
         debtor_id: Integer,
         warning_type_id: Integer,
-        warning_uid: String,
-        due_money: Float
+        warning_uid: String
       }
     end
   end

@@ -44,6 +44,10 @@ RSpec.describe 'User leaves group', type: :integration do
       expect {
         command_bus.call(Groups::Commands::LeaveGroup.send(data))
       }.to change { ReadModels::Groups::GroupProjection.find_by!(group_uid: group_uid).members}.from(before).to(after)
+
+      expect(event_store).to have_published(
+        an_event(Groups::Events::GroupLeft)
+      ).in_stream("Group$#{group_uid}")
     end
   end
 

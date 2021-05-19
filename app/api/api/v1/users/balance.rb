@@ -9,20 +9,17 @@ module Api
         
           
         desc 'Balance debts between two users'
-  
-        route_param :user_id do 
-          resource :balance do 
-            post do 
-              debts_uids = ::Debts::BalanceDebtsService.new(current_user, params[:user_id])
-              if debts_uids.any?
-                ::Debts::SettleDebtsService.settle_debts(debts_uids)
-              else 
-               status 403 
-              end
+          
+        resource :balance do 
+          post do 
+            debts_uids = ::Debts::BalanceDebtsService.new(current_user, params[:id])
+            if debts_uids.any?
+              ::Debts::SettleDebtsService.settle_debts(debts_uids)
+            else 
+              status 403 
             end
           end
         end
-
       end
     end
   end

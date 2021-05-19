@@ -7,7 +7,7 @@ module Api
         params :debt_filters do |_options|
           optional :filters, type: Hash do 
             optional :date_of_debt, type: Date 
-            optional :amount, type: Hash
+            optional :amount, type: Hash, message: 'is missing'
             given :amount do 
               requires :max, type: Integer, values: ->(val) { val < 10000.0 }
               requires :min, type: Integer, values: ->(val) { val > 0.0 }
@@ -31,9 +31,9 @@ module Api
         end 
 
         resource :debt do
+          mount Api::V1::Debts::IssueDebt
           route_param :debt_uid do 
             mount Api::V1::Debts::Index
-            mount Api::V1::Debts::IssueDebt
             mount Api::V1::Debts::AcceptDebt
             mount Api::V1::Debts::RejectDebt
             mount Api::V1::Debts::CheckOutDebtDetails

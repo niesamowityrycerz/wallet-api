@@ -34,6 +34,10 @@ RSpec.describe 'Invite user to group', type: :integration do
       expect {
         command_bus.call(Groups::Commands::InviteUser.send(params))
       }.to change { ReadModels::Groups::GroupProjection.find_by!(group_uid: group_uid).invited_users.count }.by(1)
+
+      expect(event_store).to have_published(
+        an_event(Groups::Events::UserInvited)
+      ).in_stream("Group$#{group_uid}")
     end
   end
 

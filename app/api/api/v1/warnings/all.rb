@@ -10,17 +10,14 @@ module Api
         desc 'Show all warnings'
 
         get do 
-          warnings = ReadModels::Warnings::TransactionWarningProjection.all
           if current_user.admin 
-            warnings
-          elsif warnings.user_id == current_user.id
-            warnings.where('user_id = ?', current_user.id)
-          else  
-            403 
+            warnings = ReadModels::Warnings::DebtWarningProjection.all
+          else
+            warnings = ReadModels::Warnings::DebtWarningProjection.where('user_id = ?', current_user.id)
           end 
    
-          w = ::WarningsQuery.new(warnings, params[:warning_filters], params[:pagination]).call 
-          ::Warnings::AllWarningsSerializer.new(w).serializable_hash
+          warnings_query = ::WarningsQuery.new(warnings, params[:warning_filters], params[:pagination]).call 
+          ::Warnings::AllWarningsSerializer.new(warnings_query).serializable_hash
         end
       end
     end

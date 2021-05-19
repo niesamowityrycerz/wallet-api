@@ -38,6 +38,10 @@ RSpec.describe 'Group functionality', type: :unit do
         command_bus.call(Groups::Commands::AddGroupSettlementTerms.send(@group_settlement_param))
       }.to change { ReadModels::Groups::GroupProjection.find_by!(group_uid: group_uid).currency }.from(nil).to(zloty.code)
        .and change  {ReadModels::Groups::GroupProjection.find_by!(group_uid: group_uid).debt_repayment_valid_till }.from(nil).to(@group_settlement_param[:debt_repayment_valid_till])
+    
+       expect(event_store).to have_published(
+         an_event(Groups::Events::GroupSettlementTermsAdded)
+       ).in_stream("Group$#{group_uid}")
     end
   end
 

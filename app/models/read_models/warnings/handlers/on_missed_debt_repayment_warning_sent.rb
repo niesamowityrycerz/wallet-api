@@ -11,11 +11,7 @@ module ReadModels
             }
           )
           
-
-          # create debt warning projection(ReadModels)
           warning_type = WarningType.find_by!(id: event.data.fetch(:warning_type_id))
-          # create -> new record(dynamic)
-          # find_or_create_by -> change the exisiting record(static)
           ReadModels::Warnings::DebtWarningProjection.create!(
             {
               user_id: event.data.fetch(:user_id),
@@ -25,7 +21,6 @@ module ReadModels
             }
           )
 
-          # create debt warning new record(WriteModels)
           WriteModels::Warning.create!(
             warning_type_id: event.data.fetch(:warning_type_id),
             user_id: event.data.fetch(:user_id),

@@ -14,8 +14,9 @@ module Api
             debt = ::Debts::SettleDebtsService.new(params)
             if debt.is_debtor? current_user
               debt.settle_debts([params[:debt_uid]])
+              status 200
             else
-              403
+              error!('You are not entitled to do this!', 403)
             end
           end
         end

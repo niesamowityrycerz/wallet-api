@@ -14,8 +14,9 @@ module Api
             debt = ::Debts::AcceptDebtsService.new(params)
             if debt.is_debtor? current_user
               debt.accept
+              status 200
             else 
-              403 
+              error!('You are not entitled to do this!', 403)
             end 
           end
         end 

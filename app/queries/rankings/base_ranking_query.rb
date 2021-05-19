@@ -8,7 +8,6 @@ module Rankings
     private 
 
     def filter_by_ratio(option)
-      binding.pry 
       mapper = {
         highest_to_lowest: "DESC",
         lowest_to_highest: "ASC"
@@ -24,4 +23,4 @@ module Rankings
       end 
     end
   end
-end
+end 

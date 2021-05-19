@@ -14,7 +14,7 @@ module Processes
       elsif debt_settled?(event)
         Warnings::PrepareToSendMissedDebtRepaymentWarning.cancel_warning(event.data.fetch(:debt_uid))
         command_bus.call(
-          RankingPoints::Commands::AllotCredibilityPoints.new(
+          RankingPoints::Commands::AllotCredibilityPoints.send(
             {
               debt_uid: event.data.fetch(:debt_uid),
               debtor_id: event.data.fetch(:debtor_id),
@@ -24,7 +24,7 @@ module Processes
           )
         )
         command_bus.call(
-          RankingPoints::Commands::AllotTrustPoints.new(
+          RankingPoints::Commands::AllotTrustPoints.send(
             {
               debt_uid: event.data.fetch(:debt_uid),
               creditor_id: event.data.fetch(:creditor_id)
@@ -35,7 +35,7 @@ module Processes
         # send new warning every 24h 
         Warnings::PrepareToSendMissedDebtRepaymentWarning.perform_in(24.hours, event.data.fetch(:debt_uid), event.data.fetch(:user_id)) 
         command_bus.call(
-          RankingPoints::Commands::AddPenaltyPoints.new(
+          RankingPoints::Commands::AddPenaltyPoints.send(
             {
               debt_uid: event.data.fetch(:debt_uid),
               debtor_id: event.data.fetch(:user_id),
@@ -46,7 +46,7 @@ module Processes
         )
       elsif ranking_points_alloted?(event)
         command_bus.call(
-          Debts::Commands::CloseDebt.new(
+          Debts::Commands::CloseDebt.send(
             {
               debt_uid: event.data.fetch(:debt_uid)
             }

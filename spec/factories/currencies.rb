@@ -1,6 +1,6 @@
 FactoryBot.define do 
   factory :currency do 
-    name { 'Złoty' }
+    name { 'Polski Złoty' }
     code { 'PLN' }
 
     trait :euro do 

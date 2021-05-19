@@ -7,10 +7,10 @@ module Api
 
         params do 
           optional :filters, type: Hash do 
-            optional :debtors_ids, type: Array[Integer], values: -> { User.ids }
+            optional :debtor_id, type: Integer, values: -> { User.ids }
             optional :adjusted_credibility_points, type: Hash do 
-              requires :min, type: Float, values: ->(v) { v > 0.0 }
-              requires :max, type: Float, values: ->(v) { v > 0.0 }
+              requires :min, type: Float, values: (0.0..1000.0)
+              requires :max, type: Float, values: (0.0..1000.0)
             end
             optional :debts_quantity,   type: Symbol, values: %i[ most_to_least least_to_most ]
             optional :ratio,            type: Symbol, values: %i[ highest_to_lowest lowest_to_highest ]

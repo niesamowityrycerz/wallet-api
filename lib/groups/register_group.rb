@@ -31,11 +31,9 @@ module Groups
         leader = User.find_by!(id: group[:leader_id])
         invited_users = group[:invited_users_ids].collect { |id| User.find_by!(id: id)}
         invited_users.each do |user|
+          binding.pry 
           user.friend_request(leader)
-        end
-
-        leader.pending_friends.each do |friend|
-          leader.accept_request(friend)
+          leader.accept_request(user)
         end
       end
     end

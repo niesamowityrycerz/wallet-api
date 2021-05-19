@@ -4,8 +4,11 @@ module Api
       class Base < Api::V1::Base
 
         resource :user do 
-          mount Api::V1::Users::Index
-          mount Api::V1::Users::Balance
+          route_param :id do 
+            mount Api::V1::Users::Index
+            mount Api::V1::Users::Balance
+            mount Api::V1::Users::AddRepaymentConditions
+          end 
         end
 
         resource :users do 
@@ -13,7 +16,6 @@ module Api
         end
 
         mount Api::V1::Users::Me
-
       end 
     end
   end

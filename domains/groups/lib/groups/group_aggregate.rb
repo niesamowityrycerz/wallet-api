@@ -5,7 +5,6 @@ module Groups
     include AggregateRoot
 
     MemberNotAllowed         = Class.new(StandardError)
-    GroupDoesNotExist        = Class.new(StandardError)
     UnpermittedRepaymentDate = Class.new(StandardError)
     OperationNotPermitted    = Class.new(StandardError)
     NotEntitledToCloseGroup  = Class.new(StandardError)
@@ -26,11 +25,11 @@ module Groups
     attr_reader :leader, :members, :debt_repayment_valid_till, :group_lasting_period, :invited_users
 
     def register(data)
-      #leader = User.find_by!(id: data[:leader_id])
-      #data[:invited_users].each do |id|
-      #  binding.pry
-      #  raise MemberNotAllowed.new unless leader.friends.include? User.find_by!(id: id)
-      #end
+      leader = User.find_by!(id: data[:leader_id])
+      data[:invited_users].each do |id|
+        invited_user = User.find_by!(id: id)
+        raise MemberNotAllowed.new "#{invited_user.username} is not your friend!" unless leader.friends.include? invited_user
+      end
 
       apply Events::GroupRegistered.strict({
         group_uid: @id,
@@ -43,8 +42,7 @@ module Groups
     end
 
     def add_group_terms(data)
-      raise GroupDoesNotExist.new "Group with uid #{data.fetch(:group_uid)} does not exist!" unless ReadModels::Groups::GroupProjection.find_by(group_uid: data.fetch(:group_uid))
-      raise UnpermittedRepaymentDate.new unless group_lasting_period.repayment_date_valid?(data.fetch(:debt_repayment_valid_till))
+      raise UnpermittedRepaymentDate.new 'Unpermitted repayment date!' unless group_lasting_period.repayment_date_valid?(data.fetch(:debt_repayment_valid_till))
 
       apply Events::GroupSettlementTermsAdded.strict({
         currency_id: data.fetch(:currency_id),
@@ -126,7 +124,7 @@ module Groups
     on Events::InvitationAccepted do |event|
       @members << Entities::Member.new(event.data.fetch(:member_id))
     end
-
+    
     on Events::InvitationRejected do |event|
       @rejected_by << event.data.fetch(:user_id)
     end

@@ -1,7 +1,7 @@
 module Rankings
   class CreditorRankingService
     def self.call
-      ReadModels::Rankings::CreditorRanking.order("ratio DESC")
+      ReadModels::Rankings::CreditorRankingProjection.order("ratio DESC")
     end
   end
 end

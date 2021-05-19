@@ -13,7 +13,7 @@ module Rankings
         filter_by_trust_points(@filters[:trust_points]) if @filters[:trust_points]
         filter_by_ratio(@filters[:ratio]) if @filters[:ratio]
         filter_by_credits_quantity(@filters[:credits_quantity]) if @filters[:credits_quantity]
-        filter_by_creditors_ids(@filters[:creditors_ids]) if @filters[:creditors_ids]
+        filter_by_creditor_id(@filters[:creditor_id]) if @filters[:creditor_id]
       end
       paginate(@pagination)
     end
@@ -32,8 +32,8 @@ module Rankings
       @positions = @positions.reorder("credits_quantity #{mapper[option]}")
     end
 
-    def filter_by_creditors_ids(creditors_ids)
-      @positions = @positions.where("creditor_id IN ?", creditors_ids )
+    def filter_by_creditor_id(id)
+      @positions = @positions.where("creditor_id = ?", id)
     end
   end 
 end

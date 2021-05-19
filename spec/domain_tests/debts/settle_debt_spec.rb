@@ -1,9 +1,9 @@
 require 'rails_helper'
 
-RSpec.describe 'Debt actions', type: :unit do 
+RSpec.describe 'Debts:', type: :integration do 
   let(:debt_uid)               { SecureRandom.uuid }
-  let(:creditor)               { create(:creditor, :with_ranking_position) }
-  let(:debtor)                 { create(:debtor, :with_ranking_position) }
+  let(:creditor)               { create(:creditor) }
+  let(:debtor)                 { create(:debtor) }
   let(:zloty)                  { create(:currency) }
   let!(:repayment_condition)   { create(:repayment_condition, :maturity_in_10_days, creditor: creditor, currency: zloty) }
 
@@ -32,41 +32,34 @@ RSpec.describe 'Debt actions', type: :unit do
   end
 
 
-  context 'when settle on time' do 
-    context 'when debt accepted' do 
-      context 'when debtor terms added' do
-        it 'settles debt' do 
+  context 'when debt accepted' do 
+    context 'when anticipated date added'do 
+      context 'when settlement on time' do
+        it 'performs happy path' do 
           command_bus.call(Debts::Commands::AcceptDebt.new({debt_uid: debt_uid}))
-          command_bus.call(Debts::Commands::AddDebtorTerms.new(@debtor_terms))
+          command_bus.call(Debts::Commands::AddAnticipatedSettlementDate.new(@debtor_terms))
             
           expect {
             command_bus.call(Debts::Commands::SettleDebt.new(@settlement_params))
-          }.to change { ReadModels::Debts::DebtProjection.find_by!(debt_uid: debt_uid).status }.from('debtors_terms_added').to('closed')
-          .and change { ReadModels::Rankings::DebtorRanking.find_by!(debtor_id: debtor.id).debts_quantity }.by(1)
-          .and change { ReadModels::Rankings::CreditorRanking.find_by!(creditor_id: creditor.id).credits_quantity }.by(1)
+          }.to change { ReadModels::Debts::DebtProjection.find_by!(debt_uid: debt_uid).status }.from('anticipated_settlement_date_added').to('closed')
 
           expect(ReadModels::Debts::DebtProjection.find_by!(debt_uid: debt_uid).date_of_settlement).to eq(Date.today)
         
           expect(event_store).to have_published(
             an_event(Debts::Events::DebtIssued),
             an_event(Debts::Events::DebtAccepted),
-            an_event(Debts::Events::DebtorTermsAdded),
+            an_event(Debts::Events::AnticipatedSettlementDateAdded),
             an_event(Debts::Events::DebtSettled),
             an_event(Debts::Events::DebtClosed)
           ).in_stream("Debt$#{debt_uid}").strict
-
-          expect(event_store).to have_published(
-            an_event(RankingPoints::Events::CredibilityPointsAlloted),
-            an_event(RankingPoints::Events::TrustPointsAlloted)
-          ).in_stream("RankingPoint$#{debt_uid}").strict
         end
       end 
     
-      context 'when debtor did not specify terms' do
+      context 'when debtor did not add anticipated date' do
         it 'raises error' do 
           expect {
             command_bus.call(Debts::Commands::SettleDebt.new(@settlement_params))
-          }.to raise_error(Debts::DebtAggregate::DebtorTermsNotAdded)
+          }.to raise_error(Debts::DebtAggregate::UnableToProceedSettleement)
         end
       end
     end 

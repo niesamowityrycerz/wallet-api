@@ -4,7 +4,8 @@ module ReadModels
       #has_one :debt, class_name: 'WriteModels::Debt'
       
       enum status: { pending: 'pending', accepted: 'accepted', rejected: 'rejected', under_scrutiny: 'under_scrutiny', 
-                     closed: 'closed', corrected: 'corrected', settled: 'settled', expired: 'expired', debtor_terms_added: 'debtor_terms_added',
+                     closed: 'closed', corrected: 'corrected', settled: 'settled', expired: 'expired',
+                     anticipated_settlement_date_added: 'anticipated_settlement_date_added',
                      points_alloted: 'points_alloted', penalty_points_alloted: 'penalty_points_alloted' }
 
       validates :doubts, length: { maximum: 50, too_long: "%{count} characters is maximum!" }

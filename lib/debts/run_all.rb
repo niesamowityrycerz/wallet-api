@@ -11,7 +11,7 @@ module Debts
       accept_n_settle_uids = to_accept_and_settle(accept_q)
       Debts::AcceptDebt.new(accept_n_settle_uids).call
       Debts::RejectDebt.new(to_reject(reject_q)).call
-      Debts::DebtorAddsTerms.new.call
+      Debts::AddAnticipatedSettlementDate.new.call
       Debts::SettleDebt.new(accept_n_settle_uids, settle_on_time_q).call
       Debts::CheckOutDebtDetails.new(to_checkout_and_correct(checkout_q)).call
       Debts::CorrectDebtDetails.new(to_checkout_and_correct(checkout_q)).call

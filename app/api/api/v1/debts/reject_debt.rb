@@ -10,7 +10,7 @@ module Api
         desc 'Reject debt'
         
         params do 
-          requires :reason_for_rejection, type: String
+          requires :reason_for_rejection, type: String, message: 'is missing'
         end
 
         resource :reject do 
@@ -18,8 +18,9 @@ module Api
             debt = ::Debts::RejectDebtService.new(params)
             if debt.is_debtor? current_user
               debt.reject
+              status 200
             else 
-              403 
+              error!('You are not entitled to do this!', 403)
             end 
           end 
         end 

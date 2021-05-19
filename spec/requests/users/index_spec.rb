@@ -5,6 +5,7 @@ RSpec.describe 'Index endpoint', type: :request do
   let(:zloty)           { create(:currency) }
   let(:user)            { create(:user, :with_repayment_conditions) }
   let(:logged_user)     { create(:user, :with_repayment_conditions) }
+
   let(:application)     { create(:application) }
   let(:access_token)    { create(:access_token, application: application, resource_owner_id: logged_user.id) }
 
@@ -38,25 +39,24 @@ RSpec.describe 'Index endpoint', type: :request do
   context 'when unlogged visitor' do 
     it 'shows user public profile' do 
       get "/api/v1/user/#{user.id}"
+
       expect(response.status).to eq(200)
-      parsed_body = JSON.parse(response.body)
-      expect(parsed_body["data"]["attributes"]).to eq({
-        "username" => user.username,
-        "email" => user.email
-      })
+      body = response.parsed_body['data']
+      expect(body['attributes']).to include('username', 'email')
     end
   end
 
   context 'when logged in visitor' do 
     it 'shows user public profile' do
       get "/api/v1/user/#{user.id}", headers: { "Authorization": "Bearer " + access_token.token }
+
       expect(response.status).to eq(200)
-      parsed_body = JSON.parse(response.body)
+      body = response.parsed_body
 
       visitor_debts = ReadModels::Debts::DebtProjection.where("debtor_id = ? AND creditor_id = ?", logged_user.id, user.id)
       visited_user_debts = ReadModels::Debts::DebtProjection.where("debtor_id = ? AND creditor_id = ?", user.id, logged_user.id)
 
-      expect(parsed_body["data"]["meta"]).to eq({
+      expect(body["data"]["meta"]).to eq({
         "visitor_sum_of_accepted_debts" => visitor_debts.accepted.sum("amount").round(2),
         "visitor_sum_of_acceted_credits"=> visited_user_debts.accepted.sum("amount").round(2),
         "debts_quantity" => visitor_debts.count, 
@@ -66,11 +66,9 @@ RSpec.describe 'Index endpoint', type: :request do
   end
 
   context 'when api/:version/user/:user_id user_id == logged.id' do 
-    subject { get "/api/v1/user/#{logged_user.id}", headers: { "Authorization": "Bearer " + access_token.token } }
     it 'gets redirect to /me' do 
-      expect(subject).to redirect_to("/api/v1/me")
+      get "/api/v1/user/#{logged_user.id}", headers: { "Authorization": "Bearer " + access_token.token }
+      expect(response).to redirect_to("/api/v1/me")
     end
   end
-
-  
 end

@@ -1,7 +1,7 @@
 class AddEnumeratorsToDebtsDebtsProjectionAndGroupProjections < ActiveRecord::Migration[5.2]
   def change
     create_enum :debt_statuses, %w[pending accepted rejected under_scrutiny 
-                                    closed corected settled expired debtor_terms_added
+                                    closed corected settled expired anticipated_settlement_date_added
                                     points_alloted penalty_points_alloted]
     add_column :debt_projections, :status, :debt_statuses, default: 'pending'
 

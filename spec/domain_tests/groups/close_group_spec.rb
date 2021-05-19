@@ -29,16 +29,20 @@ RSpec.describe 'Close group', type: :integration do
 
   context 'when leader' do 
     it 'closes group' do
-      @close_group_params[:user_id] = leader.id     
+      @close_group_params[:leader_id] = leader.id     
       expect {
         command_bus.call(Groups::Commands::CloseGroup.send(@close_group_params))
       }.to change { ReadModels::Groups::GroupProjection.find_by!(group_uid: group_uid).status }.from("init").to("closed")
+
+      expect(event_store).to have_published(
+        an_event(Groups::Events::GroupClosed)
+      ).in_stream("Group$#{group_uid}")
     end
   end
 
   context 'when non-leader' do 
     it 'raises error' do 
-      @close_group_params[:user_id] = friends_of_leader.sample.id   
+      @close_group_params[:leader_id] = friends_of_leader.sample.id   
       expect {
         command_bus.call(Groups::Commands::CloseGroup.send(@close_group_params))
       }.to raise_error(Groups::GroupAggregate::NotEntitledToCloseGroup)

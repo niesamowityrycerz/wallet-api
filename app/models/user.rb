@@ -41,7 +41,7 @@ class User < ApplicationRecord
   end
 
   def add_to_ranking 
-    ReadModels::Rankings::DebtorRanking.create!(debtor_id: self.id, debtor_name: self.username)
-    ReadModels::Rankings::CreditorRanking.create!(creditor_id: self.id, creditor_name: self.username)
+    ReadModels::Rankings::DebtorRankingProjection.create!(debtor_id: self.id, debtor_name: self.username)
+    ReadModels::Rankings::CreditorRankingProjection.create!(creditor_id: self.id, creditor_name: self.username)
   end
 end

@@ -16,7 +16,7 @@ module Api
               debt.close 
               status 200
             else
-              status 403
+              error!('You are not entitled to do this!', 403)
             end
           end
         end

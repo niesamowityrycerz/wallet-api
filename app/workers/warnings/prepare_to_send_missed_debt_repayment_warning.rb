@@ -1,11 +1,9 @@
 module Warnings
   class PrepareToSendMissedDebtRepaymentWarning
-    # build sidekiq worker
     include Sidekiq::Worker
 
-    # every Sidekiq worker has this method
     def perform(debt_uid, debtor_id)
-      puts "Warnings happend - #{debt_uid}"
+      puts "Warning happend for: #{debt_uid}"
       Rails.configuration.command_bus.call(Warnings::Commands::SendMissedDebtRepaymentWarning.new(
         {
           debt_uid: debt_uid,

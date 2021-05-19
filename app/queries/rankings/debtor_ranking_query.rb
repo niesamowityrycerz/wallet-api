@@ -13,7 +13,7 @@ module Rankings
         filter_by_adjusted_cred_points(@filters[:adjusted_credibility_points]) if @filters[:adjusted_credibility_points]
         filter_by_ratio(@filters[:ratio]) if @filters[:ratio]
         filter_by_debts_quantity(@filters[:debts_quantity]) if @filters[:debtss_quantity]
-        filter_by_creditors_ids(@filters[:debtors_ids]) if @filters[:debtors_ids]
+        filter_by_debtor_id(@filters[:debtor_id]) if @filters[:debtor_id]
       end
       paginate(@pagination)
     end
@@ -32,8 +32,8 @@ module Rankings
       @positions = @positions.reorder("debts_quantity #{mapper[option]}")
     end
 
-    def filter_by_debtors_ids(creditors_ids)
-      @positions = @positions.where("debtor_id IN ?", debtors_ids )
+    def filter_by_debtor_id(debtor_id)
+      @positions = @positions.where("debtor_id = ?", debtor_id )
     end
   end
 end 

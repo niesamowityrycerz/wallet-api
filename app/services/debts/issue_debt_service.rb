@@ -1,10 +1,12 @@
 module Debts 
   class IssueDebtService 
 
-    def initialize(params)
+    def initialize(params, current_user)
       @params = params
       @current_user = current_user
     end
+
+    attr_reader :params
     
     def issue
       adjust_params(@current_user)
@@ -14,7 +16,7 @@ module Debts
     private 
 
     def adjust_params(current_user)
-      @params.merge({
+      @params.merge!({
         debt_uid: SecureRandom.uuid,
         creditor_id: current_user.id
       })

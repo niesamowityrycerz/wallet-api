@@ -5,11 +5,11 @@ module Debts
     include AggregateRoot
 
     AnticipatedDateOfSettlementUnavailable = Class.new(StandardError)
-    CurrencyUnavaiable                     = Class.new(StandardError)
-    InvalidAmount                          = Class.new(StandardError)
     DebtNotAccepted                        = Class.new(StandardError)
-    DebtorTermsNotAdded                    = Class.new(StandardError)
-    UnableToProceedDebtSettleement         = Class.new(StandardError)
+    UnableToProceedSettleement             = Class.new(StandardError)
+    UnableToCheckOutDebtDetails            = Class.new(StandardError)
+    UnableToCorrectDebtDetails             = Class.new(StandardError)
+    UnableToAccept                         = Class.new(StandardError)
 
     attr_accessor :repayment_conditions, :due_money
 
@@ -44,6 +44,8 @@ module Debts
     end
 
     def accept
+      raise UnableToAccept.new 'You cannot do that!' unless @status == :pending
+
       apply Events::DebtAccepted.strict(
         {
           debt_uid: @id,
@@ -72,7 +74,7 @@ module Debts
         {
           debt_uid: @id,
           anticipated_date_of_settlement: params[:anticipated_date_of_settlement],
-          status: :debtor_terms_added,
+          status: :anticipated_settlement_date_added,
         }
       )
     end
@@ -89,6 +91,8 @@ module Debts
     end
 
     def check_out_details(params)
+      raise UnableToCheckOutDebtDetails.new 'This option is unavailable after debt acceptance.' unless @status == :pending
+
       apply Events::DebtDetailsCheckedOut.strict(
         {
           debt_uid: @id,
@@ -99,9 +103,11 @@ module Debts
     end
 
     def correct_details(params)
+      raise UnableToCorrectDebtDetails.new 'This option is unavailable.' unless @status == :under_scrutiny
+
       apply Events::DebtDetailsCorrected.strict(
         {
-          debt_uid: @id,
+          debt_uid: params[:debt_uid],
           amount: ( params[:amount] if params.key?(:amount) ),
           description: ( params[:description] if params.key?(:description) ),
           currency_id: ( params[:currency_id] if params.key?(:currency_id) ),
@@ -112,7 +118,8 @@ module Debts
     end
 
     def settle(params)
-      raise UnableToProceedDebtSettleement.new unless [ :accepted, :debtor_terms_added ].include? @status 
+      raise UnableToProceedSettleement.new 'You have to accept debt before settlement!' unless [ :accepted, :anticipated_settlement_date_added ].include? @status 
+
       apply Events::DebtSettled.strict(
         {
           debt_uid: @id,

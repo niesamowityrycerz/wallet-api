@@ -10,17 +10,16 @@ module Api
         desc 'Debtor adds anticipated settlement dat'
 
         params do 
-          requires :anticipated_date_of_settlement, type: Date
+          requires :anticipated_date_of_settlement, type: Date, values: ->(val) { Date.today <= val }
         end
 
         resource :add_anticipated_settlement_date do
           patch do 
             debt = ::Debts::AddAnticipatedSettlementDateService.new(params, current_user)
-            if debt.id_debtor? current_user
-              debt.set_aniticipated_date
-            else 
-              403
-            end 
+            if debt.is_debtor? current_user
+              debt.set_anticipated_date
+              status 200
+            end
           end
         end 
       end

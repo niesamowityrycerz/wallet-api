@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_05_15_135358) do
+ActiveRecord::Schema.define(version: 2021_05_18_125106) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -25,7 +25,7 @@ ActiveRecord::Schema.define(version: 2021_05_15_135358) do
     "corected",
     "settled",
     "expired",
-    "debtor_terms_added",
+    "anticipated_settlement_date_added",
     "points_alloted",
     "penalty_points_alloted",
   ], force: :cascade
@@ -51,15 +51,15 @@ ActiveRecord::Schema.define(version: 2021_05_15_135358) do
     "rejected",
   ], force: :cascade
 
-  create_table "creditor_rankings", force: :cascade do |t|
+  create_table "creditor_ranking_projections", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.float "trust_points", default: 0.0
     t.integer "credits_quantity", default: 0
-    t.decimal "ratio", precision: 10, scale: 2
+    t.decimal "ratio", default: "0.0"
     t.string "creditor_name"
     t.integer "creditor_id"
-    t.index ["creditor_id"], name: "index_creditor_rankings_on_creditor_id"
+    t.index ["creditor_id"], name: "index_creditor_ranking_projections_on_creditor_id"
   end
 
   create_table "currencies", force: :cascade do |t|
@@ -104,15 +104,15 @@ ActiveRecord::Schema.define(version: 2021_05_15_135358) do
     t.index ["user_id"], name: "index_debt_warning_projections_on_user_id"
   end
 
-  create_table "debtor_rankings", force: :cascade do |t|
+  create_table "debtor_ranking_projections", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.float "adjusted_credibility_points", default: 0.0
     t.integer "debts_quantity", default: 0
-    t.decimal "ratio", precision: 10, scale: 2
+    t.decimal "ratio", default: "0.0"
     t.string "debtor_name"
     t.integer "debtor_id"
-    t.index ["debtor_id"], name: "index_debtor_rankings_on_debtor_id"
+    t.index ["debtor_id"], name: "index_debtor_ranking_projections_on_debtor_id"
   end
 
   create_table "debts", force: :cascade do |t|

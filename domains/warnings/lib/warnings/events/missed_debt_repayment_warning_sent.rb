@@ -3,7 +3,7 @@ module Warnings
     class MissedDebtRepaymentWarningSent < Event 
       SCHEMA = {
         debt_uid: String,
-        state: Symbol,
+        status: Symbol,
         user_id: Integer,
         warning_type_id: Integer,
         warning_uid: String

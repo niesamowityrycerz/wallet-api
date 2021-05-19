@@ -1,5 +1,5 @@
 module Debts
-  class DebtorAddsTerms 
+  class AddAnticipatedSettlementDate
     def initialize
       @debtors_terms_q = ReadModels::Debts::DebtProjection.accepted
     end
@@ -14,7 +14,7 @@ module Debts
       accepted_debts = ReadModels::Debts::DebtProjection.accepted
       created_commands = []
       accepted_debts.each do |tran|
-        created_commands << Debts::Commands::AddDebtorTerms.new({
+        created_commands << Debts::Commands::AddAnticipatedSettlementDate.new({
           debt_uid: tran.debt_uid,
           anticipated_date_of_settlement: Date.today + rand(1..3)
         })

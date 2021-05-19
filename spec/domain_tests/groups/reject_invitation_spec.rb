@@ -31,9 +31,10 @@ RSpec.describe "Group functionality", type: :unit do
         group_uid: group_uid,
         user_id: sampled_user.id
       }
-      command_bus.call(Groups::Commands::RejectInvitation.send(data))
-
-      expect(sampled_user.group_members.where(group_uid: group_uid).invitation_status).to eq("rejected")
+      expect {
+        command_bus.call(Groups::Commands::RejectInvitation.send(data))
+      }.to change { WriteModels::GroupMember.find_by!(group_uid: group_uid, member_id: sampled_user.id).invitation_status }.from("waiting").to("rejected")
+      
       expect(event_store).to have_published(
         an_event(Groups::Events::InvitationRejected).with_data({
           user_id: sampled_user.id

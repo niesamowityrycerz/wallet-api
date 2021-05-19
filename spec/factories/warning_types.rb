@@ -1,5 +1,5 @@
 FactoryBot.define do
   factory :warning_type do
-    name { 'missed repayment date' }
+    name { 'missed debt repayment' }
   end
 end

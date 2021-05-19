@@ -15,7 +15,7 @@ module Api
             debt_projection = debt.debt_projection
             ::Debts::DebtSerializer.new(debt_projection, { params: { current_user: current_user } }).serializable_hash
           else 
-            403 
+            error! 'You are not entitled to do this!', 403 
           end
         end
       end 

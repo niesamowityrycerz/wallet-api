@@ -1,6 +1,6 @@
 module Debts 
   class AddAnticipatedSettlementDateService < BaseDebtsService
-    def set_aniticipated_date
+    def set_anticipated_date
       Rails.configuration.command_bus.call(
         Debts::Commands::AddAnticipatedSettlementDate.new(adjusted_params)
       )

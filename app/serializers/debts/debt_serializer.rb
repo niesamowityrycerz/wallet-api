@@ -82,10 +82,10 @@ module Debts
       "localhost:3000/api/v1/debt/#{debt.debt_uid}/settle"
     end
     
-    link :fill_settlement_terms, if: Proc.new { |debt, params|
+    link :add_anticipated_date_of_return, if: Proc.new { |debt, params|
       debt.debtor_id == params[:current_user].id && debt.accepted?
     } do |debt|
-      "localhost:3000/api/v1/debt/#{debt.debt_uid}/fill_settlement_terms"
+      "localhost:3000/api/v1/debt/#{debt.debt_uid}/add_anticipated_settlement_date"
     end
   end 
 end
