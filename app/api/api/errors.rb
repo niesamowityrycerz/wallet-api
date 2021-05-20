@@ -3,7 +3,6 @@ module Api
     extend ActiveSupport::Concern 
 
     included do 
-
       rescue_from Grape::Exceptions::ValidationErrors do |e|
         error!(e, 400)
       end

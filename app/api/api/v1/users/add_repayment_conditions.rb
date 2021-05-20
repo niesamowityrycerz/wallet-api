@@ -10,7 +10,7 @@ module Api
         desc 'User adds repayment conditions'
 
         params do 
-          requires :currency_id, type: Integer, values: -> { Currency.id }
+          requires :currency_id, type: Integer, values: -> { Currency.ids }
           requires :maturity_in_days, type: Integer, values: (1..365)
         end
 

@@ -1,2 +1,2 @@
 GrapeSwaggerRails.options.url      = '/swagger_doc.json'
-GrapeSwaggerRails.options.app_url  = 'http://swagger.wordnik.com'
+GrapeSwaggerRails.options.app_url  = "http://localhost:3000/api/v1"
