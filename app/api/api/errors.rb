@@ -37,7 +37,7 @@ module Api
         when 'Groups::GroupAggregate::NotEntitledToCloseGroup'
           error!(e, 403)
         else
-          error!('Something went wrong!', 500)
+          error!(e, 500)
         end
       end 
     end
