@@ -14,14 +14,13 @@ module Groups
     private 
 
     def grab_users(leader_q)
-
       leaders = User.ids.sample(20)
       available_users = User.ids - leaders 
       @friends = []
       leaders.each do |leader_id|
         @friends << {
           leader_id: leader_id,
-          invited_users_ids: available_users.sample(rand(1..3))
+          invited_users_ids: available_users.sample(rand(2..4))
         }
       end
     end 

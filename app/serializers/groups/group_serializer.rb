@@ -44,7 +44,7 @@ module Groups
           debtor: User.find_by!(id: debt_p.debtor_id).username,
           status: debt_p.status,
           amount: debt_p.amount,
-          placed_at: debt_p.created_at,
+          placed_at: debt_p.created_at.to_date,
         }
       end
       display 

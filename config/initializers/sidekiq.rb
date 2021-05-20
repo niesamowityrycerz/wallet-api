@@ -1,11 +1,3 @@
-if Rails.env == :production
-
-else  
-  url = 'localhost:3000'
-
-
-end
-
 # redis size == sidekiq concurrency
 Sidekiq.configure_server do |config|
   config.redis = { 

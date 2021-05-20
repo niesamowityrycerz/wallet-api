@@ -13,9 +13,9 @@ module Debts
 
     def prepare_command(debt_uids)
       commands = []
-      debt_uids.each do |tran_uid|
+      debt_uids.each do |debt_uid|
         commands << Debts::Commands::CheckOutDebtDetails.new({
-          debt_uid: tran_uid,
+          debt_uid: debt_uid,
           doubts: Faker::Quote.famous_last_words[0..40]
         })
       end

@@ -13,9 +13,9 @@ module Debts
 
     def prepare_command(debt_uids)
       commands = []
-      debt_uids.each do |tran_uid|
+      debt_uids.each do |debt_uid|
         commands << Debts::Commands::AcceptDebt.new({
-          debt_uid: tran_uid
+          debt_uid: debt_uid
         })
       end
       commands 

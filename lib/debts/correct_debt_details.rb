@@ -1,7 +1,7 @@
 module Debts
   class CorrectDebtDetails
-    def initialize(debt_uids)
-      @debt_uids = debt_uids
+    def initialize
+      @debt_uids = ReadModels::Debts::DebtProjection.under_scrutiny.pluck(:debt_uid)
     end
 
     def call

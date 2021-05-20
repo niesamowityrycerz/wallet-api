@@ -1,25 +1,24 @@
 module Groups 
   class AcceptInvitation 
-    def initialize(q)
-      @q = q
+    def initialize(per_group_accept)
+      @per_group_accept = per_group_accept
     end
 
     def call 
-      get_groups(@q)
-      mapped_data = get_invited_users_per_group(@groups)
+      mapped_data = get_invited_users_per_group(get_groups_uids)
       prepare_command(mapped_data)
     end
 
     private 
 
-    def get_groups(q)
-      @groups = ReadModels::Groups::GroupProjection.take(q)
+    def get_groups_uids
+      @groups_uids = ReadModels::Groups::GroupProjection.pluck(:group_uid, :invited_users)
     end
 
     def get_invited_users_per_group(groups)
       mapper = {}
       groups.each do |group|
-        mapper[group.group_uid] = group.invited_users
+        mapper[group.first] = group.second.sample(@per_group_accept)
       end
       mapper
     end
@@ -27,9 +26,7 @@ module Groups
     def prepare_command(users_groups)
       users_groups.each do |group_uid, users|
         users.each do |user_id|
-          if user_id.even?
-            accept_invitation({ group_uid: group_uid, member_id: user_id })
-          end 
+          accept_invitation({ group_uid: group_uid, member_id: user_id })
         end
       end
     end
