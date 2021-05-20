@@ -25,6 +25,7 @@ module Api
         when 'Debts::DebtAggregate::UnableToAccept'
           error!(e, 403)
         when 'NoMethodError'
+          binding.pry
           error!('Could not find the requested resource', 404)
         when 'Groups::GroupAggregate::MemberNotAllowed'
           error!(e, 403)

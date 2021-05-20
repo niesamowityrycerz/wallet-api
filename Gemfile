@@ -24,6 +24,7 @@ gem 'puma', '~> 3.11'
 gem 'grape'
 gem 'grape_on_rails_routes'
 gem 'grape-swagger'
+gem 'grape-swagger-rails'
 
 # devise 
 gem 'devise'
