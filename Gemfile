@@ -20,10 +20,21 @@ gem 'puma', '~> 3.11'
 # Use ActiveStorage variant
 # gem 'mini_magick', '~> 4.8'
 
+
+# Use SCSS for stylesheets
+gem 'sass-rails', '~> 5.0'
+
+# Use Uglifier as compressor for JavaScript assets
+gem 'uglifier', '>= 1.3.0'
+
+# Use CoffeeScript for .coffee assets and views
+gem 'coffee-rails', '~> 4.2'
+
 # grape
 gem 'grape'
 gem 'grape_on_rails_routes'
 gem 'grape-swagger'
+gem 'grape-swagger-rails'
 
 # devise 
 gem 'devise'

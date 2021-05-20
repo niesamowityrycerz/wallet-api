@@ -3,9 +3,7 @@ module Api
     extend ActiveSupport::Concern 
 
     included do 
-
       rescue_from Grape::Exceptions::ValidationErrors do |e|
-        binding.pry
         error!(e, 400)
       end
 
@@ -39,7 +37,7 @@ module Api
           error!(e, 403)
         else
           binding.pry
-          #error!('Something went wrong!', 500)
+          error!('Something went wrong!', 500)
         end
       end 
     end
