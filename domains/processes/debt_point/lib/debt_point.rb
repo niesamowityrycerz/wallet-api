@@ -10,7 +10,7 @@ module Processes
 
     def call(event)
       if debt_accepted?(event)
-        Warnings::PrepareToSendMissedDebtRepaymentWarning.perform_in(2.minutes, event.data.fetch(:debt_uid), event.data.fetch(:debtor_id))
+        Warnings::PrepareToSendMissedDebtRepaymentWarning.perform_in(time_to_expire(event), event.data.fetch(:debt_uid), event.data.fetch(:debtor_id))
       elsif debt_settled?(event)
         Warnings::PrepareToSendMissedDebtRepaymentWarning.cancel_warning(event.data.fetch(:debt_uid))
         command_bus.call(
