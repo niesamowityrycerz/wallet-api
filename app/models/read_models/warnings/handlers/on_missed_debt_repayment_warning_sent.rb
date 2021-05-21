@@ -4,7 +4,6 @@ module ReadModels
       class OnMissedDebtRepaymentWarningSent
         def call(event)
           debt_uid = event.data.fetch(:debt_uid)
-          binding.pry
           debt_projection = ReadModels::Debts::DebtProjection.find_by!(debt_uid: event.data.fetch(:debt_uid))
           debt_projection.update!(
             {
