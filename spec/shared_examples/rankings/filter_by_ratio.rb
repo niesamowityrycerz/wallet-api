@@ -18,7 +18,7 @@ RSpec.shared_examples "Filter by ratio", type: :request do |option|
       parsed_body = JSON.parse(response.body)
 
       displayed_credits_quantity = parsed_body["data"].collect { |record| record["attributes"]["ratio"] }
-      base_data = ReadModels::Rankings::CreditorRanking.order("ratio #{@mapper[option]}" )
+      base_data = ReadModels::Rankings::CreditorRankingProjection.order("ratio #{@mapper[option]}" )
 
       to_be_displayed = (base_data.collect {|record| record.ratio.to_s }).first(25)
       expect(displayed_credits_quantity).to eq(to_be_displayed)

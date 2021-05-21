@@ -13,7 +13,6 @@ class User < ApplicationRecord
 
   has_many :group_members, foreign_key: 'member_id', class_name: 'WriteModels::GroupMember'
   has_many :groups, through: :group_members, class_name: "WriteModels::Group"
-  has_many :posts, dependent: :destroy
 
   has_friendship
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_05_18_125106) do
+ActiveRecord::Schema.define(version: 2021_05_21_202053) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -228,14 +228,6 @@ ActiveRecord::Schema.define(version: 2021_05_18_125106) do
     t.index ["uid"], name: "index_oauth_applications_on_uid", unique: true
   end
 
-  create_table "posts", force: :cascade do |t|
-    t.bigint "user_id"
-    t.string "body"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_posts_on_user_id"
-  end
-
   create_table "repayment_conditions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -285,6 +277,5 @@ ActiveRecord::Schema.define(version: 2021_05_18_125106) do
   add_foreign_key "group_members", "users", column: "member_id"
   add_foreign_key "groups", "group_projections"
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
-  add_foreign_key "posts", "users"
   add_foreign_key "warnings", "users"
 end

@@ -14,9 +14,9 @@ module Api
             group = ::Groups::LeaveGroupService.new(params, current_user)
             if group.has_member? current_user
               group.leave
-              200
+              status 201
             else 
-              403
+              error!('You cannot do that!', 403)
             end 
           end
         end

@@ -11,9 +11,9 @@ module Api
         
         resource :settle do 
           put do 
-            debt = ::Debts::SettleDebtsService.new(params)
+            debt = ::Debts::SettleDebtService.new(params)
             if debt.is_debtor? current_user
-              debt.settle_debts([params[:debt_uid]])
+              debt.settle_debt(params[:debt_uid])
               status 200
             else
               error!('You are not entitled to do this!', 403)

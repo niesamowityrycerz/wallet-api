@@ -2,7 +2,7 @@ module Groups
   class IssueDebtsService < BaseGroupService
 
     def issue_debts
-      data = prepare_params(@debt_params)
+      data = prepare_params(params)
       execute_commands(data)
     end
 

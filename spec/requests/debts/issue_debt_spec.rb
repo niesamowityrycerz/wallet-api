@@ -29,6 +29,8 @@ RSpec.describe 'Issue debt endpoint', type: :request do
         post "/api/v1/debt/new", params: @params, headers: { 'Authorization': 'Bearer ' + access_token.token }
         debt_uid = ReadModels::Debts::DebtProjection.last.debt_uid
 
+        
+
         expect(response).to redirect_to("/api/v1/debt/#{debt_uid}")
         expect(response.status).to eq(301)
       end 

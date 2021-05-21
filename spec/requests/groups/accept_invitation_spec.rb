@@ -9,11 +9,10 @@ RSpec.describe 'Accept invitation endpoint', type: :request do
   let(:leader)                    { create(:user) }
   let(:friends_of_leader)         { create_list(:user, 3) }
   let(:random_user)               { create(:user) }
-
   let(:euro)                      { create(:currency, :euro) }
 
   let(:application)               { create(:application) }
-  let(:access_token)              { create(:access_token, application: application, resource_owner_id: leader.id) }
+  let(:invited_user_access_token) { create(:access_token, application: application, resource_owner_id: friends_of_leader.sample.id) }
   let(:random_user_access_token)  { create(:access_token, application: application, resource_owner_id: random_user.id) }
 
   before(:each) do 
@@ -30,10 +29,19 @@ RSpec.describe 'Accept invitation endpoint', type: :request do
   end
 
   context 'when group exists' do 
-    context 'when group' do 
-      it 'adds group terms' do 
-        patch "/api/v1/group/#{group_uid}/add_terms", params: @params, headers: { 'Authorization': 'Bearer ' + access_token.token }
+    context 'when invited user' do 
+      it 'accepts invitation' do 
+        patch "/api/v1/group/#{group_uid}/accept", headers: { 'Authorization': 'Bearer ' + invited_user_access_token.token }
         expect(response.status).to eq(201)
+      end 
+    end
+
+    context 'when random user' do 
+      it 'raises error' do 
+        patch "/api/v1/group/#{group_uid}/accept", headers: { 'Authorization': 'Bearer ' + random_user_access_token.token }
+
+        expect(response.status).to eq(403)
+        expect(response.parsed_body['error']).to eq('You cannot do that!')
       end 
     end
   end 

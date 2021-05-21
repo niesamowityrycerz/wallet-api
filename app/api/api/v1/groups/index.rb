@@ -14,7 +14,7 @@ module Api
           if group.has_member? current_user
             ::Groups::GroupSerializer.new(group.projection, { params: { current_user_id: current_user.id } }).serializable_hash
           else 
-            status 403
+            error!('You cannot do that!', 403)
           end
         end
       end

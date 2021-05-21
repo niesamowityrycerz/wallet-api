@@ -18,7 +18,7 @@ RSpec.shared_examples "Filter by credits quantity", type: :request do |option|
       parsed_body = JSON.parse(response.body)
 
       displayed_credits_quantity = parsed_body["data"].collect { |record| record["attributes"]["credits_quantity"] }
-      base_data = ReaModels::Rankings::CreditorRanking.order("credits_quantity #{@mapper[option]}" )
+      base_data = ReadModels::Rankings::CreditorRankingProjection.order("credits_quantity #{@mapper[option]}" )
 
       to_be_displayed = (base_data.collect {|record| record.credits_quantity }).first(25)
       expect(displayed_credits_quantity).to eq(to_be_displayed)

@@ -16,7 +16,7 @@ module Api
               group.reject_invitation
               status 201
             else 
-              status 403
+              error!('You cannot do that!', 403)
             end
           end
         end 

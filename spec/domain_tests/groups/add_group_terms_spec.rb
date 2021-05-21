@@ -45,15 +45,6 @@ RSpec.describe 'Group functionality', type: :unit do
     end
   end
 
-  context 'when group does not exist' do 
-    it 'raises error on adding settlement terms' do
-      @group_settlement_param[:group_uid] = SecureRandom.uuid
-      expect {
-        command_bus.call(Groups::Commands::AddGroupSettlementTerms.send(@group_settlement_param))
-      }.to raise_error(Groups::GroupAggregate::GroupDoesNotExist)
-    end
-  end
-
   context 'when transaction_expire_on in contradiction with group lasting period' do 
     it 'raises error on adding settlement terms' do
       @group_settlement_param[:group_uid] = group_uid

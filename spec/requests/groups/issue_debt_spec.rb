@@ -12,6 +12,7 @@ RSpec.describe 'Issue splitted debt', type: :request do
 
   let(:application)               { create(:application) }
   let(:access_token)              { create(:access_token, application: application, resource_owner_id: leader.id) }
+  let(:not_member_access_token)   { create(:access_token, application: application, resource_owner_id: leader_friends.sample.id) }
 
   before(:each) do 
     create_friendships(leader, leader_friends)
@@ -32,7 +33,7 @@ RSpec.describe 'Issue splitted debt', type: :request do
     }))
   end
   
-  context 'when access permitted' do 
+  context 'when creditor is member of group' do 
     context 'when split debt among picked group members' do
       it 'issues debts' do
         params = {
@@ -42,7 +43,7 @@ RSpec.describe 'Issue splitted debt', type: :request do
           debtors_ids: leader_friends.collect{ |user| user.id },
           amount: 100.0,
         }
-        post "/api/v1/groups/#{group_uid}/issue_debt", params: params, headers: { 'Authorization': 'Bearer ' + access_token.token }
+        post "/api/v1/group/#{group_uid}/issue_debt", params: params, headers: { 'Authorization': 'Bearer ' + access_token.token }
 
         expect(response.status).to eq(201)
         to_repay_per_debtor = (params[:amount] / params[:debtors_ids].count).round(2)
@@ -82,7 +83,7 @@ RSpec.describe 'Issue splitted debt', type: :request do
             }
           ]
         }
-        post "/api/v1/groups/#{group_uid}/issue_debt", params: params, headers: { 'Authorization': 'Bearer ' + access_token.token }
+        post "/api/v1/group/#{group_uid}/issue_debt", params: params, headers: { 'Authorization': 'Bearer ' + access_token.token }
         expect(response.status).to eq(201)
         expect(event_store).to have_published(
           an_event(Debts::Events::DebtIssued).with_data(
@@ -95,6 +96,21 @@ RSpec.describe 'Issue splitted debt', type: :request do
             creditor_id: leader.id, amount: params[:debts_info][2][:amount], debtor_id: leader_friends[2].id),
         ).in_stream("Group$#{group_uid}")
       end
+    end
+  end
+
+  context 'when is NOT member of group' do 
+    it 'raises error' do 
+      params = {
+        description: 'test',
+        currency_id: zloty.id,
+        credit_equally: true,
+        debtors_ids: leader_friends.collect{ |user| user.id },
+        amount: 100.0,
+      }
+      post "/api/v1/group/#{group_uid}/issue_debt", params: params, headers: { 'Authorization': 'Bearer ' + not_member_access_token.token }
+      expect(response.status).to eq(403)
+      expect(response.parsed_body['error']).to eq('You cannot do that!')
     end
   end
 end

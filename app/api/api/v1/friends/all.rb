@@ -11,9 +11,8 @@ module Api
 
         resource :all do 
           get do 
-            friendships = ::Services::Friends::FriendService.call(current_user)
-            ::Users::FriendsSerializer.new(friendships).serializable_hash
-            # linki do akceptacji, odrzucenia i usunięcia 
+            friendships = ::Friends::FriendService.call(current_user)
+            ::Friendships::FriendsSerializer.new(friendships, params: { current_user: current_user }).serializable_hash
           end
         end
       end

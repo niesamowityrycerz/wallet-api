@@ -11,15 +11,15 @@ module Api
         desc 'Add friend'
 
         params do
-          requires :friend_id, type: Integer, values: -> { User.ids }
+          requires :user_id, type: Integer, values: -> { User.ids }
         end
 
         resource :add do 
           post do 
-            requested_user = User.find_by!(id: params[:friend_id])
+            requested_user = User.find_by!(id: params[:user_id])
             if !friendship_errors 
               current_user.friend_request(requested_user)
-              status 200
+              status 201
             end
           end
         end

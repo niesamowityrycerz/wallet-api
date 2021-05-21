@@ -16,7 +16,7 @@ module Users
       visitor_debts  = ReadModels::Debts::DebtProjection.where("creditor_id = ? AND debtor_id = ?", user.id, params[:profile_visitor].id).accepted
       visitor_debts.sum('amount') > visitor_credits.sum('amount')
     } do |object|
-      "/api/v1/users/#{object.id}/balance"
+      "/api/v1/user/#{object.id}/balance"
     end 
 
 

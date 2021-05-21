@@ -16,7 +16,7 @@ module Api
               group.close
               status 200
             else 
-              403
+              error!('You cannot do that!', 403)
             end
           end
         end

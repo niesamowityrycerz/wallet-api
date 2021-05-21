@@ -24,7 +24,6 @@ module Api
         when 'Debts::DebtAggregate::UnableToAccept'
           error!(e, 403)
         when 'NoMethodError'
-          binding.pry
           error!('Could not find the requested resource', 404)
         when 'Groups::GroupAggregate::MemberNotAllowed'
           error!(e, 403)
@@ -36,8 +35,11 @@ module Api
           error!(e, 403)
         when 'Groups::GroupAggregate::NotEntitledToCloseGroup'
           error!(e, 403)
+        when 'ActiveRecord::RecordNotFound'
+          error!(e, 404)
         else
-          error!(e, 500)
+          #error!(e, 500)
+          error!('Something went wrong!', 500)
         end
       end 
     end

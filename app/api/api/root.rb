@@ -15,9 +15,9 @@ module Api
 
     mount Api::V1::Base
 
-    #route :any, '*path' do 
-    #  error!('We cannot find this!', 404)
-    #end
+    route :any, '*path' do 
+      error!('We cannot find this!', 404)
+    end
     
     add_swagger_documentation(
       api_version: 'v1',

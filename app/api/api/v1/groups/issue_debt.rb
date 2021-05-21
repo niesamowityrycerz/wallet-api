@@ -34,7 +34,7 @@ module Api
               group.issue_debts
               status 201 
             else 
-              status 403 
+              error!('You cannot do that!', 403)
             end
           end
         end

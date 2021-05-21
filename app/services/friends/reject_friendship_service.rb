@@ -2,18 +2,15 @@ module Friends
   class RejectFriendshipService
     def initialize(current_user, params)
       @current_user = current_user
-      @params = params 
+      @wanabe_friend = User.find_by!(id: params[:user_id]) 
     end
 
-    private 
-
     def has_friend_request?
-      @current_user.requested_friends.include? @params[:wanabe_friend_id]
+      @current_user.requested_friends.include? @wanabe_friend
     end
 
     def decline_friend 
-      requestor = User.find_by!(id: params[:wanabe_friend_id])
-      @current_user.decline_request(requestor)
+      @current_user.decline_request(@wanabe_friend)
     end
 
   end

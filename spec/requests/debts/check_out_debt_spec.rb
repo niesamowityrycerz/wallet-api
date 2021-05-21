@@ -61,24 +61,7 @@ RSpec.describe 'Check out endpoint', type: :request do
       patch "/api/v1/debt/#{debt_uid}/checkout", params: @params, headers: { 'Authorization': 'Bearer ' + debtor_access_token.token }
 
       expect(response.status).to eq(403)
-      expect(response.parsed_body['error']).to eq('This option is unavailable after debt acceptance')
-    end
-  end
-
-
-  # SHARED EXAMPLED 
-  context 'when invalid parameters' do 
-    context 'when exceeded length' do
-      it 'raises error' do 
-
-
-      end
-    end 
-
-    context 'when no parameter' do 
-      it 'raises error' do 
-
-      end
+      expect(response.parsed_body['error']).to eq('This option is unavailable after debt acceptance.')
     end
   end
 end
