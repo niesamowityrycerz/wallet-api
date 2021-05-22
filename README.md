@@ -14,7 +14,7 @@ This simple app helps you keep control over money you have lent and borrowed. Yo
 
 ## General info
 
-Wallet-api was built with hope of fulfilling Domain-Driven-Design principles. I also tried to implement Command Query Responsibility Segregation(CQRS) pattern using excellent gem [rails_event_store](https://railseventstore.org) created by Arkency. The integral part of CQRS is Event Stormming, which I also conducted. The result is available here: [in polish](https://miro.com/app/board/o9J_lR_tFpw=/) and [in english](https://miro.com/app/board/o9J_lCgluk8=/). Wallet-api is [deployed on heroku](https://radiant-plains-06954.herokuapp.com/). If you would like to access sidekiq UI, go at */sidekiq* and pass login: sidekiq and password: sidekiqpassword.
+Wallet-api was built with hope of fulfilling Domain-Driven-Design principles. I also tried to implement Command Query Responsibility Segregation(CQRS) pattern using excellent gem [rails_event_store](https://railseventstore.org) created by Arkency. The integral part of CQRS is Event Stormming, which I also conducted. The result is available here: [in polish](https://miro.com/app/board/o9J_lR_tFpw=/) and [in english](https://miro.com/app/board/o9J_lCgluk8=/). Wallet-api is [deployed on heroku](https://radiant-plains-06954.herokuapp.com/). If you would like to access sidekiq UI, go at */sidekiq* and pass login: sidekiq and password: sidekiqpassword. 
 
 ## Technologies 
 Wallet-api uses:
@@ -59,7 +59,14 @@ $ rails server
 ```
 
 Feel free to check out wallet-api using collection of endpoints which are available on [open workspace](https://www.postman.com/niesamowityrycerz).
-Most of the endpoints are restricted only to logged in user. You have to open up console and run what is on line 12 in */db/seeds*. This will create an OauthApplication(which in this case is named Wallet-api). Then, if you would like to log in you have to pass user email, OAuthApplication uid as client_id and OAuthApplication secret as client_secret in query parameters. 
+Most of the endpoints are restricted only to logged in user. You have to open up console and run what is on line 12 in */db/seeds*. This will create an OauthApplication(which in this case is named Wallet-api). Then, if you would like to log in you have to pass user email, OAuthApplication uid as client_id and OAuthApplication secret as client_secret in query parameters. However, if you would like to check production version of Wallet-Api I have already created OAuthApplication. Use this:
+
+* email: "ezekiel@bartoletti.info" 
+* client_uid: 'ltQo04dji1A0fACUDCAy1WclmFcYMb7boSRGf_B6mjg'
+* client_secret: 'vWrfRFgtRa-PXocZyY-36jFgqg6VnZCvkCA-reER5R0'
+
+Remember to put access token in every request that requires user authentication.
+
 Locally, Wallet-api is exposed on port 3000. Sidekiq UI available at */sidekiq*. If you want to get all of the routes exposed, go ahead and run 
 
 ```
