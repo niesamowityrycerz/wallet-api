@@ -7,16 +7,9 @@
 #   Character.create(name: 'Luke', movie: movies.first)
 
 
-# Delete all record from all tables 
-# Currency.delete_all
-# User.delete_all
-# SettlementMethod.delete_all
-# WriteModels::RepaymentCondition.delete_all
-# ReadModels::Transactions::TransactionProjection.delete_all
-
 # Create my own OAuth Application
 # create Doorkeeper::Application in console 
-# wallet_app = Doorkeeper::Application.create(name: "Wallet Development Client", redirect_uri: "", scopes: "")
+# wallet_app = Doorkeeper::Application.create(name: "Wallet-api", redirect_uri: "", scopes: "")
 
 
 # Currencies
@@ -25,7 +18,7 @@ Currency.create!(name: 'Zloty', code: 'PLN')
 Currency.create!(name: 'Euro',  code: 'EUR')
 Currency.create!(name: 'US Dollar', code: 'USD')
 
-# Waring types
+# Warning types
 WarningType.create(name: 'missed debt repayment')
 
 

@@ -14,7 +14,7 @@ module Api
         end
 
         resource :add_anticipated_settlement_date do
-          patch do 
+          put do 
             debt = ::Debts::AddAnticipatedSettlementDateService.new(params, current_user)
             if debt.is_debtor? current_user
               debt.set_anticipated_date

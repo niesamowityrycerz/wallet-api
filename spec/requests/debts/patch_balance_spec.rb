@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe 'PUT Balance endpoint', type: :request do 
+RSpec.describe 'patch Balance endpoint', type: :request do 
 
   let(:user_1)  { create(:user, :with_repayment_conditions) }
   let(:user_2)  { create(:user, :with_repayment_conditions) }
@@ -35,7 +35,7 @@ RSpec.describe 'PUT Balance endpoint', type: :request do
   context 'when debts have NOT been accepted' do 
     context 'when user entitled' do 
       it 'raises errors' do 
-        put "/api/v1/user/#{user_2.id}/balance", headers: { 'Authorization': 'Bearer ' + user_1_access_token.token }
+        patch "/api/v1/user/#{user_2.id}/balance", headers: { 'Authorization': 'Bearer ' + user_1_access_token.token }
 
         expect(response.status).to eq(404)
         expect(response.parsed_body["error"]).to eq("Unable to proceed!")
@@ -58,7 +58,7 @@ RSpec.describe 'PUT Balance endpoint', type: :request do
 
     context 'when user entitiled' do 
       it 'balances debts' do
-        put "/api/v1/user/#{user_2.id}/balance", headers: { 'Authorization': 'Bearer ' + user_1_access_token.token }
+        patch "/api/v1/user/#{user_2.id}/balance", headers: { 'Authorization': 'Bearer ' + user_1_access_token.token }
 
         expect(response.status).to eq(201)
       end
@@ -66,7 +66,7 @@ RSpec.describe 'PUT Balance endpoint', type: :request do
 
     context 'when user NOT entitled' do 
       it 'raises error' do 
-        put "/api/v1/user/#{user_1.id}/balance", headers: { 'Authorization': 'Bearer ' + user_2_access_token.token }
+        patch "/api/v1/user/#{user_1.id}/balance", headers: { 'Authorization': 'Bearer ' + user_2_access_token.token }
 
         expect(response.status).to eq(404)
         expect(response.parsed_body["error"]).to eq("Unable to proceed!")

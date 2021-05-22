@@ -9,7 +9,10 @@ module Api
 
         desc 'Delete friend'
 
-        # compare delete.rb with reject.rb in terms of using services 
+        params do 
+          requires :user_id, type: Integer, values: -> { User.ids }
+        end
+
         resource :delete do 
           delete do 
             to_remove = User.find_by!(id: params[:user_id])

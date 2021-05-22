@@ -15,12 +15,11 @@ module Api
         end
 
         resource :new_repayment_conditions do 
-          patch do 
+          put do 
             debt = ::Debts::OverwriteRepaymentConditionsService.new(params)
-            binding.pry 
             if debt.is_creditor? current_user
               debt.overwrite_repayment_conditions
-              status(201)
+              status 201
             else 
               error!('You cannot do that!', 403)
             end

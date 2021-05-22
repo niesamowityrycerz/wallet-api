@@ -34,7 +34,7 @@ RSpec.describe 'New repayment conditions endpoint', type: :request do
   context 'when debt status == :pending' do 
     context 'when creditor' do 
       it 'overwrites basic repayment conditions' do 
-        patch "/api/v1/debt/#{debt_uid}/new_repayment_conditions", params: @params, headers: { 'Authorization': 'Bearer ' + creditor_access_token.token }
+        put "/api/v1/debt/#{debt_uid}/new_repayment_conditions", params: @params, headers: { 'Authorization': 'Bearer ' + creditor_access_token.token }
 
         expect(response.status).to eq(201)
         expect(event_store).to have_published(
@@ -45,7 +45,7 @@ RSpec.describe 'New repayment conditions endpoint', type: :request do
 
     context 'when debtor' do 
       it 'raises error on attempt to overwrite conditions' do 
-        patch "/api/v1/debt/#{debt_uid}/new_repayment_conditions", params: @params, headers: { 'Authorization': 'Bearer ' + debtor_access_token.token }
+        put "/api/v1/debt/#{debt_uid}/new_repayment_conditions", params: @params, headers: { 'Authorization': 'Bearer ' + debtor_access_token.token }
 
         expect(response.status).to eq(403)
         expect(response.parsed_body['error']).to eq('You cannot do that!')
@@ -60,7 +60,7 @@ RSpec.describe 'New repayment conditions endpoint', type: :request do
     end
 
     it 'raises error on attempt to overwrite conditions' do 
-      patch "/api/v1/debt/#{debt_uid}/new_repayment_conditions", params: @params, headers: { 'Authorization': 'Bearer ' + creditor_access_token.token }
+      put "/api/v1/debt/#{debt_uid}/new_repayment_conditions", params: @params, headers: { 'Authorization': 'Bearer ' + creditor_access_token.token }
 
       expect(response.status).to eq(403)
       expect(response.parsed_body['error']).to eq('It is too late to do that!')
@@ -69,7 +69,7 @@ RSpec.describe 'New repayment conditions endpoint', type: :request do
 
   context 'when debt does not exist' do 
     it 'raises error on attempt to overwrite conditions' do 
-      patch "/api/v1/debt/#{invalid_debt_uid}/new_repayment_conditions", params: @params, headers: { 'Authorization': 'Bearer ' + creditor_access_token.token }
+      put "/api/v1/debt/#{invalid_debt_uid}/new_repayment_conditions", params: @params, headers: { 'Authorization': 'Bearer ' + creditor_access_token.token }
 
       expect(response.status).to eq(404)
       expect(response.parsed_body['error']).to eq('We could not find the requested resource!')

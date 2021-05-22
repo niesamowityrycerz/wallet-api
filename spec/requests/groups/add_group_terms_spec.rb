@@ -30,7 +30,7 @@ RSpec.describe 'Add group terms endpoint', type: :request do
 
     @params = {
       currency_id: euro.id,
-      debt_repayment_valid_till: Date.today + rand(1..50)
+      debt_repayment_valid_till: Date.today + rand(5..100)
     }
   end
 

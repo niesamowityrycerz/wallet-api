@@ -7,10 +7,18 @@ RSpec.describe 'Reject endpoint', type: :request do
   let(:application)           { create(:application) }
   let(:access_token)          { create(:access_token, application: application, resource_owner_id: friend.id) }
 
+  
+  before(:each) do 
+    @params = {
+      user_id: friendship_issuer.id
+    }
+  end
+
+
   context 'when friend request exist' do 
     it 'rejects friend request' do 
       friendship_issuer.friend_request(friend)
-      put "/api/v1/friend/#{friendship_issuer.id}/reject", headers: { 'Authorization': 'Bearer ' + access_token.token }
+      patch "/api/v1/friend/reject", params: @params, headers: { 'Authorization': 'Bearer ' + access_token.token }
  
       expect(friendship_issuer.pending_friends).to eq([])
       expect(friend.requested_friends).to eq([])
@@ -20,7 +28,7 @@ RSpec.describe 'Reject endpoint', type: :request do
 
   context 'when no friend request' do 
     it 'raises error' do
-      put "/api/v1/friend/#{friendship_issuer.id}/reject", headers: { 'Authorization': 'Bearer ' + access_token.token }
+      patch "/api/v1/friend/reject", params: @params, headers: { 'Authorization': 'Bearer ' + access_token.token }
 
       expect(response.status).to eq(404)
       expect(response.parsed_body["error"]).to eq('Unable to proceed')

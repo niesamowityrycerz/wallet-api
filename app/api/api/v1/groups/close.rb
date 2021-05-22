@@ -10,7 +10,7 @@ module Api
         desc 'Close group'
 
         resource :close do 
-          patch do 
+          put do 
             group = ::Groups::CloseGroupService.new(params, current_user)
             if group.is_leader? current_user
               group.close

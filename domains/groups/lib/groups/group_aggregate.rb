@@ -25,11 +25,11 @@ module Groups
     attr_reader :leader, :members, :debt_repayment_valid_till, :group_lasting_period, :invited_users
 
     def register(data)
-      leader = User.find_by!(id: data[:leader_id])
-      data[:invited_users].each do |id|
-        invited_user = User.find_by!(id: id)
-        raise MemberNotAllowed.new "#{invited_user.username} is not your friend!" unless leader.friends.include? invited_user
-      end
+      #leader = User.find_by!(id: data[:leader_id])
+      #data[:invited_users].each do |id|
+      #  invited_user = User.find_by!(id: id)
+      #  raise MemberNotAllowed.new "#{invited_user.username} is not your friend!" unless leader.friends.include? invited_user
+      #end
 
       apply Events::GroupRegistered.strict({
         group_uid: @id,

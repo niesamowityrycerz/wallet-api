@@ -26,7 +26,6 @@ module Api
         when 'Debts::DebtAggregate::UnableToOverwroteRepaymentConditions'
           error!(e, 403)
         when 'NoMethodError'
-          binding.pry
           error!('Could not find the requested resource', 404)
         when 'Groups::GroupAggregate::MemberNotAllowed'
           error!(e, 403)
@@ -39,10 +38,8 @@ module Api
         when 'Groups::GroupAggregate::NotEntitledToCloseGroup'
           error!(e, 403)
         when 'ActiveRecord::RecordNotFound'
-          binding.pry
           error!('We could not find the requested resource!', 404)
         else
-          binding.pry
           #error!(e, 500)
           error!('Something went wrong!', 500)
         end

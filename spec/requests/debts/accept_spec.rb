@@ -59,7 +59,7 @@ RSpec.describe 'Accept endpoint', type: :request do
       patch "/api/v1/debt/#{unexisiting_debt_uid}/accept", params: @accept_params, headers: { 'Authorization': 'Bearer ' + random_user_access_token.token }
 
       expect(response.status).to eq(404)
-      expect(response.parsed_body["error"]).to eq('Could not find the requested resource')
+      expect(response.parsed_body["error"]).to eq("We could not find the requested resource!")
     end
   end
 end

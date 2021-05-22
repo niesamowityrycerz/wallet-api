@@ -10,7 +10,7 @@ module Api
         desc 'Accept invitation to group'
 
         resource :accept do 
-          patch do 
+          put do 
             group = ::Groups::AcceptInvitationService.new(params, current_user)
             if group.has_invited? current_user
               group.accept_invitation

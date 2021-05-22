@@ -27,20 +27,15 @@ module Api
           FriendshipsErrors
         )
 
-        resource :friends do 
-          mount Api::V1::Friends::Add
-        end 
-
         resource :friend do 
-          route_param :user_id do 
-            mount Api::V1::Friends::Accept
-            mount Api::V1::Friends::Delete
-            mount Api::V1::Friends::Reject
-          end
+          mount Api::V1::Friends::Accept
+          mount Api::V1::Friends::Delete
+          mount Api::V1::Friends::Reject
         end
 
         resource :friends do 
-          mount Api::V1::Friends::All 
+          mount Api::V1::Friends::All
+          mount Api::V1::Friends::Add
         end 
       end
     end

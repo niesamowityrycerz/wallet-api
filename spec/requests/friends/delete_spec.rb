@@ -7,12 +7,19 @@ RSpec.describe 'Delete endpoint', type: :request do
   let(:application)           { create(:application) }
   let(:access_token)          { create(:access_token, application: application, resource_owner_id: friendship_issuer.id) }
 
+  before(:each) do 
+    @params = {
+      user_id: friend.id
+    }
+  end
+
+
   context 'when happy path' do 
     it 'deletes user from friends' do 
       friendship_issuer.friend_request(friend)
       friend.accept_request(friendship_issuer)
 
-      delete "/api/v1/friend/#{friend.id}/delete", headers: { 'Authorization': 'Bearer ' + access_token.token }
+      delete "/api/v1/friend/delete", params: @params, headers: { 'Authorization': 'Bearer ' + access_token.token }
 
       expect(friendship_issuer.friends).to eq([])
       expect(friend.friends).to eq([])
@@ -21,7 +28,7 @@ RSpec.describe 'Delete endpoint', type: :request do
 
   context 'when no friendship' do 
     it 'raises error' do
-      delete "/api/v1/friend/#{friend.id}/delete", headers: { 'Authorization': 'Bearer ' + access_token.token }
+      delete "/api/v1/friend/delete", params: @params, headers: { 'Authorization': 'Bearer ' + access_token.token }
 
       expect(response.status).to eq(404)
       parsed_response = JSON.parse(response.body)

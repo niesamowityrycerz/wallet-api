@@ -11,7 +11,7 @@ module Api
         desc 'Balance debts between two users'
           
         resource :balance do 
-          put do 
+          patch do 
             debts_uids = ::Debts::BalanceDebtsService.new(current_user, params[:id]).call
             if debts_uids.any?
               ::Debts::SettleDebtsService.settle_debts(debts_uids)

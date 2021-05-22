@@ -31,14 +31,14 @@ RSpec.describe 'Accept invitation endpoint', type: :request do
   context 'when group exists' do 
     context 'when invited user' do 
       it 'accepts invitation' do 
-        patch "/api/v1/group/#{group_uid}/accept", headers: { 'Authorization': 'Bearer ' + invited_user_access_token.token }
+        put "/api/v1/group/#{group_uid}/accept", headers: { 'Authorization': 'Bearer ' + invited_user_access_token.token }
         expect(response.status).to eq(201)
       end 
     end
 
     context 'when random user' do 
       it 'raises error' do 
-        patch "/api/v1/group/#{group_uid}/accept", headers: { 'Authorization': 'Bearer ' + random_user_access_token.token }
+        put "/api/v1/group/#{group_uid}/accept", headers: { 'Authorization': 'Bearer ' + random_user_access_token.token }
 
         expect(response.status).to eq(403)
         expect(response.parsed_body['error']).to eq('You cannot do that!')

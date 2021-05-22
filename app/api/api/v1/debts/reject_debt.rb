@@ -14,7 +14,7 @@ module Api
         end
 
         resource :reject do 
-          patch do 
+          put do 
             debt = ::Debts::RejectDebtService.new(params)
             if debt.is_debtor? current_user
               debt.reject

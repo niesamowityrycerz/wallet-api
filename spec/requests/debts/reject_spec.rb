@@ -36,7 +36,7 @@ RSpec.describe 'Reject endpoint', type: :request do
   context 'when debt issud' do 
     context 'when debtor' do 
       it 'rejects debt' do 
-        patch "/api/v1/debt/#{debt_uid}/reject", params: @params, headers: { 'Authorization': 'Bearer ' + debtor_access_token.token }
+        put "/api/v1/debt/#{debt_uid}/reject", params: @params, headers: { 'Authorization': 'Bearer ' + debtor_access_token.token }
 
         expect(response.status).to eq(200)
       end 
@@ -45,7 +45,7 @@ RSpec.describe 'Reject endpoint', type: :request do
 
   context 'when current user is not debtor' do 
     it 'raise error' do 
-      patch "/api/v1/debt/#{debt_uid}/reject", params: @params, headers: { 'Authorization': 'Bearer ' + random_user_access_token.token }
+      put "/api/v1/debt/#{debt_uid}/reject", params: @params, headers: { 'Authorization': 'Bearer ' + random_user_access_token.token }
 
       expect(response.status).to eq(403)
       expect(response.parsed_body["error"]).to eq('You are not entitled to do this!')
@@ -55,7 +55,7 @@ RSpec.describe 'Reject endpoint', type: :request do
   context 'when absence of parameter' do 
     it 'raises error' do 
       @params.delete(:reason_for_rejection)
-      patch "/api/v1/debt/#{debt_uid}/reject", params: @params, headers: { 'Authorization': 'Bearer ' + debtor_access_token.token }
+      put "/api/v1/debt/#{debt_uid}/reject", params: @params, headers: { 'Authorization': 'Bearer ' + debtor_access_token.token }
 
       expect(response.status).to eq(400)
       expect(response.parsed_body[0]).to eq({"params" => ["reason_for_rejection"], "messages" => ["is missing"]})

@@ -3,7 +3,15 @@ module Api
     module Friends 
       class Accept < Base 
 
+        before do 
+          authenticate_user!
+        end
+
         desc 'Accept friend'
+
+        params do 
+          requires :user_id, type: Integer, values: -> { User.ids }
+        end
 
         resource :accept do 
           put do 

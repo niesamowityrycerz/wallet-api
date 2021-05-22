@@ -37,14 +37,14 @@ RSpec.describe 'Add anticipated settlememnt date endpoint', type: :request do
     end
 
     it 'adds anticipated date of return' do 
-      patch "/api/v1/debt/#{debt_uid}/add_anticipated_settlement_date", params: @params, headers: { 'Authorization': 'Bearer ' + debtor_access_token.token }
+      put "/api/v1/debt/#{debt_uid}/add_anticipated_settlement_date", params: @params, headers: { 'Authorization': 'Bearer ' + debtor_access_token.token }
       expect(response.status).to eq(200)
     end
   end
 
   context 'when debt not accepted' do 
     it 'raises error' do 
-      patch "/api/v1/debt/#{debt_uid}/add_anticipated_settlement_date", params: @params, headers: { 'Authorization': 'Bearer ' + debtor_access_token.token }
+      put "/api/v1/debt/#{debt_uid}/add_anticipated_settlement_date", params: @params, headers: { 'Authorization': 'Bearer ' + debtor_access_token.token }
       expect(response.status).to eq(403)
       expect(response.parsed_body['error']).to eq('Accept debt first!')
     end
