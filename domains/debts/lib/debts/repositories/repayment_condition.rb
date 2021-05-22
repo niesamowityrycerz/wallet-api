@@ -15,8 +15,6 @@ module Debts
           }
         )
       end
-
-
     end
   end
 end

@@ -6,7 +6,10 @@ module Groups
 
     def call
       grab_users(@group_q)
-      #make_friendships(@friends)
+      # TO DO
+      # adding friends in the way like this does not work
+      # however, in console and through requests it works
+      #make_friendships(@friends) 
       params = prepare_data(@group_q, @friends)
       register_group(params)
     end
@@ -30,7 +33,6 @@ module Groups
         leader = User.find_by!(id: group[:leader_id])
         invited_users = group[:invited_users_ids].collect { |id| User.find_by!(id: id)}
         invited_users.each do |user|
-          binding.pry 
           user.friend_request(leader)
           leader.accept_request(user)
         end

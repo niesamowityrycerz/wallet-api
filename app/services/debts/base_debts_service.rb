@@ -4,6 +4,7 @@ module Debts
       @debt_uid = params[:debt_uid]
       @params = params
       @current_user = current_user
+      binding.pry
     end
 
     attr_reader :params, :current_user, :debt_uid
@@ -13,7 +14,7 @@ module Debts
     end
 
     def debt_projection
-      ReadModels::Debts::DebtProjection.find_by(debt_uid: debt_uid)
+      ReadModels::Debts::DebtProjection.find_by!(debt_uid: debt_uid)
     end
 
     def is_debtor?(user)

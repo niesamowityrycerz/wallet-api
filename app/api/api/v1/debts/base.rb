@@ -33,6 +33,7 @@ module Api
         resource :debt do
           mount Api::V1::Debts::IssueDebt
           route_param :debt_uid do 
+            mount Api::V1::Debts::NewRepaymentConditions
             mount Api::V1::Debts::Index
             mount Api::V1::Debts::AcceptDebt
             mount Api::V1::Debts::RejectDebt

@@ -10,6 +10,7 @@ module Debts
     UnableToCheckOutDebtDetails            = Class.new(StandardError)
     UnableToCorrectDebtDetails             = Class.new(StandardError)
     UnableToAccept                         = Class.new(StandardError)
+    UnableToOverwroteRepaymentConditions   = Class.new(StandardError)
 
     attr_accessor :repayment_conditions, :due_money
 
@@ -40,6 +41,19 @@ module Debts
           max_date_of_settlement: ( params.key?(:creditor_conditions) ? Date.today + params[:creditor_conditions][:maturity_in_days] : params[:max_date_of_settlement] ),
           group_uid: ( params[:group_uid] if params.key?(:group_uid) )
         }.compact
+      )
+    end
+
+    def overwrite_repayment_conditions(params)
+      raise UnableToOverwroteRepaymentConditions.new 'It is too late to do that!' unless @status == :pending
+
+      apply Events::RepaymentConditionsOverwrote.strict(
+        {
+          debt_uid: @id,
+          currency_id: params[:currency_id],
+          max_date_of_settlement: @date_of_placement + params[:maturity_in_days],
+          maturity_in_days: params[:maturity_in_days]
+        }
       )
     end
 
@@ -141,6 +155,14 @@ module Debts
       @debtor_id = event.data.fetch(:debtor_id)
       @repayment_conditions = Repositories::RepaymentCondition.new.with_condition(event.data.fetch(:creditor_id)) unless event.data.key?(:group_uid)
       @max_date_of_settlement = event.data.fetch(:max_date_of_settlement) 
+    end
+
+    on Events::RepaymentConditionsOverwrote do |event|
+      @repayment_conditions = Entities::RepaymentCondition.new({
+        currency_id: event.data.fetch(:currency_id), 
+        maturity_in_days: event.data.fetch(:maturity_in_days),
+        creditor_id: @creditor_id
+      })
     end
 
     on Events::DebtAccepted do |event| 

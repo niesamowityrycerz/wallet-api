@@ -12,8 +12,8 @@ module Debts
 
       def creditor_conditions
         {
-          maturity_in_days: @maturity_in_days,
-          currency_id: @currency_id,
+          maturity_in_days: maturity_in_days,
+          currency_id: currency_id,
           creditor_id: @creditor_id
         }
       end
@@ -21,8 +21,6 @@ module Debts
       def currency_allowed?(settlement_curency_id)
         currency_id == settlement_curency_id
       end
-
-
       
     end
   end
