@@ -25,6 +25,7 @@ module Groups
     attr_reader :leader, :members, :debt_repayment_valid_till, :group_lasting_period, :invited_users
 
     def register(data)
+      # TODO - seed does not work 
       #leader = User.find_by!(id: data[:leader_id])
       #data[:invited_users].each do |id|
       #  invited_user = User.find_by!(id: id)
